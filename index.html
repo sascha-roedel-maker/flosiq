@@ -10502,12 +10502,7 @@ async function requestPersistentStorage(){
   persistRequested=true;
   try{if(navigator.storage?.persist)await navigator.storage.persist();}catch(err){console.warn("FLOSIQ persistent storage request",err);}
 }
-async function cachePut(url,data){
-  await requestPersistentStorage();
-  try{await idbWrite(url,data);return;}catch(err){console.warn("FLOSIQ IndexedDB write failed; using CacheStorage",err);}
-  const cache=await openCache();
-  await cache.put(new Request(url,{cache:"no-store"}),new Response(JSON.stringify(data),{headers:{"content-type":"application/json","cache-control":"no-store"}}));
-}
+async function cachePut(url,data){await requestPersistentStorage();let idbOk=false,cacheOk=false;try{await idbWrite(url,data);idbOk=true;}catch(err){console.warn("FLOSIQ IndexedDB write failed",err);}try{const cache=await openCache();await cache.put(new Request(url,{cache:"no-store"}),new Response(JSON.stringify(data),{headers:{"content-type":"application/json","cache-control":"no-store"}}));cacheOk=true;}catch(err){console.warn("FLOSIQ CacheStorage write failed",err);}if(!idbOk&&!cacheOk)throw new Error("Lokale Sicherung in IndexedDB und CacheStorage fehlgeschlagen");return true;}
 async function cacheGet(url,fallback=null){
   try{const value=await idbRead(url);if(value!==undefined)return value;}catch{}
   try{const cache=await openCache();const r=await cache.match(url);if(!r)return fallback;return await r.json();}catch{return fallback;}
@@ -10595,7 +10590,7 @@ function userId(){return session?.user?.id||null;}
 function rowDate(payload){return payload?.date||payload?.record_date||null;}
 function opKey(op){return `${op.action}|${op.type}|${op.key}`;}
 async function saveQueue(){await cachePut(CACHE_QUEUE_URL(),{schema:3,saved_at:isoNow(),ops:queue});}
-async function loadQueue(){const q=await cacheGet(CACHE_QUEUE_URL(),null);queue=Array.isArray(q?.ops)?q.ops:[];return queue;}
+async function loadQueue(){const q=await cacheGet(CACHE_QUEUE_URL(),null);queue=Array.isArray(q?.ops)?q.ops.filter(x=>x?.action!=="delete"):[];await saveQueue();return queue;}
 async function enqueueOperations(ops){
   if(!ops?.length)return;
   const map=new Map(queue.map(x=>[opKey(x),x]));
@@ -10755,7 +10750,7 @@ async function login(){
     session={...data,expires_at:expiresAt};nativeSetItem.call(localStorage,EMAIL_KEY,email);await persistSession();
     if($c("iqCloudPassword"))$c("iqCloudPassword").value="";
     setSignedUi(true);setDialogStatus("Angemeldet. Geräte-Daten werden zuerst gesichert …","good");
-    await loadQueue();await flushQueue();await hydrateFromCloud();
+    await loadQueue();await hydrateFromCloud();await flushQueue();
   }catch(err){console.error("FLOSIQ v3 login failed",err);session=null;await persistSession();setSignedUi(false);setPill("CLOUD LOGIN");const msg=String(err?.message||"");setDialogStatus(/invalid login|invalid credentials/i.test(msg)?"E-Mail oder Passwort stimmt nicht.":`Anmeldung fehlgeschlagen: ${msg||"Unbekannter Fehler"}`,"bad");}
   finally{if(btn)btn.disabled=false;}
 }
@@ -10768,9 +10763,7 @@ function openCloudDialog(){
   const hint=localStorage.getItem(EMAIL_KEY)||"";if($c("iqCloudEmail")&&!$c("iqCloudEmail").value)$c("iqCloudEmail").value=hint;
   setSignedUi(!!session?.access_token);if(!dlg.open)dlg.showModal();
 }
-async function manualSync(){
-  try{await settleTrackedChanges();await durableBackupNow();await loadQueue();if(session?.access_token){await flushQueue();await hydrateFromCloud();}else openCloudDialog();}catch(err){setDialogStatus(`Prüfung fehlgeschlagen: ${err?.message||err}`,"bad");setHealth("bad","Cloud-Prüfung fehlgeschlagen",String(err?.message||err));}
-}
+async function manualSync(){try{await settleTrackedChanges();await durableBackupNow();await loadQueue();if(session?.access_token){await hydrateFromCloud();await flushQueue();}else openCloudDialog();}catch(err){setDialogStatus(`Prüfung fehlgeschlagen: ${err?.message||err}`,"bad");setHealth("bad","Cloud-Prüfung fehlgeschlagen",String(err?.message||err));}}
 
 function bindCloudUi(){
   const p=$c("modePill");if(p){p.onclick=openCloudDialog;p.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openCloudDialog();}};}
@@ -10839,7 +10832,7 @@ async function init(){
     try{
       await ensureSession();setSignedUi(true);
       /* offene lokale Änderungen immer zuerst senden, bevor Cloud die UI neu aufbaut */
-      await flushQueue();await hydrateFromCloud();
+      await hydrateFromCloud();await flushQueue();
     }catch(err){console.warn("FLOSIQ v3 boot cloud",err);setSignedUi(false);setPill("CLOUD LOGIN","Cloud-Sitzung abgelaufen");setHealth(restored?"":"bad",restored?"✓ Geräte-Sicherung vorhanden · Cloud Login nötig":"Cloud-Anmeldung erforderlich",restored?"Lokale Geräte-Sicherung wurde restauriert.":"Vor der Erfassung bitte anmelden.");}
   }else{
     setSignedUi(false);setPill("CLOUD LOGIN","Vor Pilotstart mit IQ-Versum Core verbinden");
@@ -10853,7 +10846,7 @@ async function init(){
   };
 }
 
-window.addEventListener("online",()=>{if(bootReady){loadQueue().then(()=>flushQueue()).then(()=>session?.access_token?hydrateFromCloud():null).catch(()=>{});}});
+window.addEventListener("online",()=>{if(bootReady){loadQueue().then(()=>session?.access_token?hydrateFromCloud():null).then(()=>flushQueue()).catch(()=>{});}});
 window.addEventListener("pagehide",()=>{void durableBackupNow();void flushQueue({keepalive:true});});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){void durableBackupNow();void flushQueue({keepalive:true});}});
 
