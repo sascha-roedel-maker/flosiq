@@ -7852,7 +7852,7 @@ quickAddDlg.addEventListener("click",e=>{
 if(e.target===quickAddDlg)quickAddDlg.close();
 });
 
-$("cancelMeals").onclick=()=>mealsDlg.close();
+$("cancelMeals")?.addEventListener("click",()=>mealsDlg.close());
 
 $("saveMeals").onclick=async()=>{
 const meals=Number($("mealsInput").value);
