@@ -11371,72 +11371,29 @@ var quick=document.createElement("button");quick.id="mdeQuick";quick.className="
 var picked=today(),filter="all";try{var saved=localStorage.getItem("flosiq_management_day_v1");if(/^\d{4}-\d{2}-\d{2}$/.test(saved))picked=saved;}catch(_e){}if(picked>today())picked=today();
 function shift(n){var d=asDate(picked);d.setDate(d.getDate()+n);picked=localDate(d);draw();}
 function mealText(row){if(!row)return["Noch nicht eingetragen","Für diesen Tag fehlt die Essenszahl."];var n=Number(row.meals||0).toLocaleString("de-DE");if(row.status==="verified")return[n+" Essen · bestätigt","Durch das Management bestätigt."];if(row.status==="billed")return[n+" Essen · belastbar","Als belastbare Zahl hinterlegt."];if(row.status==="provisional")return[n+" Essen · vorläufig","Wartet auf Management-Bestätigung."];if(row.status==="pending")return["Essenszahl noch offen","Für später vorgemerkt, noch ohne Zahlenwert."];return[n+" Essen","Status nicht näher bezeichnet."];}
-function draw(){if(picked>today())picked=today();var all=(state.entries||[]).filter(function(x){return x.date===picked;}).slice().sort(function(a,b){return String(a.created_at||"").localeCompare(String(b.created_at||""));});var shown=filter==="all"?all:all.filter(function(x){return x.category===filter;});var total=all.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);var lunch=all.filter(function(x){return x.service==="lunch";}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);var unknown=all.some(function(x){return x.service==="unassigned";}),hasLunch=all.some(function(x){return x.service==="lunch";});var meal=(state.meals||[]).find(function(x){return x.date===picked;})||null,meals=meal&&meal.status!=="pending"?Number(meal.meals||0):0,kpi=meals>0&&!unknown&&hasLunch?Math.round(lunch*1000/meals):null,mt=mealText(meal);$("mdeDate").value=picked;$("mdeDate").max=today();$("mdeNext").disabled=picked>=today();$("mdeTitle").textContent=compactDate(picked);$("mdeWaste").textContent=fmtKg(total)+" kg";$("mdeCount").textContent=String(all.length);$("mdeMeals").textContent=meals?meals.toLocaleString("de-DE"):"—";$("mdeKpi").textContent=kpi==null?"—":kpi+" g";$("mdeMealState").textContent=mt[0];$("mdeMealInfo").textContent=mt[1];$("mdeMenu").textContent=menuFor(picked)||"Noch kein Speiseplan hinterlegt.";$("mdeFilters").innerHTML=[{id:"all",label:"Alle",icon:""}].concat(CATS).map(function(o){var n=o.id==="all"?all.length:all.filter(function(x){return x.category===o.id;}).length;return '<button type="button" class="'+(filter===o.id?'on':'')+'" data-mde-cat="'+esc(o.id)+'">'+(o.icon?o.icon+" ":"")+esc(o.label)+" · "+n+"</button>";}).join("");$("mdeList").innerHTML=shown.length?shown.map(function(x){var c=cat(x.category),s=service(x.service),t=x.created_at?fmtTime(x.created_at):"Keine Uhrzeit",note=x.note?esc(x.note):"Keine Bemerkung",exact=x.category==="storage"&&typeof getStorageExactValue==="function"?getStorageExactValue(x):null;return '<article class="mde-e"><div class="mde-i">'+c.icon+'</div><div class="mde-m"><b>'+esc(c.label)+'</b><small>'+esc(t)+" · "+s.icon+" "+esc(s.label)+" · "+note+'</small></div><div class="mde-a"><div class="mde-w"><b>'+fmtKg(x.weight_kg)+' kg</b><small>'+(exact!=null?esc(fmtEur(exact))+" Warenwert":"Einzelwiegung")+'</small></div><button type="button" class="mde-del" data-mde-del="'+esc(String(x.id==null?"":x.id))+'" aria-label="Eintrag löschen">⌫</button></div></article>';}).join(""):'<div class="mde-empty">Für diesen Tag gibt es in dieser Auswahl keine einzelnen Wiegungen.</div>';try{localStorage.setItem("flosiq_management_day_v1",picked);}catch(_e){}}
-async function removeEntry(id){var entry=(state.entries||[]).find(function(x){return String(x.id)==String(id);});if(!entry){toast("Eintrag nicht gefunden.");return;}if(!confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+cat(entry.category).label+" · "+fmtKg(entry.weight_kg)+" kg\n\nDie Tageswerte werden danach sofort neu berechnet."))return;try{if(state.remote){await api("/api/waste/"+encodeURIComponent(id),{method:"DELETE"});if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);await load();}else{if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);state.entries=state.entries.filter(function(x){return String(x.id)!==String(id);});saveLocal();render();}toast("Eintrag gelöscht.");draw();}catch(error){toast(error.message||"Löschen fehlgeschlagen.");}}
+function draw(){if(picked>today())picked=today();var all=(state.entries||[]).filter(function(x){return x.date===picked;}).slice().sort(function(a,b){return String(a.created_at||"").localeCompare(String(b.created_at||""));});var shown=filter==="all"?all:all.filter(function(x){return x.category===filter;});var total=all.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);var lunch=all.filter(function(x){return x.service==="lunch";}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);var unknown=all.some(function(x){return x.service==="unassigned";}),hasLunch=all.some(function(x){return x.service==="lunch";});var meal=(state.meals||[]).find(function(x){return x.date===picked;})||null,meals=meal&&meal.status!=="pending"?Number(meal.meals||0):0,kpi=meals>0&&!unknown&&hasLunch?Math.round(lunch*1000/meals):null,mt=mealText(meal);$("mdeDate").value=picked;$("mdeDate").max=today();$("mdeNext").disabled=picked>=today();$("mdeTitle").textContent=compactDate(picked);$("mdeWaste").textContent=fmtKg(total)+" kg";$("mdeCount").textContent=String(all.length);$("mdeMeals").textContent=meals?meals.toLocaleString("de-DE"):"—";$("mdeKpi").textContent=kpi==null?"—":kpi+" g";$("mdeMealState").textContent=mt[0];$("mdeMealInfo").textContent=mt[1];$("mdeMenu").textContent=menuFor(picked)||"Noch kein Speiseplan hinterlegt.";$("mdeFilters").innerHTML=[{id:"all",label:"Alle",icon:""}].concat(CATS).map(function(o){var n=o.id==="all"?all.length:all.filter(function(x){return x.category===o.id;}).length;return '<button type="button" class="'+(filter===o.id?'on':'')+'" data-mde-cat="'+esc(o.id)+'">'+(o.icon?o.icon+" ":"")+esc(o.label)+" · "+n+"</button>";}).join("");$("mdeList").innerHTML=shown.length?shown.map(function(x){var c=cat(x.category),s=service(x.service),t=x.created_at?fmtTime(x.created_at):"Keine Uhrzeit",note=x.note?esc(x.note):"Keine Bemerkung",exact=x.category==="storage"&&typeof getStorageExactValue==="function"?getStorageExactValue(x):null;return '<article class="mde-e"><div class="mde-i">'+c.icon+'</div><div class="mde-m"><b>'+esc(c.label)+'</b><small>'+esc(t)+" · "+s.icon+" "+esc(s.label)+" · "+note+'</small></div><div class="mde-a"><div class="mde-w"><b>'+fmtKg(x.weight_kg)+' kg</b><small>'+(exact!=null?esc(fmtEur(exact))+" Warenwert":"Einzelwiegung")+'</small></div><button type="button" class="mde-del" data-mde-del="'+esc(String(x.id??x.created_at??x.createdAt??""))+'" aria-label="Eintrag löschen">⌫</button></div></article>';}).join(""):'<div class="mde-empty">Für diesen Tag gibt es in dieser Auswahl keine einzelnen Wiegungen.</div>';try{localStorage.setItem("flosiq_management_day_v1",picked);}catch(_e){}}
+async function removeEntry(key){
+var entryKey=function(row){return String(row.id??row.created_at??row.createdAt??"");};
+var entry=(state.entries||[]).find(function(row){return entryKey(row)===String(key);});
+if(!entry){toast("Eintrag nicht gefunden.");return;}
+if(!confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+cat(entry.category).label+" · "+fmtKg(entry.weight_kg)+" kg"))return;
+try{
+state.entries=state.entries.filter(function(row){return entryKey(row)!==String(key);});
+saveLocal();
+}catch(error){
+console.error("FLOSIQ delete save",error);
+toast("Löschen fehlgeschlagen: "+String(error&&error.message||error||"Speicherfehler"));
+return;
+}
+try{
+if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);
+}catch(error){console.warn("FLOSIQ storage value cleanup",error);}
+try{draw();}catch(error){console.warn("FLOSIQ day explorer refresh",error);}
+toast("Eintrag gelöscht · Sicherung läuft.");
+}
 $("mdePrev").onclick=function(){shift(-1);};$("mdeNext").onclick=function(){if(picked<today())shift(1);};$("mdeToday").onclick=function(){picked=today();draw();};$("mdeDate").onchange=function(){if(/^\d{4}-\d{2}-\d{2}$/.test(this.value)){picked=this.value;draw();}};$("mdeFilters").onclick=function(e){var del=e.target.closest("[data-mde-del]");if(del){removeEntry(del.dataset.mdeDel);return;}var b=e.target.closest("[data-mde-cat]");if(b){filter=b.dataset.mdeCat;draw();}};$("mdeList").onclick=function(e){var del=e.target.closest("[data-mde-del]");if(del)removeEntry(del.dataset.mdeDel);};quick.onclick=function(e){if(typeof window.FLOSIQ_OPEN_MGMT_SPACE==="function")window.FLOSIQ_OPEN_MGMT_SPACE(e,"analysis");else if(typeof setMgmtSpace==="function")setMgmtSpace("analysis",{scroll:false});draw();setTimeout(function(){card.scrollIntoView({behavior:"smooth",block:"start"});},40);};if(typeof renderAnalytics==="function"){var oldRenderAnalytics=renderAnalytics;renderAnalytics=function(){var r=oldRenderAnalytics.apply(this,arguments);draw();return r;};}window.FLOSIQ_RENDER_DAY_EXPLORER=draw;draw();var space="cockpit";try{space=localStorage.getItem("flosiq_management_space_v1")||"cockpit";}catch(_e){}card.classList.toggle("mgmt-space-hidden",space!=="analysis");
 })();
 </script>
 <!-- /FLOSIQ MANAGEMENT TAGESDATEN 2026-11-15 -->
 
    
-<script id="flosiq-management-delete-fix-v2-20261115">
-(function(){
-  "use strict";
-  document.addEventListener("click",function(event){
-    var origin=event.target&&event.target.nodeType===3?event.target.parentElement:event.target;
-    var button=origin&&origin.closest?origin.closest("#mdeList [data-mde-del],#mdeList [data-mde-index]"):null;
-    if(!button)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    var list=document.getElementById("mdeList");
-    var row=button.closest(".mde-e");
-    var rows=list?Array.prototype.slice.call(list.querySelectorAll(".mde-e")):[];
-    var visualIndex=rows.indexOf(row);
-    var dateInput=document.getElementById("mdeDate");
-    var picked=dateInput?dateInput.value:"";
-    var activeButton=document.querySelector("#mdeFilters [data-mde-cat].on");
-    var active=activeButton?activeButton.getAttribute("data-mde-cat"):"all";
-    var shown=(state.entries||[]).filter(function(entry){
-      return entry.date===picked&&(active==="all"||entry.category===active);
-    }).slice().sort(function(a,b){
-      return String(a.created_at||a.createdAt||"").localeCompare(String(b.created_at||b.createdAt||""));
-    });
-    var entry=shown[visualIndex];
-    var index=(state.entries||[]).indexOf(entry);
-    if(!entry||index<0){
-      toast("Eintrag konnte nicht gefunden werden.");
-      return;
-    }
-
-    var label=typeof cat==="function"?cat(entry.category).label:entry.category;
-    var weight=typeof fmtKg==="function"?fmtKg(entry.weight_kg):String(entry.weight_kg);
-    if(!window.confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+label+" · "+weight+" kg"))return;
-
-    try{
-      state.entries=state.entries.filter(function(_entry,i){return i!==index;});
-      saveLocal();
-    }catch(error){
-      console.error("FLOSIQ delete save",error);
-      toast("Löschen fehlgeschlagen: "+String(error&&error.message||error||"Speicherfehler"));
-      return;
-    }
-
-    try{
-      if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);
-    }catch(error){
-      console.warn("FLOSIQ storage value cleanup",error);
-    }
-
-    try{
-      if(typeof window.FLOSIQ_RENDER_DAY_EXPLORER==="function")window.FLOSIQ_RENDER_DAY_EXPLORER();
-      else if(row&&row.parentNode)row.parentNode.removeChild(row);
-    }catch(error){
-      console.warn("FLOSIQ day explorer refresh",error);
-      if(row&&row.parentNode)row.parentNode.removeChild(row);
-    }
-
-    toast("Eintrag gelöscht · Sicherung läuft.");
-  },true);
-})();
-</script>
