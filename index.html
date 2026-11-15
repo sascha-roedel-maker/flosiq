@@ -11377,3 +11377,38 @@ $("mdePrev").onclick=function(){shift(-1);};$("mdeNext").onclick=function(){if(p
 })();
 </script>
 <!-- /FLOSIQ MANAGEMENT TAGESDATEN 2026-11-15 -->
+
+   
+<script id="flosiq-management-delete-fix-20261115">
+(()=>{
+  "use strict";
+  document.addEventListener("click",function(event){
+    const button=event.target.closest?.("#mdeList [data-mde-del],#mdeList [data-mde-index]");
+    if(!button)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const list=document.getElementById("mdeList");
+    const rows=[...list.querySelectorAll(".mde-e")];
+    const visualIndex=rows.indexOf(button.closest(".mde-e"));
+    const picked=document.getElementById("mdeDate")?.value||"";
+    const active=document.querySelector("#mdeFilters [data-mde-cat].on")?.dataset.mdeCat||"all";
+    const shown=(state.entries||[]).filter(row=>row.date===picked&&(active==="all"||row.category===active)).slice().sort((a,b)=>String(a.created_at||a.createdAt||"").localeCompare(String(b.created_at||b.createdAt||"")));
+    const entry=shown[visualIndex];
+    const index=(state.entries||[]).indexOf(entry);
+    if(!entry||index<0){toast("Eintrag konnte nicht eindeutig gefunden werden.");return;}
+    if(!window.confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+cat(entry.category).label+" · "+fmtKg(entry.weight_kg)+" kg\n\nDie Löschung wird auf dem Gerät gesichert und mit der Cloud abgeglichen."))return;
+    try{
+      if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);
+      state.entries=state.entries.filter((_row,i)=>i!==index);
+      saveLocal();
+      render();
+      const dateInput=document.getElementById("mdeDate");
+      if(dateInput){dateInput.value=picked;dateInput.dispatchEvent(new Event("change",{bubbles:true}));}
+      toast("Eintrag gelöscht und zur Cloud-Sicherung vorgemerkt.");
+    }catch(error){
+      console.error("FLOSIQ management delete",error);
+      toast("Löschen fehlgeschlagen: "+(error?.message||"Unbekannter Fehler"));
+    }
+  },true);
+})();
+</script>
