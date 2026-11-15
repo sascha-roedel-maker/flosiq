@@ -11379,36 +11379,64 @@ $("mdePrev").onclick=function(){shift(-1);};$("mdeNext").onclick=function(){if(p
 <!-- /FLOSIQ MANAGEMENT TAGESDATEN 2026-11-15 -->
 
    
-<script id="flosiq-management-delete-fix-20261115">
-(()=>{
+<script id="flosiq-management-delete-fix-v2-20261115">
+(function(){
   "use strict";
   document.addEventListener("click",function(event){
-    const button=event.target.closest?.("#mdeList [data-mde-del],#mdeList [data-mde-index]");
+    var origin=event.target&&event.target.nodeType===3?event.target.parentElement:event.target;
+    var button=origin&&origin.closest?origin.closest("#mdeList [data-mde-del],#mdeList [data-mde-index]"):null;
     if(!button)return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    const list=document.getElementById("mdeList");
-    const rows=[...list.querySelectorAll(".mde-e")];
-    const visualIndex=rows.indexOf(button.closest(".mde-e"));
-    const picked=document.getElementById("mdeDate")?.value||"";
-    const active=document.querySelector("#mdeFilters [data-mde-cat].on")?.dataset.mdeCat||"all";
-    const shown=(state.entries||[]).filter(row=>row.date===picked&&(active==="all"||row.category===active)).slice().sort((a,b)=>String(a.created_at||a.createdAt||"").localeCompare(String(b.created_at||b.createdAt||"")));
-    const entry=shown[visualIndex];
-    const index=(state.entries||[]).indexOf(entry);
-    if(!entry||index<0){toast("Eintrag konnte nicht eindeutig gefunden werden.");return;}
-    if(!window.confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+cat(entry.category).label+" · "+fmtKg(entry.weight_kg)+" kg\n\nDie Löschung wird auf dem Gerät gesichert und mit der Cloud abgeglichen."))return;
+
+    var list=document.getElementById("mdeList");
+    var row=button.closest(".mde-e");
+    var rows=list?Array.prototype.slice.call(list.querySelectorAll(".mde-e")):[];
+    var visualIndex=rows.indexOf(row);
+    var dateInput=document.getElementById("mdeDate");
+    var picked=dateInput?dateInput.value:"";
+    var activeButton=document.querySelector("#mdeFilters [data-mde-cat].on");
+    var active=activeButton?activeButton.getAttribute("data-mde-cat"):"all";
+    var shown=(state.entries||[]).filter(function(entry){
+      return entry.date===picked&&(active==="all"||entry.category===active);
+    }).slice().sort(function(a,b){
+      return String(a.created_at||a.createdAt||"").localeCompare(String(b.created_at||b.createdAt||""));
+    });
+    var entry=shown[visualIndex];
+    var index=(state.entries||[]).indexOf(entry);
+    if(!entry||index<0){
+      toast("Eintrag konnte nicht gefunden werden.");
+      return;
+    }
+
+    var label=typeof cat==="function"?cat(entry.category).label:entry.category;
+    var weight=typeof fmtKg==="function"?fmtKg(entry.weight_kg):String(entry.weight_kg);
+    if(!window.confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+label+" · "+weight+" kg"))return;
+
+    try{
+      state.entries=state.entries.filter(function(_entry,i){return i!==index;});
+      saveLocal();
+    }catch(error){
+      console.error("FLOSIQ delete save",error);
+      toast("Löschen fehlgeschlagen: "+String(error&&error.message||error||"Speicherfehler"));
+      return;
+    }
+
     try{
       if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);
-      state.entries=state.entries.filter((_row,i)=>i!==index);
-      saveLocal();
-      render();
-      const dateInput=document.getElementById("mdeDate");
-      if(dateInput){dateInput.value=picked;dateInput.dispatchEvent(new Event("change",{bubbles:true}));}
-      toast("Eintrag gelöscht und zur Cloud-Sicherung vorgemerkt.");
     }catch(error){
-      console.error("FLOSIQ management delete",error);
-      toast("Löschen fehlgeschlagen: "+(error?.message||"Unbekannter Fehler"));
+      console.warn("FLOSIQ storage value cleanup",error);
     }
+
+    try{
+      if(typeof window.FLOSIQ_RENDER_DAY_EXPLORER==="function")window.FLOSIQ_RENDER_DAY_EXPLORER();
+      else if(row&&row.parentNode)row.parentNode.removeChild(row);
+    }catch(error){
+      console.warn("FLOSIQ day explorer refresh",error);
+      if(row&&row.parentNode)row.parentNode.removeChild(row);
+    }
+
+    toast("Eintrag gelöscht · Sicherung läuft.");
   },true);
 })();
 </script>
