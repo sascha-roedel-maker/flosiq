@@ -5025,8 +5025,8 @@ $("entryList").innerHTML=list.length
 <small>${fmtTime(x.created_at)} · ${service(x.service).icon} ${esc(service(x.service).label)}${x.note?` · ${esc(x.note)}`:""}</small>
 </div>
 <div class="entry-actions">
-${state.appView==="management"&&x.category==="storage"?`<button class="entry-value-btn" data-storage-value="${x.id??""}">${getStorageExactValue(x)!=null?`${fmtEur(getStorageExactValue(x))} exakt`:"€ Warenwert"}</button>`:""}
-<button class="del" data-del="${x.id}">⌫</button>
+${state.appView==="management"&&x.category==="storage"?`<button class="entry-value-btn" data-storage-value="${esc(String(x.id??x.created_at??x.createdAt??""))}">${getStorageExactValue(x)!=null?`${fmtEur(getStorageExactValue(x))} exakt`:"€ Warenwert"}</button>`:""}
+<button class="del" data-del="${esc(String(x.id??x.created_at??x.createdAt??""))}">⌫</button>
 </div>
 </div>
 `).join("")
@@ -7737,34 +7737,34 @@ renderAnalytics();
 toast("Exakter Lagerwarenwert entfernt.");
 };
 $("entryList").onclick=async e=>{
+const entryKey=row=>String(row?.id??row?.created_at??row?.createdAt??"");
 const valueBtn=e.target.closest("[data-storage-value]");
 if(valueBtn){
-const id=String(valueBtn.dataset.storageValue||"");
-const entry=state.entries.find(x=>String(x.id??"")===id);
+const key=String(valueBtn.dataset.storageValue||"");
+const entry=state.entries.find(x=>entryKey(x)===key);
 if(entry)openStorageValueDialog(entry);
 return;
 }
 
 const b=e.target.closest("[data-del]");
 if(!b||!confirm("Diesen Eintrag löschen?"))return;
-const id=Number(b.dataset.del);
-const entryBeforeDelete=state.entries.find(x=>Number(x.id)===id);
+const key=String(b.dataset.del||"");
+const entryBeforeDelete=state.entries.find(x=>entryKey(x)===key);
+if(!entryBeforeDelete){toast("Eintrag nicht gefunden.");return;}
 
 try{
-if(state.remote){
-await api(`/api/waste/${id}`,{method:"DELETE"});
-if(entryBeforeDelete)removeStorageExactValue(entryBeforeDelete);
-await load();
-}else{
-if(entryBeforeDelete)removeStorageExactValue(entryBeforeDelete);
-state.entries=state.entries.filter(x=>Number(x.id)!==id);
+state.entries=state.entries.filter(x=>entryKey(x)!==key);
 saveLocal();
-render();
+}catch(error){
+console.error("FLOSIQ management delete save",error);
+toast("Löschen fehlgeschlagen: "+String(error?.message||error||"Speicherfehler"));
+return;
 }
-toast("Eintrag gelöscht.");
-}catch(e){
-toast(e.message||"Löschen fehlgeschlagen");
-}
+try{if(entryBeforeDelete.category==="storage")removeStorageExactValue(entryBeforeDelete);}catch(error){console.warn("FLOSIQ storage cleanup",error);}
+try{renderOverview();}catch(error){console.warn("FLOSIQ overview refresh",error);}
+try{renderAnalytics();}catch(error){console.warn("FLOSIQ analytics refresh",error);}
+try{window.FLOSIQ_RENDER_DAY_EXPLORER?.();}catch(error){console.warn("FLOSIQ day explorer refresh",error);}
+toast("Eintrag gelöscht · Sicherung läuft.");
 };
 
 const mealsDlg=$("mealsDialog");
