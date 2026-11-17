@@ -7854,7 +7854,7 @@ quickAddDlg.addEventListener("click",e=>{
 if(e.target===quickAddDlg)quickAddDlg.close();
 });
 
-$("cancelMeals").onclick=()=>mealsDlg.close();
+if($("cancelMeals"))$("cancelMeals").onclick=()=>mealsDlg.close();
 
 $("saveMeals").onclick=async()=>{
 const meals=Number($("mealsInput").value);
