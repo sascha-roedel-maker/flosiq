@@ -11526,26 +11526,37 @@ exportPdf=function(month){
   var all=exportRows(month),rows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";});
   if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
   var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"}),summary=monthSummary(month),bounds=monthBounds(month);
+  var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),chartTotal=chartRows.reduce(function(sum,r){return sum+Number(r["Nassmüll gesamt kg"]||0);},0),averageDaily=chartRows.length?chartTotal/chartRows.length:0;
   var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),green=[103,170,45],dark=[28,49,31],muted=[103,112,105];
   doc.setFillColor.apply(doc,green);doc.rect(0,0,297,28,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(21);doc.text("FLOSIQ Managementbericht",12,13);doc.setFontSize(10);doc.setFont("helvetica","normal");doc.text(monthLabel+" · Food Loss Intelligence",12,21);
   var cards=[
     ["Nassmüll gesamt",fmtKg(summary["Nassmüll gesamt kg"])+" kg"],
     ["Food Loss je Portion",summary["Food Loss g/Portion"]!==""?summary["Food Loss g/Portion"]+" g":"—"],
+    ["Ø Tagesmüll",chartRows.length?fmtKg(averageDaily)+" kg":"—"],
     ["Datenqualität",summary["Erfassungsqualität %"]!==""?summary["Erfassungsqualität %"]+" %":"—"],
     ["Warenwertverlust",summary["Geschätzter Warenwertverlust €"]!==""?fmtEur(summary["Geschätzter Warenwertverlust €"]):"—"]
   ];
-  cards.forEach(function(c,i){var x=12+i*70;doc.setFillColor(245,248,243);doc.roundedRect(x,34,64,22,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c[0].toUpperCase(),x+4,41);doc.setTextColor.apply(doc,dark);doc.setFontSize(15);doc.text(String(c[1]),x+4,51);});
+  cards.forEach(function(c,i){var x=12+i*55;doc.setFillColor(245,248,243);doc.roundedRect(x,34,50,22,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFontSize(7);doc.setFont("helvetica","bold");doc.text(c[0].toUpperCase(),x+3,41);doc.setTextColor.apply(doc,dark);doc.setFontSize(13);doc.text(String(c[1]),x+3,51);});
   doc.setTextColor.apply(doc,dark);doc.setFontSize(12);doc.text("Tagesverlauf Nassmüll",12,66);doc.text("Verteilung nach Abfallursache",205,66);
-  var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);}));
+  var max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);}));
   var cx=14,cy=73,cw=178,ch=53,bw=Math.max(2.2,cw/Math.max(chartRows.length,1)-1);
   doc.setDrawColor(220,226,218);doc.line(cx,cy+ch,cx+cw,cy+ch);
   chartRows.forEach(function(r,i){
     var v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,step=cw/Math.max(chartRows.length,1),x=cx+i*step;
     doc.setFillColor.apply(doc,green);doc.roundedRect(x,cy+ch-h,bw,h,0.8,0.8,"F");
+    /* Messwert kompakt über dem Balken, Einheit steht in der Diagrammlegende. */
+    var valueLabel=v>=10?String(Math.round(v)):v.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(chartRows.length>28?4.1:4.8);
+    doc.text(valueLabel,x+bw/2,Math.max(cy+4,cy+ch-h-2),{align:"center"});
     /* Jeder Balken erhält den Kalendertag im Format 01–31. */
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(chartRows.length>28?4.5:5.2);
     doc.text(String(r.Datum.slice(0,2)).padStart(2,"0"),x+bw/2,cy+ch+4,{align:"center"});
   });
+  if(chartRows.length){
+    var averageY=cy+ch-(averageDaily/max*ch);
+    doc.setDrawColor(35,87,45);doc.setLineWidth(0.35);if(doc.setLineDashPattern)doc.setLineDashPattern([2,1],0);doc.line(cx,averageY,cx+cw,averageY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);
+    doc.setFillColor(255,255,255);doc.rect(cx+cw-27,averageY-4.5,27,4.5,"F");doc.setTextColor(35,87,45);doc.setFont("helvetica","bold");doc.setFontSize(6);doc.text("Ø "+fmtKg(averageDaily)+" kg/Tag",cx+cw-1,averageY-1,{align:"right"});
+  }
   var entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;}),catTotal=entries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
   CATS.forEach(function(c,i){var v=entries.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0),share=catTotal>0?v/catTotal:0,y=75+i*14;doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c.label,205,y);doc.setFillColor(233,237,231);doc.roundedRect(205,y+3,65,5,2,2,"F");doc.setFillColor.apply(doc,c.id==="plate"?[66,130,183]:c.id==="prep"?[226,174,55]:c.id==="overproduction"?[224,126,43]:[145,145,145]);if(share>0)doc.roundedRect(205,y+3,65*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(fmtKg(v)+" kg · "+Math.round(share*100)+" %",273,y+7,{align:"right"});});
   doc.setTextColor.apply(doc,dark);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text("Kurzbewertung",12,143);doc.setFontSize(9);doc.setFont("helvetica","normal");var pd=periodData(bounds.start,bounds.end),top=CATS.slice().sort(function(a,b){return pd.cats[b.id]-pd.cats[a.id];})[0];var note=pd.k==null?"Für eine belastbare Kennzahl müssen Essen und Nassmüll am selben Tag erfasst sein.":"Der Food Loss liegt bei "+pd.k+" g je Portion. Größte Abfallursache: "+top.label+" mit "+fmtKg(pd.cats[top.id])+" kg.";doc.text(doc.splitTextToSize(note,270),12,150);
