@@ -11840,3 +11840,102 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 })();
 </script>
 <!-- /FLOSIQ ANALYSIS PERIOD NAVIGATION 2026-11-17 -->
+
+<!-- FLOSIQ TEAM REPORT 2026-11-17 -->
+<style id="flosiq-team-report-style-20261117">
+#exportTeamPdfBtn{background:linear-gradient(135deg,#2683b8,#17628d)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 22px rgba(23,98,141,.2)!important}
+.export-actions{flex-wrap:wrap}.export-actions button{min-height:44px}
+</style>
+<script id="flosiq-team-report-20261117">
+(function(){
+  "use strict";
+  if(typeof exportRows!=="function"||typeof monthSummary!=="function")return;
+
+  function teamFocus(category){
+    return{
+      plate:"Portionen und Gästefeedback gemeinsam im Blick behalten.",
+      prep:"Beim Vorbereiten auf gute Ausbeute und saubere Schnitttechnik achten.",
+      overproduction:"Bedarf beobachten und bei Bedarf lieber gezielt nachproduzieren.",
+      storage:"FIFO, MHD und Lagerreichweite gemeinsam im Blick behalten."
+    }[category]||"Weiter vollständig erfassen und gemeinsam den größten Hebel finden.";
+  }
+  function teamNumber(value,digits){return Number(value||0).toLocaleString("de-DE",{minimumFractionDigits:digits,maximumFractionDigits:digits});}
+
+  window.FLOSIQ_TEAM_PDF_EXPORT=function(month){
+    if(!window.jspdf||!window.jspdf.jsPDF)return toast("PDF-Export konnte nicht geladen werden.");
+    var all=exportRows(month),rows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";});
+    if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
+
+    var bounds=monthBounds(month),summary=monthSummary(month),entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;});
+    var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),totalWaste=Number(summary["Nassmüll gesamt kg"]||0),average=chartRows.length?totalWaste/chartRows.length:0;
+    var meals=all.reduce(function(sum,r){return sum+Number(r.Essen||0);},0),foodLoss=summary["Food Loss g/Portion"];
+    var cats=CATS.map(function(c){return{id:c.id,label:c.label,value:entries.filter(function(x){return x.category===c.id;}).reduce(function(sum,x){return sum+Number(x.weight_kg||0);},0)};});
+    var top=cats.slice().sort(function(a,b){return b.value-a.value;})[0];
+    var complete=all.filter(function(r){return r.Essen!==""&&r["Nassmüll gesamt kg"]!==""&&r["Food Loss g/Portion"]!=="";});
+    var best=complete.slice().sort(function(a,b){return Number(a["Food Loss g/Portion"])-Number(b["Food Loss g/Portion"]);})[0]||null;
+    var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"});
+
+    var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    var green=[113,190,45],dark=[27,66,35],muted=[101,113,104],light=[242,247,239],blue=[38,131,184],orange=[226,126,43],yellow=[226,174,55],gray=[145,151,146];
+
+    /* Freundlicher Kopf. */
+    doc.setFillColor.apply(doc,dark);doc.rect(0,0,210,35,"F");
+    doc.setFillColor.apply(doc,green);doc.circle(190,8,19,"F");doc.circle(204,29,12,"F");
+    doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(20);doc.text("UNSER FLOSIQ TEAMREPORT",12,14);
+    doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text(monthLabel+" · Gemeinsam gegen Food Waste",12,23);
+    doc.setFontSize(7);doc.text("Klar. Fair. Ohne Mitarbeiterbewertung.",12,29);
+
+    /* Vier leicht lesbare Kernwerte. */
+    var cards=[
+      ["ESSEN",Math.round(meals).toLocaleString("de-DE")],
+      ["NASSMÜLL",teamNumber(totalWaste,2)+" kg"],
+      ["JE PORTION",foodLoss!==""?foodLoss+" g":"—"],
+      ["Ø PRO TAG",chartRows.length?teamNumber(average,2)+" kg":"—"]
+    ];
+    cards.forEach(function(card,i){var x=12+i*47;doc.setFillColor.apply(doc,light);doc.roundedRect(x,43,43,25,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(card[0],x+4,50);doc.setTextColor.apply(doc,dark);doc.setFontSize(13);doc.text(String(card[1]),x+4,61);});
+
+    /* Zielanzeige mit sachlicher, motivierender Rückmeldung. */
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Unser gemeinsamer Kurs",12,79);
+    var goalText="Für g/Portion brauchen wir an denselben Tagen Nassmüll und Essenszahlen.";
+    if(foodLoss!=="")goalText=Number(foodLoss)<=BENCH.target?"Stark: Der FLOSIQ-Zielbereich ist erreicht.":Number(foodLoss)<=BENCH.orientation?"Guter Kurs: Wir bleiben gemeinsam dran.":"Jede Verbesserung zählt: Gemeinsam Schritt für Schritt.";
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(goalText,12,86);
+    doc.setFillColor(226,233,224);doc.roundedRect(12,92,186,7,3,3,"F");
+    if(foodLoss!==""){var progress=Math.max(0,Math.min(1,Number(foodLoss)/BENCH.max));doc.setFillColor.apply(doc,Number(foodLoss)<=BENCH.target?green:Number(foodLoss)<=BENCH.orientation?yellow:orange);if(progress>0)doc.roundedRect(12,92,186*progress,7,3,3,"F");}
+    var targetX=12+186*(BENCH.target/BENCH.max);doc.setDrawColor.apply(doc,dark);doc.setLineWidth(.5);doc.line(targetX,90.5,targetX,101.5);doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("Ziel 60 g",targetX,105,{align:"center"});
+
+    /* Verteilung nach Ursache. */
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Wo entsteht unser Nassmüll?",12,118);
+    var catColors={plate:blue,prep:yellow,overproduction:orange,storage:gray};
+    cats.forEach(function(c,i){var y=126+i*10,share=totalWaste>0?c.value/totalWaste:0;doc.setTextColor.apply(doc,dark);doc.setFontSize(7.5);doc.setFont("helvetica","bold");doc.text(c.label,12,y);doc.setFillColor(232,237,230);doc.roundedRect(67,y-4.5,91,5,2,2,"F");doc.setFillColor.apply(doc,catColors[c.id]||gray);if(share>0)doc.roundedRect(67,y-4.5,91*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(teamNumber(c.value,2)+" kg · "+Math.round(share*100)+" %",198,y,{align:"right"});});
+
+    /* Einfacher Tagesverlauf mit Durchschnittslinie. */
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Unser Tagesverlauf",12,171);
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("Nassmüll in kg · jeder Balken steht für einen erfassten Kalendertag",12,177);
+    var cx=14,cy=184,cw=182,ch=39,max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);})),daysInMonth=all.length,step=cw/Math.max(daysInMonth,1),barWidth=Math.max(2.2,step-1.2);
+    doc.setDrawColor(219,226,217);doc.line(cx,cy+ch,cx+cw,cy+ch);
+    chartRows.forEach(function(r){var day=Math.max(1,Number(String(r.Datum).slice(0,2))||1),v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,x=cx+(day-1)*step;doc.setFillColor.apply(doc,green);if(h>0)doc.roundedRect(x,cy+ch-h,barWidth,h,.7,.7,"F");else doc.circle(x+barWidth/2,cy+ch-.5,.7,"F");});
+    [1,5,10,15,20,25,daysInMonth].filter(function(v,i,a){return v<=daysInMonth&&a.indexOf(v)===i;}).forEach(function(day){doc.setTextColor.apply(doc,muted);doc.setFontSize(6);doc.text(String(day).padStart(2,"0"),cx+(day-1)*step+barWidth/2,cy+ch+5,{align:"center"});});
+    if(chartRows.length){var avgY=cy+ch-(average/max*ch);doc.setDrawColor.apply(doc,blue);if(doc.setLineDashPattern)doc.setLineDashPattern([2,1],0);doc.line(cx,avgY,cx+cw,avgY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.text("Ø "+teamNumber(average,2)+" kg",cx+cw,avgY-1,{align:"right"});}
+
+    /* Positives Fazit und ein gemeinsamer nächster Schritt. */
+    var goodText=best?"Stärkster vollständiger Tageswert: "+best.Datum+" mit "+best["Food Loss g/Portion"]+" g je Portion.":chartRows.length+" Erfassungstage dokumentiert. Jede vollständige Erfassung macht uns besser.";
+    var focusText=top&&top.value>0?teamFocus(top.id):"Weiter vollständig erfassen und gemeinsam eine verlässliche Datenbasis aufbauen.";
+    doc.setFillColor(239,247,235);doc.roundedRect(12,239,89,35,3,3,"F");doc.setFillColor(235,244,250);doc.roundedRect(109,239,89,35,3,3,"F");
+    doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("DAS LIEF GUT",17,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(goodText,79),17,255);
+    doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("UNSER NÄCHSTER FOKUS",114,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(focusText,79),114,255);
+
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("Jede Messung zählt. Gemeinsam machen wir Lebensmittelwert sichtbar.",105,287,{align:"center"});
+    doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel,105,293,{align:"center"});
+    doc.save("FLOSIQ_Teamreport_"+month+".pdf");
+  };
+
+  var managementButton=document.getElementById("exportPdfBtn"),actions=managementButton&&managementButton.parentElement;
+  if(actions&&!document.getElementById("exportTeamPdfBtn")){
+    var teamButton=document.createElement("button");teamButton.id="exportTeamPdfBtn";teamButton.type="button";teamButton.textContent="Team-PDF";teamButton.title="Leicht verständlichen und motivierenden Teamreport erstellen";
+    teamButton.onclick=function(){var input=document.getElementById("exportMonth"),month=input&&input.value?input.value:today().slice(0,7);window.FLOSIQ_TEAM_PDF_EXPORT(month);};
+    actions.appendChild(teamButton);
+  }
+  var note=document.getElementById("exportNote");if(note)note.textContent="Management-PDF mit Detailauswertung · Team-PDF als motivierende, leicht lesbare A4-Seite.";
+})();
+</script>
+<!-- /FLOSIQ TEAM REPORT 2026-11-17 -->
