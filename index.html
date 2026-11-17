@@ -11730,3 +11730,101 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 #exportPdfBtn{background:linear-gradient(135deg,#173d22,#2e713b)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 22px rgba(23,61,34,.2)!important}
 </style>
 <!-- /FLOSIQ PDF EXPORT BINDING 2026-11-17 -->
+
+<!-- FLOSIQ ANALYSIS PERIOD NAVIGATION 2026-11-17 -->
+<style id="flosiq-analysis-period-navigation-style-20261117">
+#analyticsStickyPeriod{flex-wrap:wrap}
+#daysSeg{order:2}
+.analysis-period-nav{order:3;flex:0 0 100%;display:grid;grid-template-columns:46px minmax(0,1fr) 46px;align-items:center;gap:8px;margin-top:10px}
+.analysis-period-nav button{width:46px;height:42px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);font-size:25px;font-weight:800;box-shadow:var(--shadow-soft)}
+.analysis-period-nav button:disabled{opacity:.3;box-shadow:none;cursor:not-allowed}
+.analysis-period-nav-copy{min-width:0;text-align:center;padding:7px 12px;border:1px solid var(--line);border-radius:13px;background:var(--soft)}
+.analysis-period-nav-copy span{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.8px}
+.analysis-period-nav-copy b{display:block;margin-top:2px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:520px){
+  #analyticsStickyPeriod .analytics-sticky-copy{flex:0 0 100%}
+  #daysSeg{width:100%;display:grid!important;grid-template-columns:repeat(4,1fr);margin-top:8px}
+  #daysSeg button{min-width:0;padding-left:7px!important;padding-right:7px!important}
+  .analysis-period-nav{grid-template-columns:42px minmax(0,1fr) 42px}
+  .analysis-period-nav button{width:42px}
+  .analysis-period-nav-copy b{font-size:12px}
+}
+</style>
+<script id="flosiq-analysis-period-navigation-20261117">
+(function(){
+  "use strict";
+  var seg=document.getElementById("daysSeg");
+  var sticky=document.getElementById("analyticsStickyPeriod");
+  if(!seg||!sticky||typeof rangeBounds!=="function"||typeof renderAnalytics!=="function")return;
+
+  /* Tag als vierte, gleichwertige Auswertungsstufe ergänzen. */
+  if(!seg.querySelector('[data-days="1"]')){
+    var dayButton=document.createElement("button");
+    dayButton.type="button";dayButton.dataset.days="1";dayButton.textContent="Tag";
+    seg.insertBefore(dayButton,seg.firstChild);
+  }
+
+  var savedDays=Number(localStorage.getItem("flosiq_analysis_days")||state.days||7);
+  if([1,7,30,365].includes(savedDays))state.days=savedDays;
+  state.analysisOffset=Math.max(0,Number(localStorage.getItem("flosiq_analysis_offset")||0));
+
+  var navigator=document.createElement("div");
+  navigator.id="analysisPeriodNavigator";navigator.className="analysis-period-nav";
+  navigator.innerHTML='<button id="analysisPeriodPrev" type="button" aria-label="Vorherigen Zeitraum anzeigen" title="Vorheriger Zeitraum">‹</button><div class="analysis-period-nav-copy"><span>ANGEZEIGTER ZEITRAUM</span><b id="analysisPeriodNavLabel">—</b></div><button id="analysisPeriodNext" type="button" aria-label="Nächsten Zeitraum anzeigen" title="Nächster Zeitraum">›</button>';
+  sticky.appendChild(navigator);
+
+  var calendarBounds=rangeBounds;
+  rangeBounds=function(days,offset){
+    var requested=Number(offset||0);
+    return calendarBounds(days,Math.max(0,Number(state.analysisOffset||0))+requested);
+  };
+
+  var previousPeriodLabel=analysisPeriodLabel;
+  analysisPeriodLabel=function(days){
+    if(Number(days)===1)return"Tag";
+    return previousPeriodLabel(days);
+  };
+  analysisPeriodCaption=function(days){
+    if(Number(days)===1)return"Ausgewählter Tag";
+    if(Number(days)===7)return"Ausgewählte Kalenderwoche";
+    if(Number(days)===30)return"Ausgewählter Kalendermonat";
+    if(Number(days)===365)return"Ausgewähltes Kalenderjahr";
+    return String(days)+" Tage";
+  };
+
+  function fullDate(iso){return asDate(iso).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});}
+  function periodName(days){return Number(days)===1?"Tag":Number(days)===7?"Woche":Number(days)===30?"Monat":"Jahr";}
+  function currentBounds(){return rangeBounds(state.days);}
+  function exactRange(bounds){return bounds.start===bounds.end?fullDate(bounds.start):fullDate(bounds.start)+"–"+fullDate(bounds.end);}
+  function persistPeriod(){
+    localStorage.setItem("flosiq_analysis_days",String(state.days));
+    localStorage.setItem("flosiq_analysis_offset",String(state.analysisOffset));
+  }
+  function updatePeriodNavigation(){
+    var bounds=currentBounds(),label=exactRange(bounds);
+    var navLabel=document.getElementById("analysisPeriodNavLabel");if(navLabel)navLabel.textContent=label;
+    var stickyLabel=document.getElementById("stickyPeriodDates");if(stickyLabel)stickyLabel.textContent=label;
+    var rangeLabel=document.getElementById("analysisRangeText");if(rangeLabel)rangeLabel.textContent=periodName(state.days)+" · "+label;
+    var caption=document.getElementById("periodCaption");if(caption)caption.textContent=analysisPeriodCaption(state.days);
+    var next=document.getElementById("analysisPeriodNext");if(next)next.disabled=Number(state.analysisOffset||0)<=0;
+    seg.querySelectorAll("[data-days]").forEach(function(btn){
+      var days=Number(btn.dataset.days);btn.classList.toggle("active",days===Number(state.days));
+      btn.title=days===1?"Tagesauswertung":days===7?"Wochenauswertung":days===30?"Monatsauswertung":"Jahresauswertung";
+    });
+  }
+
+  /* Alte Direktbelegungen entfernen und alle Zeitraumtasten einheitlich steuern. */
+  seg.querySelectorAll("[data-days]").forEach(function(btn){btn.onclick=null;});
+  seg.onclick=function(event){
+    var button=event.target.closest("[data-days]");if(!button)return;
+    state.days=Number(button.dataset.days||7);state.analysisOffset=0;persistPeriod();renderAnalytics();
+  };
+  document.getElementById("analysisPeriodPrev").onclick=function(){state.analysisOffset=Number(state.analysisOffset||0)+1;persistPeriod();renderAnalytics();};
+  document.getElementById("analysisPeriodNext").onclick=function(){if(Number(state.analysisOffset||0)<=0)return;state.analysisOffset-=1;persistPeriod();renderAnalytics();};
+
+  var previousRenderAnalytics=renderAnalytics;
+  renderAnalytics=function(){var result=previousRenderAnalytics.apply(this,arguments);updatePeriodNavigation();return result;};
+  updatePeriodNavigation();renderAnalytics();
+})();
+</script>
+<!-- /FLOSIQ ANALYSIS PERIOD NAVIGATION 2026-11-17 -->
