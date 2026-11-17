@@ -11942,7 +11942,9 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel+" · Seite 1 von 2",105,293,{align:"center"});
 
     /* Seite 2: positiver Monatsvergleich und umsetzbare Tipps. */
-    doc.addPage("a4","portrait");doc.setFillColor.apply(doc,dark);doc.rect(0,0,210,35,"F");doc.setFillColor.apply(doc,blue);doc.circle(190,8,19,"F");doc.circle(204,29,12,"F");
+    /* Die neue Seite bewusst ohne Formatparameter anlegen. So übernimmt jsPDF
+       garantiert das bereits aktive A4-Hochformat – auch in älteren Browsern. */
+    doc.addPage();doc.setPage(2);doc.setFillColor.apply(doc,dark);doc.rect(0,0,210,35,"F");doc.setFillColor.apply(doc,blue);doc.circle(190,8,19,"F");doc.circle(204,29,12,"F");
     doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(20);doc.text("UNSER FORTSCHRITT",12,14);doc.setFont("helvetica","normal");doc.setFontSize(9.5);
     var progressMessage=!previousHasData?"Der Vergleich startet, sobald im Vormonat Daten vorliegen.":foodImproved?Math.abs(foodChange)+" % weniger g je Portion als im Vormonat. Stark gemacht!":hasFoodComparison?"Der Vergleich zeigt uns klar, wo wir gemeinsam ansetzen können.":"Für einen fairen Vergleich brauchen wir Essen und Nassmüll am selben Tag.";
     doc.text(doc.splitTextToSize(progressMessage,180),12,22);doc.setFontSize(7);doc.text(monthLabel+" im Vergleich zu "+previousLabel,12,31);
@@ -11968,16 +11970,19 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 
     doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("Unsere Team-Challenge:",12,281);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Eine kleine Maßnahme gemeinsam testen und im nächsten Teamreport ihre Wirkung ansehen.",49,281);
     doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel+" · Seite 2 von 2",105,293,{align:"center"});
-    doc.save("FLOSIQ_Teamreport_"+month+".pdf");
+    /* Eindeutiger Dateiname verhindert, dass Tablet/iPhone eine ältere
+       einseitige Datei mit demselben Namen erneut öffnen. */
+    var exportStamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\..+/,"").replace("T","_");
+    doc.save("FLOSIQ_Teamreport_2-Seiten_"+month+"_"+exportStamp+".pdf");
   };
 
   var managementButton=document.getElementById("exportPdfBtn"),actions=managementButton&&managementButton.parentElement;
   if(actions&&!document.getElementById("exportTeamPdfBtn")){
-    var teamButton=document.createElement("button");teamButton.id="exportTeamPdfBtn";teamButton.type="button";teamButton.textContent="Team-PDF";teamButton.title="Leicht verständlichen und motivierenden Teamreport erstellen";
+    var teamButton=document.createElement("button");teamButton.id="exportTeamPdfBtn";teamButton.type="button";teamButton.textContent="Team-PDF · 2 Seiten";teamButton.title="Zweiseitigen, leicht verständlichen und motivierenden Teamreport erstellen";
     teamButton.onclick=function(){var input=document.getElementById("exportMonth"),month=input&&input.value?input.value:today().slice(0,7);window.FLOSIQ_TEAM_PDF_EXPORT(month);};
     actions.appendChild(teamButton);
   }
-  var note=document.getElementById("exportNote");if(note)note.textContent="Management-PDF mit Detailauswertung · Team-PDF als motivierende, leicht lesbare A4-Seite.";
+  var note=document.getElementById("exportNote");if(note)note.textContent="Management-PDF mit Detailauswertung · Team-PDF mit 2 motivierenden, leicht lesbaren A4-Seiten.";
 })();
 </script>
 <!-- /FLOSIQ TEAM REPORT 2026-11-17 -->
