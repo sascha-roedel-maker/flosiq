@@ -11668,3 +11668,48 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 }
 </style>
 <!-- /FLOSIQ MODERN UI 2026-11-17 -->
+
+<!-- FLOSIQ PDF EXPORT BINDING 2026-11-17 -->
+<script id="flosiq-pdf-export-binding-20261117">
+(function(){
+  "use strict";
+  var currentButton=document.getElementById("exportPdfBtn");
+  if(!currentButton||typeof exportPdf!=="function")return;
+
+  /*
+    Die ursprüngliche onclick-Belegung wird mitsamt allen eventuell noch
+    vorhandenen Listenern entfernt. Der Bericht ruft dadurch garantiert die
+    aktuelle Management-Ausgabe mit Kennzahlen und Diagrammen auf.
+  */
+  window.FLOSIQ_MANAGEMENT_PDF_EXPORT=exportPdf;
+  var reportButton=currentButton.cloneNode(true);
+  reportButton.textContent="Management-PDF";
+  reportButton.title="Monatsbericht mit Kennzahlen, Diagrammen, Bewertung und Tageswerten";
+  reportButton.setAttribute("aria-label","Management-PDF mit Statistiken und Diagrammen erstellen");
+  currentButton.replaceWith(reportButton);
+  reportButton.addEventListener("click",function(event){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    var monthInput=document.getElementById("exportMonth");
+    var month=monthInput&&monthInput.value?monthInput.value:today().slice(0,7);
+    window.FLOSIQ_MANAGEMENT_PDF_EXPORT(month);
+  });
+
+  var note=document.getElementById("exportNote");
+  if(note)note.textContent="Management-PDF: Kennzahlen, Tagesdiagramm, Ursachenverteilung, Kurzbewertung und vollständige Tageswerte.";
+
+  var exportCard=reportButton.closest(".export-card");
+  if(exportCard&&!exportCard.querySelector(".pdf-export-version")){
+    var badge=document.createElement("div");
+    badge.className="pdf-export-version";
+    badge.textContent="NEUER STATISTIKBERICHT";
+    var title=exportCard.querySelector(".export-title");
+    if(title)title.insertAdjacentElement("afterend",badge);
+  }
+})();
+</script>
+<style id="flosiq-pdf-export-binding-style-20261117">
+.pdf-export-version{display:inline-flex;align-items:center;margin:7px 0 4px;padding:5px 9px;border-radius:999px;background:#edf6e8;color:#4f951d;font-size:10px;font-weight:900;letter-spacing:.65px}
+#exportPdfBtn{background:linear-gradient(135deg,#173d22,#2e713b)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 22px rgba(23,61,34,.2)!important}
+</style>
+<!-- /FLOSIQ PDF EXPORT BINDING 2026-11-17 -->
