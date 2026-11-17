@@ -11539,7 +11539,13 @@ exportPdf=function(month){
   var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);}));
   var cx=14,cy=73,cw=178,ch=53,bw=Math.max(2.2,cw/Math.max(chartRows.length,1)-1);
   doc.setDrawColor(220,226,218);doc.line(cx,cy+ch,cx+cw,cy+ch);
-  chartRows.forEach(function(r,i){var v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,x=cx+i*(cw/Math.max(chartRows.length,1));doc.setFillColor.apply(doc,green);doc.roundedRect(x,cy+ch-h,bw,h,0.8,0.8,"F");if(i%5===0||i===chartRows.length-1){doc.setTextColor.apply(doc,muted);doc.setFontSize(6);doc.text(String(Number(r.Datum.slice(0,2))),x,cy+ch+4);}});
+  chartRows.forEach(function(r,i){
+    var v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,step=cw/Math.max(chartRows.length,1),x=cx+i*step;
+    doc.setFillColor.apply(doc,green);doc.roundedRect(x,cy+ch-h,bw,h,0.8,0.8,"F");
+    /* Jeder Balken erhält den Kalendertag im Format 01–31. */
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(chartRows.length>28?4.5:5.2);
+    doc.text(String(r.Datum.slice(0,2)).padStart(2,"0"),x+bw/2,cy+ch+4,{align:"center"});
+  });
   var entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;}),catTotal=entries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
   CATS.forEach(function(c,i){var v=entries.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0),share=catTotal>0?v/catTotal:0,y=75+i*14;doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c.label,205,y);doc.setFillColor(233,237,231);doc.roundedRect(205,y+3,65,5,2,2,"F");doc.setFillColor.apply(doc,c.id==="plate"?[66,130,183]:c.id==="prep"?[226,174,55]:c.id==="overproduction"?[224,126,43]:[145,145,145]);if(share>0)doc.roundedRect(205,y+3,65*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(fmtKg(v)+" kg · "+Math.round(share*100)+" %",273,y+7,{align:"right"});});
   doc.setTextColor.apply(doc,dark);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text("Kurzbewertung",12,143);doc.setFontSize(9);doc.setFont("helvetica","normal");var pd=periodData(bounds.start,bounds.end),top=CATS.slice().sort(function(a,b){return pd.cats[b.id]-pd.cats[a.id];})[0];var note=pd.k==null?"Für eine belastbare Kennzahl müssen Essen und Nassmüll am selben Tag erfasst sein.":"Der Food Loss liegt bei "+pd.k+" g je Portion. Größte Abfallursache: "+top.label+" mit "+fmtKg(pd.cats[top.id])+" kg.";doc.text(doc.splitTextToSize(note,270),12,150);
