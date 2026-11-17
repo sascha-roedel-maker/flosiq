@@ -11859,6 +11859,14 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
       storage:"FIFO, MHD und Lagerreichweite gemeinsam im Blick behalten."
     }[category]||"Weiter vollständig erfassen und gemeinsam den größten Hebel finden.";
   }
+  function teamTips(category){
+    return{
+      plate:["Lieber etwas kleiner anrichten und Nachschlag ermöglichen.","Kurz nachfragen, welche Komponenten häufig liegen bleiben.","Auffällige Gerichte im Team festhalten und beim nächsten Mal anpassen."],
+      prep:["Schäl- und Schnitttechnik kurz im Team vergleichen.","Verwendbare Abschnitte für Fonds, Suppen oder Beilagen sammeln.","Ausbeute bei häufig verwendeten Rohwaren stichprobenartig prüfen."],
+      overproduction:["Bedarf früh beobachten und lieber gezielt nachproduzieren.","Vor Produktionsende die FLOSIQ-Rettungsabfrage nutzen.","Restmengen und Verkaufsverlauf bei der nächsten Planung berücksichtigen."],
+      storage:["FIFO und MHD bei jedem Einräumen kurz prüfen.","Angebrochene Ware sichtbar kennzeichnen und zuerst einplanen.","Bestellmenge und Lagerreichweite bei wiederkehrenden Resten anpassen."]
+    }[category]||["Essen und Nassmüll am selben Tag vollständig erfassen.","Eine kleine Maßnahme gemeinsam testen.","Im nächsten Teamreport prüfen, was sie bewirkt hat."];
+  }
   function teamNumber(value,digits){return Number(value||0).toLocaleString("de-DE",{minimumFractionDigits:digits,maximumFractionDigits:digits});}
 
   window.FLOSIQ_TEAM_PDF_EXPORT=function(month){
@@ -11874,6 +11882,12 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     var complete=all.filter(function(r){return r.Essen!==""&&r["Nassmüll gesamt kg"]!==""&&r["Food Loss g/Portion"]!=="";});
     var best=complete.slice().sort(function(a,b){return Number(a["Food Loss g/Portion"])-Number(b["Food Loss g/Portion"]);})[0]||null;
     var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"});
+    var monthStart=asDate(bounds.start),previousDate=new Date(monthStart.getFullYear(),monthStart.getMonth()-1,1,12),previousMonth=previousDate.getFullYear()+"-"+String(previousDate.getMonth()+1).padStart(2,"0");
+    var previousBounds=monthBounds(previousMonth),previousAll=exportRows(previousMonth),previousHasData=previousAll.some(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";}),previousSummary=monthSummary(previousMonth);
+    var previousChartRows=previousAll.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),previousWaste=Number(previousSummary["Nassmüll gesamt kg"]||0),previousAverage=previousChartRows.length?previousWaste/previousChartRows.length:0,previousFoodLoss=previousSummary["Food Loss g/Portion"];
+    var previousEntries=(state.entries||[]).filter(function(x){return x.date>=previousBounds.start&&x.date<=previousBounds.end;}),previousCats=CATS.map(function(c){return{id:c.id,value:previousEntries.filter(function(x){return x.category===c.id;}).reduce(function(sum,x){return sum+Number(x.weight_kg||0);},0)};});
+    var previousLabel=asDate(previousBounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),hasFoodComparison=previousHasData&&foodLoss!==""&&previousFoodLoss!==""&&Number(previousFoodLoss)>0;
+    var foodChange=hasFoodComparison?Math.round((Number(foodLoss)-Number(previousFoodLoss))/Number(previousFoodLoss)*100):null,foodImproved=hasFoodComparison&&Number(foodLoss)<Number(previousFoodLoss);
 
     var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
     var green=[113,190,45],dark=[27,66,35],muted=[101,113,104],light=[242,247,239],blue=[38,131,184],orange=[226,126,43],yellow=[226,174,55],gray=[145,151,146];
@@ -11897,10 +11911,10 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     /* Zielanzeige mit sachlicher, motivierender Rückmeldung. */
     doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Unser gemeinsamer Kurs",12,79);
     var goalText="Für g/Portion brauchen wir an denselben Tagen Nassmüll und Essenszahlen.";
-    if(foodLoss!=="")goalText=Number(foodLoss)<=BENCH.target?"Stark: Der FLOSIQ-Zielbereich ist erreicht.":Number(foodLoss)<=BENCH.orientation?"Guter Kurs: Wir bleiben gemeinsam dran.":"Jede Verbesserung zählt: Gemeinsam Schritt für Schritt.";
+    if(foodLoss!=="")goalText=Number(foodLoss)<=BENCH.target?"Stark: Der FLOSIQ-Zielbereich ist erreicht.":Number(foodLoss)<=BENCH.orientation?"Guter Kurs: Wir bleiben gemeinsam dran.":"Wir kennen unseren Wert und können gemeinsam gezielt besser werden.";
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(goalText,12,86);
     doc.setFillColor(226,233,224);doc.roundedRect(12,92,186,7,3,3,"F");
-    if(foodLoss!==""){var progress=Math.max(0,Math.min(1,Number(foodLoss)/BENCH.max));doc.setFillColor.apply(doc,Number(foodLoss)<=BENCH.target?green:Number(foodLoss)<=BENCH.orientation?yellow:orange);if(progress>0)doc.roundedRect(12,92,186*progress,7,3,3,"F");}
+    if(foodLoss!==""){var progress=Math.max(0,Math.min(1,Number(foodLoss)/BENCH.max));doc.setFillColor.apply(doc,Number(foodLoss)<=BENCH.target?green:Number(foodLoss)<=BENCH.orientation?yellow:blue);if(progress>0)doc.roundedRect(12,92,186*progress,7,3,3,"F");}
     var targetX=12+186*(BENCH.target/BENCH.max);doc.setDrawColor.apply(doc,dark);doc.setLineWidth(.5);doc.line(targetX,90.5,targetX,101.5);doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("Ziel 60 g",targetX,105,{align:"center"});
 
     /* Verteilung nach Ursache. */
@@ -11918,14 +11932,42 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     if(chartRows.length){var avgY=cy+ch-(average/max*ch);doc.setDrawColor.apply(doc,blue);if(doc.setLineDashPattern)doc.setLineDashPattern([2,1],0);doc.line(cx,avgY,cx+cw,avgY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.text("Ø "+teamNumber(average,2)+" kg",cx+cw,avgY-1,{align:"right"});}
 
     /* Positives Fazit und ein gemeinsamer nächster Schritt. */
-    var goodText=best?"Stärkster vollständiger Tageswert: "+best.Datum+" mit "+best["Food Loss g/Portion"]+" g je Portion.":chartRows.length+" Erfassungstage dokumentiert. Jede vollständige Erfassung macht uns besser.";
+    var goodText=foodImproved?Math.abs(foodChange)+" % weniger Food Loss je Portion als im Vormonat. Das ist Teamarbeit!":best?"Stärkster vollständiger Tageswert: "+best.Datum+" mit "+best["Food Loss g/Portion"]+" g je Portion.":chartRows.length+" Erfassungstage dokumentiert. Jede vollständige Erfassung macht uns besser.";
     var focusText=top&&top.value>0?teamFocus(top.id):"Weiter vollständig erfassen und gemeinsam eine verlässliche Datenbasis aufbauen.";
     doc.setFillColor(239,247,235);doc.roundedRect(12,239,89,35,3,3,"F");doc.setFillColor(235,244,250);doc.roundedRect(109,239,89,35,3,3,"F");
     doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("DAS LIEF GUT",17,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(goodText,79),17,255);
     doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("UNSER NÄCHSTER FOKUS",114,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(focusText,79),114,255);
 
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("Jede Messung zählt. Gemeinsam machen wir Lebensmittelwert sichtbar.",105,287,{align:"center"});
-    doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel,105,293,{align:"center"});
+    doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel+" · Seite 1 von 2",105,293,{align:"center"});
+
+    /* Seite 2: positiver Monatsvergleich und umsetzbare Tipps. */
+    doc.addPage("a4","portrait");doc.setFillColor.apply(doc,dark);doc.rect(0,0,210,35,"F");doc.setFillColor.apply(doc,blue);doc.circle(190,8,19,"F");doc.circle(204,29,12,"F");
+    doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(20);doc.text("UNSER FORTSCHRITT",12,14);doc.setFont("helvetica","normal");doc.setFontSize(9.5);
+    var progressMessage=!previousHasData?"Der Vergleich startet, sobald im Vormonat Daten vorliegen.":foodImproved?Math.abs(foodChange)+" % weniger g je Portion als im Vormonat. Stark gemacht!":hasFoodComparison?"Der Vergleich zeigt uns klar, wo wir gemeinsam ansetzen können.":"Für einen fairen Vergleich brauchen wir Essen und Nassmüll am selben Tag.";
+    doc.text(doc.splitTextToSize(progressMessage,180),12,22);doc.setFontSize(7);doc.text(monthLabel+" im Vergleich zu "+previousLabel,12,31);
+
+    function comparisonCard(x,title,previousValue,currentValue,unit,lowerIsBetter,target){
+      doc.setFillColor.apply(doc,light);doc.roundedRect(x,44,89,78,4,4,"F");doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text(title,x+6,54);
+      if(!previousHasData||previousValue==null||currentValue==null){doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize("Noch kein belastbarer Vormonatsvergleich.",75),x+7,70);return;}
+      var ceiling=Math.max(1,Number(previousValue),Number(currentValue),Number(target||0)),base=104,height=39,prevH=Number(previousValue)/ceiling*height,currentH=Number(currentValue)/ceiling*height;
+      doc.setFillColor(186,195,188);if(prevH>0)doc.roundedRect(x+20,base-prevH,18,prevH,2,2,"F");else doc.circle(x+29,base-.5,.8,"F");doc.setFillColor.apply(doc,lowerIsBetter&&Number(currentValue)<=Number(previousValue)?green:blue);if(currentH>0)doc.roundedRect(x+52,base-currentH,18,currentH,2,2,"F");else doc.circle(x+61,base-.5,.8,"F");
+      doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(teamNumber(previousValue,unit==="g"?0:2)+" "+unit,x+29,base-prevH-3,{align:"center"});doc.text(teamNumber(currentValue,unit==="g"?0:2)+" "+unit,x+61,base-currentH-3,{align:"center"});
+      doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("Vormonat",x+29,112,{align:"center"});doc.text("Aktuell",x+61,112,{align:"center"});
+      if(target){var targetY=base-(Number(target)/ceiling*height);doc.setDrawColor.apply(doc,dark);if(doc.setLineDashPattern)doc.setLineDashPattern([1.5,1],0);doc.line(x+10,targetY,x+79,targetY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);doc.setTextColor.apply(doc,muted);doc.setFontSize(5.5);doc.text("Ziel",x+78,targetY-1,{align:"right"});}
+      var delta=Number(previousValue)>0?Math.round((Number(currentValue)-Number(previousValue))/Number(previousValue)*100):null;if(delta!=null){var positive=lowerIsBetter?delta<=0:delta>=0;doc.setTextColor.apply(doc,positive?green:blue);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text((delta>0?"+":"")+delta+" % zum Vormonat",x+44.5,119,{align:"center"});}
+    }
+    comparisonCard(12,"Food Loss je Portion",previousFoodLoss===""?null:Number(previousFoodLoss),foodLoss===""?null:Number(foodLoss),"g",true,BENCH.target);
+    comparisonCard(109,"Ø Nassmüll je Erfassungstag",previousChartRows.length?previousAverage:null,chartRows.length?average:null,"kg",true,null);
+
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Abfallursachen im Monatsvergleich",12,140);doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("Grau = Vormonat · farbig = aktueller Monat",12,146);
+    cats.forEach(function(c,i){var old=(previousCats.find(function(x){return x.id===c.id;})||{value:0}).value,rowMax=Math.max(1,old,c.value),y=157+i*14,color=catColors[c.id]||gray;doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(c.label,12,y);doc.setFillColor(225,230,226);doc.roundedRect(72,y-6,76,3.5,1.5,1.5,"F");doc.setFillColor(177,185,179);if(old>0)doc.roundedRect(72,y-6,76*(old/rowMax),3.5,1.5,1.5,"F");doc.setFillColor(229,235,226);doc.roundedRect(72,y-1,76,3.5,1.5,1.5,"F");doc.setFillColor.apply(doc,color);if(c.value>0)doc.roundedRect(72,y-1,76*(c.value/rowMax),3.5,1.5,1.5,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text(teamNumber(old,2)+" → "+teamNumber(c.value,2)+" kg",198,y,{align:"right"});});
+
+    var tips=teamTips(top&&top.value>0?top.id:null);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Drei einfache Tipps für unseren nächsten Monat",12,221);
+    tips.forEach(function(tip,i){var x=12+i*63;doc.setFillColor.apply(doc,i===0?light:i===1?[237,246,250]:[245,247,238]);doc.roundedRect(x,228,59,43,3,3,"F");doc.setFillColor.apply(doc,i===0?green:i===1?blue:yellow);doc.circle(x+8,237,4,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(String(i+1),x+8,239.5,{align:"center"});doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(doc.splitTextToSize(tip,49),x+5,247);});
+
+    doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("Unsere Team-Challenge:",12,281);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Eine kleine Maßnahme gemeinsam testen und im nächsten Teamreport ihre Wirkung ansehen.",49,281);
+    doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("FLOSIQ · Teamreport · "+monthLabel+" · Seite 2 von 2",105,293,{align:"center"});
     doc.save("FLOSIQ_Teamreport_"+month+".pdf");
   };
 
