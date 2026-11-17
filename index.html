@@ -11735,19 +11735,21 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 <style id="flosiq-analysis-period-navigation-style-20261117">
 #analyticsStickyPeriod{flex-wrap:wrap}
 #daysSeg{order:2}
-.analysis-period-nav{order:3;flex:0 0 100%;display:grid;grid-template-columns:46px minmax(0,1fr) 46px;align-items:center;gap:8px;margin-top:10px}
-.analysis-period-nav button{width:46px;height:42px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);font-size:25px;font-weight:800;box-shadow:var(--shadow-soft)}
+.analysis-period-nav{order:3;flex:0 0 100%;display:grid;grid-template-columns:minmax(120px,1fr) minmax(180px,1.35fr) minmax(120px,1fr);align-items:stretch;gap:8px;margin-top:10px}
+.analysis-period-nav button{width:auto;min-height:52px;padding:7px 10px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);font-size:11px;font-weight:900;line-height:1.15;box-shadow:var(--shadow-soft);display:flex;align-items:center;justify-content:center;gap:7px}
+.analysis-period-nav button .period-arrow{font-size:25px;line-height:1}
 .analysis-period-nav button:disabled{opacity:.3;box-shadow:none;cursor:not-allowed}
-.analysis-period-nav-copy{min-width:0;text-align:center;padding:7px 12px;border:1px solid var(--line);border-radius:13px;background:var(--soft)}
+.analysis-period-nav-copy{min-width:0;text-align:center;padding:7px 12px;border:1px solid var(--line);border-radius:13px;background:var(--soft);display:flex;flex-direction:column;justify-content:center}
 .analysis-period-nav-copy span{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.8px}
 .analysis-period-nav-copy b{display:block;margin-top:2px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:520px){
   #analyticsStickyPeriod .analytics-sticky-copy{flex:0 0 100%}
   #daysSeg{width:100%;display:grid!important;grid-template-columns:repeat(4,1fr);margin-top:8px}
   #daysSeg button{min-width:0;padding-left:7px!important;padding-right:7px!important}
-  .analysis-period-nav{grid-template-columns:42px minmax(0,1fr) 42px}
-  .analysis-period-nav button{width:42px}
-  .analysis-period-nav-copy b{font-size:12px}
+  .analysis-period-nav{grid-template-columns:minmax(82px,.8fr) minmax(145px,1.35fr) minmax(82px,.8fr);gap:5px}
+  .analysis-period-nav button{min-height:58px;padding:6px 5px;font-size:9px;gap:3px}
+  .analysis-period-nav button .period-arrow{font-size:20px}
+  .analysis-period-nav-copy{padding:6px 5px}.analysis-period-nav-copy b{font-size:11px;white-space:normal;line-height:1.25}
 }
 </style>
 <script id="flosiq-analysis-period-navigation-20261117">
@@ -11770,7 +11772,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 
   var navigator=document.createElement("div");
   navigator.id="analysisPeriodNavigator";navigator.className="analysis-period-nav";
-  navigator.innerHTML='<button id="analysisPeriodPrev" type="button" aria-label="Vorherigen Zeitraum anzeigen" title="Vorheriger Zeitraum">‹</button><div class="analysis-period-nav-copy"><span>ANGEZEIGTER ZEITRAUM</span><b id="analysisPeriodNavLabel">—</b></div><button id="analysisPeriodNext" type="button" aria-label="Nächsten Zeitraum anzeigen" title="Nächster Zeitraum">›</button>';
+  navigator.innerHTML='<button id="analysisPeriodPrev" type="button" aria-label="Vorherigen Zeitraum anzeigen"><span class="period-arrow">←</span><span id="analysisPeriodPrevText">Vorherige Woche</span></button><div class="analysis-period-nav-copy"><span>AKTUELL ANGEZEIGTE AUSWERTUNG</span><b id="analysisPeriodNavLabel">—</b></div><button id="analysisPeriodNext" type="button" aria-label="Nächsten Zeitraum anzeigen"><span id="analysisPeriodNextText">Nächste Woche</span><span class="period-arrow">→</span></button>';
   sticky.appendChild(navigator);
 
   var calendarBounds=rangeBounds;
@@ -11795,7 +11797,13 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
   function fullDate(iso){return asDate(iso).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});}
   function periodName(days){return Number(days)===1?"Tag":Number(days)===7?"Woche":Number(days)===30?"Monat":"Jahr";}
   function currentBounds(){return rangeBounds(state.days);}
-  function exactRange(bounds){return bounds.start===bounds.end?fullDate(bounds.start):fullDate(bounds.start)+"–"+fullDate(bounds.end);}
+  function exactRange(bounds){return bounds.start===bounds.end?fullDate(bounds.start):fullDate(bounds.start)+" bis "+fullDate(bounds.end);}
+  function directionLabels(days){
+    if(Number(days)===1)return{prev:"Vorheriger Tag",next:"Nächster Tag"};
+    if(Number(days)===7)return{prev:"Vorherige Woche",next:"Nächste Woche"};
+    if(Number(days)===30)return{prev:"Vorheriger Monat",next:"Nächster Monat"};
+    return{prev:"Vorheriges Jahr",next:"Nächstes Jahr"};
+  }
   function persistPeriod(){
     localStorage.setItem("flosiq_analysis_days",String(state.days));
     localStorage.setItem("flosiq_analysis_offset",String(state.analysisOffset));
@@ -11807,6 +11815,10 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     var rangeLabel=document.getElementById("analysisRangeText");if(rangeLabel)rangeLabel.textContent=periodName(state.days)+" · "+label;
     var caption=document.getElementById("periodCaption");if(caption)caption.textContent=analysisPeriodCaption(state.days);
     var next=document.getElementById("analysisPeriodNext");if(next)next.disabled=Number(state.analysisOffset||0)<=0;
+    var direction=directionLabels(state.days),prevText=document.getElementById("analysisPeriodPrevText"),nextText=document.getElementById("analysisPeriodNextText");
+    if(prevText)prevText.textContent=direction.prev;if(nextText)nextText.textContent=direction.next;
+    var prev=document.getElementById("analysisPeriodPrev");if(prev){prev.title=direction.prev;prev.setAttribute("aria-label",direction.prev+" anzeigen");}
+    if(next){next.title=direction.next;next.setAttribute("aria-label",direction.next+" anzeigen");}
     seg.querySelectorAll("[data-days]").forEach(function(btn){
       var days=Number(btn.dataset.days);btn.classList.toggle("active",days===Number(state.days));
       btn.title=days===1?"Tagesauswertung":days===7?"Wochenauswertung":days===30?"Monatsauswertung":"Jahresauswertung";
