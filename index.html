@@ -595,7 +595,7 @@ body.view-operational .op-finish-note{margin-top:12px}
 }
 
 
-/* 4 Behälter + Mittagessen Workflow */
+/* 4 Behälter + Essen Workflow */
 .op-bin-actions{gap:9px}
 .op-bin-action,.op-meals-action{min-height:80px}
 .op-bin-action.current{border-color:#78c72d;box-shadow:0 0 0 2px rgba(120,199,45,.12)}
@@ -3178,7 +3178,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 
 <button id="opMealsBtn" class="op-action op-meals-action" type="button" tabindex="-1">
 <span class="op-step-number">5</span>
-<span class="op-action-copy"><b>Mittagessen</b><small id="opMealsState">Noch offen</small></span>
+<span class="op-action-copy"><b>Essen</b><small id="opMealsState">Noch offen</small></span>
 <span class="op-action-state" id="opMealsCheck">—</span>
 </button>
 </div>
@@ -3227,15 +3227,15 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 
 <section class="card">
 <button class="edit-link" id="editMealsBtn">✎ Eintragen</button>
-<div class="klabel">🍽 Ausgegebene Mittagessen</div>
+<div class="klabel">🍽 Ausgegebene Essen</div>
 <div class="kvalue" id="todayMeals">—</div>
-<div class="ksub" id="mealsLabel">Mittagessen heute</div>
+<div class="ksub" id="mealsLabel">Essen heute</div>
 </section>
 
 <section class="card">
-<div class="klabel">⚖ Food Loss je Mittagessen</div>
+<div class="klabel">⚖ Food Loss je Portion</div>
 <div class="kpi-value-row"><div class="kvalue" id="todayKpi">—</div><div class="kpi-target neutral" id="todayKpiTarget">Optimalwert ≤ 60 g</div></div>
-<div class="ksub" id="todayKpiSub">Gramm Food Loss pro Mittagessen</div>
+<div class="ksub" id="todayKpiSub">Gramm Food Loss pro Portion</div>
 </section>
 
 </div>
@@ -3348,7 +3348,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="analytics-sticky-period" id="analyticsStickyPeriod">
 <div class="analytics-sticky-copy">
 <span>ZEITRAUM</span>
-<small id="stickyPeriodDates">Letzte 7 Tage</small>
+<small id="stickyPeriodDates">Aktuelle Kalenderwoche</small>
 </div>
 <div class="period-seg analytics-period-seg" id="daysSeg">
 <button data-days="7" class="active">Woche</button>
@@ -3405,7 +3405,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div>
 <div class="mgmt-overline">PERFORMANCE IM ÜBERBLICK</div>
 <div class="mgmt-dashboard-title">Food Loss Management</div>
-<div class="mgmt-range" id="analysisRangeText">Letzte 7 Tage</div>
+<div class="mgmt-range" id="analysisRangeText">Aktuelle Kalenderwoche</div>
 </div>
 <div class="mgmt-head-actions">
 <button class="mgmt-faq-jump" id="faqJumpBtn" type="button" aria-label="FAQ und Methodik öffnen">
@@ -3421,7 +3421,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 
 <div class="mgmt-kpi-main" data-mgmt-module="foodLossKpi" data-mgmt-space="cockpit">
 <div class="mgmt-kpi-copy">
-<div class="mgmt-kpi-label">Food Loss je Mittagessen</div>
+<div class="mgmt-kpi-label">Food Loss je Portion</div>
 <div class="mgmt-kpi-value" id="periodKpi">—</div>
 <div class="mgmt-trend-line" id="mgmtKpiTrend">Noch keine Vergleichsdaten.</div>
 <div class="kpi-target neutral compact" id="periodKpiTarget">Optimalwert ≤ 60 g</div>
@@ -3440,7 +3440,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="mgmt-mini" data-mgmt-module="wasteKpi">
 <span>Nassmüll gesamt</span>
 <b id="periodWaste">0,00 kg</b>
-<small id="periodCaption">Letzte 7 Tage</small>
+<small id="periodCaption">Aktuelle Kalenderwoche</small>
 </div>
 <div class="mgmt-mini" id="valueKpiCard" data-mgmt-module="valueKpi">
 <div class="mgmt-mini-top"><span class="kpi-title-value">Warenwert<br>verlust</span><button class="mgmt-link-btn" id="editCostBtn">Einrichten</button></div>
@@ -3519,7 +3519,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </div>
 <div class="multi-metric-toggle" id="multiMetricToggle">
 <button type="button" data-multi-metric="waste" class="active">Nassmüll gesamt</button>
-<button type="button" data-multi-metric="meals" class="active">Mittagessen</button>
+<button type="button" data-multi-metric="meals" class="active">Essen</button>
 <button type="button" data-multi-metric="foodLoss" class="active">Food Loss</button>
 <button type="button" data-multi-metric="lunchWaste">Mittagsmüll</button>
 </div>
@@ -3637,14 +3637,14 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="bench-head">
 <div>
 <b id="benchValue">—</b>
-<small>Food Loss je Mittagessen</small>
+<small>Food Loss je Portion</small>
 <div class="kpi-target neutral compact" id="benchTargetInline">Optimalwert ≤ 60 g</div>
 </div>
 <span id="benchStatus" class="status mid">Keine Daten</span>
 </div>
 <div class="gauge"><div id="benchMarker" class="marker" style="left:0%"></div></div>
 <div class="bench-scale"><span>0 g</span><span>Ziel 60 g</span><span>100 g</span><span>180+ g</span></div>
-<div class="bench-note">Startwerte: Ziel ≤ 60 g/Essen · Orientierungswert Betriebsrestaurants ca. 85 g/Essen.</div>
+<div class="bench-note">Startwerte: Ziel ≤ 60 g/Portion · Orientierungswert Betriebsrestaurants ca. 85 g/Portion.</div>
 </div>
 
 <div class="section-title">Nach Abfallursache</div>
@@ -3761,20 +3761,20 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <details class="faq-item">
 <summary>
 <span class="faq-number">05</span>
-<div><b>Wie errechnet sich „Food Loss je Mittagessen“?</b><small>Der zentrale Leistungs-KPI</small></div>
+<div><b>Wie errechnet sich „Food Loss je Portion“?</b><small>Der zentrale Leistungs-KPI</small></div>
 <span class="faq-chevron">⌄</span>
 </summary>
 <div class="faq-answer">
-<p>Der KPI betrachtet ausschließlich den der <b>Mittagsverpflegung zugeordneten Nassmüll</b> und setzt ihn ins Verhältnis zu den ausgegebenen Mittagessen.</p>
+<p>Der KPI setzt den <b>gesamten Nassmüll des Tages</b> ins Verhältnis zu allen ausgegebenen Essen aus Früh- und Mittagsverpflegung.</p>
 <div class="faq-example">
 <span>Formel</span>
-<b>Mittagsmüll in kg × 1.000 ÷ ausgegebene Mittagessen = g Food Loss je Mittagessen</b>
+<b>Nassmüll gesamt in kg × 1.000 ÷ ausgegebene Essen = g Food Loss je Portion</b>
 </div>
 <div class="faq-example">
 <span>Beispiel</span>
-<b>12,5 kg × 1.000 ÷ 100 Essen = 125 g/Essen</b>
+<b>12,5 kg × 1.000 ÷ 100 Essen = 125 g/Portion</b>
 </div>
-<p>Ein Tag fließt nur dann in diesen KPI ein, wenn eine Essenszahl und eine gültige Mittagsmüll-Erfassung vorhanden sind.</p>
+<p>Ein Tag fließt nur dann in diesen KPI ein, wenn eine Essenszahl und eine Nassmüll-Erfassung vorhanden sind.</p>
 </div>
 </details>
 
@@ -3798,7 +3798,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </summary>
 <div class="faq-answer">
 <p><b>Nassmüll gesamt</b> zeigt die absolute erfasste Menge aller berücksichtigten Abfallarten im Zeitraum.</p>
-<p><b>Food Loss je Mittagessen</b> normalisiert den Mittagsmüll auf die Zahl der ausgegebenen Essen. Dadurch können Tage und Zeiträume mit unterschiedlicher Gästezahl sinnvoller verglichen werden.</p>
+<p><b>Food Loss je Portion</b> normalisiert den gesamten Tages-Nassmüll auf die Zahl der ausgegebenen Essen. Dadurch können Tage und Zeiträume mit unterschiedlicher Gästezahl sinnvoller verglichen werden.</p>
 </div>
 </details>
 
@@ -4088,7 +4088,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </button>
 <button id="quickMealsBtn" class="quick-option">
 <span class="quick-icon">🍽</span>
-<span><b>Mittagessen erfassen</b><small>Ausgegebene Essenszahl für den gewählten Tag</small></span>
+<span><b>Essen erfassen</b><small>Ausgegebene Essenszahl für den gewählten Tag</small></span>
 <span class="quick-arrow">›</span>
 </button>
 <button id="quickCancel" class="quick-cancel">Abbrechen</button>
@@ -4098,7 +4098,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <dialog id="mealsDialog">
 <div class="modal">
 <h3 id="mealsDialogTitle">Kennst du die heutige Essenszahl schon?</h3>
-<p class="meal-optional-intro" id="mealsDialogIntro">Optional · damit FLOSIQ den Food Loss je Mittagessen berechnen kann. Wenn die Zahl noch nicht vorliegt, kannst du sie einfach später ergänzen.</p>
+<p class="meal-optional-intro" id="mealsDialogIntro">Optional · damit FLOSIQ den Food Loss je Portion berechnen kann. Wenn die Zahl noch nicht vorliegt, kannst du sie einfach später ergänzen.</p>
 <label class="form-label">Datum</label>
 <button id="mealsDateBtn" class="date-field" type="button">
 <span class="date-ico">📅</span><strong id="mealsDateLabel">Heute</strong><span class="date-arrow">›</span>
@@ -4186,7 +4186,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </label>
 
 <label class="mgmt-setting-row">
-<div><b>Food Loss Haupt-KPI</b><small>g/Essen, Zielkreis und KPI-Basis</small></div>
+<div><b>Food Loss Haupt-KPI</b><small>g/Portion, Zielkreis und KPI-Basis</small></div>
 <input type="checkbox" data-mgmt-setting="foodLossKpi"><span class="mgmt-switch"></span>
 </label>
 
@@ -4220,7 +4220,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </label>
 
 <label class="mgmt-setting-row">
-<div><b>Mehrfachanalyse</b><small>Nassmüll, Mittagessen und Food Loss gemeinsam</small></div>
+<div><b>Mehrfachanalyse</b><small>Nassmüll, Essen und Food Loss gemeinsam</small></div>
 <input type="checkbox" data-mgmt-setting="multiAnalysis"><span class="mgmt-switch"></span>
 </label>
 
@@ -4300,7 +4300,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <button class="chart-option" data-chart-metric="waste">🗑 Nassmüll gesamt</button>
 <button class="chart-option" data-chart-metric="lunchWaste">🍽 Mittagsbereich</button>
 <button class="chart-option" data-chart-metric="foodLoss">⚖ Food Loss</button>
-<button class="chart-option" data-chart-metric="meals">👥 Mittagessen</button>
+<button class="chart-option" data-chart-metric="meals">👥 Essen</button>
 </div>
 <div class="form-label" style="margin-top:16px">Darstellung</div>
 <div class="chart-option-grid chart-option-grid-two" id="chartStyleOptions">
@@ -4506,7 +4506,7 @@ function operationalTasks(date=state.viewDate||today()){
 const binIds=["plate","prep","storage","overproduction"];
 return [
 ...binIds.map((id,index)=>({type:"bin",id,index:index+1,label:cat(id).label,...binTaskState(date,id)})),
-{type:"meals",id:"meals",index:5,label:"Mittagessen",done:mealsFor(date)>0,zero:false,weight:0}
+{type:"meals",id:"meals",index:5,label:"Essen",done:mealsFor(date)>0,zero:false,weight:0}
 ];
 }
 
@@ -4984,7 +4984,7 @@ const short=deDate(t);
 
 $("todayLong").textContent=d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
 $("wasteLabel").textContent=isToday?"🗑 Nassmüll heute":`🗑 Nassmüll am ${short}`;
-$("mealsLabel").textContent=isToday?"Mittagessen heute":`Mittagessen am ${short}`;
+$("mealsLabel").textContent=isToday?"Essen heute":`Essen am ${short}`;
 $("categoryTitle").textContent=isToday?"Heute nach Abfallursache":`Abfallursachen am ${short}`;
 $("entriesTitle").textContent=isToday?"Heutige Einträge":`Einträge am ${short}`;
 
@@ -5000,7 +5000,7 @@ unknown>0
 ? "Essenszahl fehlt"
 : !hasLunchEntry
 ? "Food Loss für Mittag noch nicht erfasst"
-: "Gramm Food Loss pro Mittagessen";
+: "Gramm Food Loss pro Portion";
 
 $("dayCatGrid").innerHTML=CATS.map(c=>`
 <div class="catcard">
@@ -5182,7 +5182,7 @@ return cur<prev
 
 function renderKpiBasis(cur){
 if(!cur.mealDays){
-$("kpiBasis").innerHTML="Für diesen Zeitraum sind noch keine ausgegebenen Mittagessen hinterlegt.";
+$("kpiBasis").innerHTML="Für diesen Zeitraum sind noch keine ausgegebenen Essen hinterlegt.";
 return;
 }
 
@@ -5249,7 +5249,7 @@ cur.k<=BENCH.target
 ?"im Orientierungsbereich"
 :"über dem gewünschten Bereich";
 
-parts.push(`Die belastbare Food-Loss-KPI liegt bei ${cur.k} g je Essen und damit ${level}.`);
+parts.push(`Die belastbare Food-Loss-KPI liegt bei ${cur.k} g je Portion und damit ${level}.`);
 
 if(prev.k!=null&&prev.k>0){
 const d=Math.round((cur.k-prev.k)/prev.k*100);
@@ -5432,7 +5432,7 @@ const biggestShare=pct(cur.cats[biggest.id],cur.w);
 let sentences=[
 `Im gewählten Zeitraum wurden ${fmtKg(cur.w)} kg Nassmüll erfasst.`,
 cur.k!=null
-? `Der Food Loss liegt bei ${cur.k} g je Mittagessen (${targetInfo(cur.k).text.toLowerCase()}).`
+? `Der Food Loss liegt bei ${cur.k} g je Portion (${targetInfo(cur.k).text.toLowerCase()}).`
 : `Für die Food-Loss-KPI fehlen noch vollständig erfasste Tage.`,
 `${biggest.label} ist mit ${biggestShare} % aktuell die größte Abfallursache.`,
 cur.mealDays
@@ -6136,8 +6136,8 @@ toast("Kopieren nicht möglich.");
 const CHART_META={
 waste:{label:"Nassmüll gesamt",color:"#8BC53F",subtitle:"Erfasste Gesamtmenge im gewählten Zeitraum"},
 lunchWaste:{label:"Nassmüll im Mittagsbereich",color:"#6fb52f",subtitle:"Nur Einträge aus der Mittagsverpflegung"},
-foodLoss:{label:"Food Loss je Mittagessen",color:"#5aa516",subtitle:"Belastbare Relation aus Mittagsmüll und Essenszahl"},
-meals:{label:"Ausgegebene Mittagessen",color:"#8BC53F",subtitle:"Erfasste Essenszahlen im Zeitraum"}
+foodLoss:{label:"Food Loss je Portion",color:"#5aa516",subtitle:"Belastbare Relation aus Tages-Nassmüll und Essenszahl"},
+meals:{label:"Ausgegebene Essen",color:"#8BC53F",subtitle:"Erfasste Essenszahlen im Zeitraum"}
 };
 
 function modeLabel(mode){
@@ -6388,15 +6388,15 @@ $("lineChart").innerHTML=`<div class="chart-scroll"><svg width="${W}" height="${
 
 const MULTI_META={
 waste:{label:"Nassmüll gesamt",color:"#8BC53F",unit:"kg"},
-meals:{label:"Mittagessen",color:"#4f86c6",unit:"Essen"},
-foodLoss:{label:"Food Loss",color:"#c68a2d",unit:"g/Essen"},
+meals:{label:"Essen",color:"#4f86c6",unit:"Essen"},
+foodLoss:{label:"Food Loss",color:"#c68a2d",unit:"g/Portion"},
 lunchWaste:{label:"Mittagsmüll",color:"#2c7b4a",unit:"kg"}
 };
 
 function multiValueLabel(metric,v){
 if(v==null||!Number.isFinite(Number(v)))return "—";
 if(metric==="waste"||metric==="lunchWaste")return `${fmtKg(v)} kg`;
-if(metric==="foodLoss")return `${Math.round(v)} g/Essen`;
+if(metric==="foodLoss")return `${Math.round(v)} g/Portion`;
 if(metric==="meals")return `${Math.round(v).toLocaleString("de-DE")} Essen`;
 return String(v);
 }
@@ -6551,10 +6551,10 @@ function renderAnomalies(cur,prev){
 const items=[];
 if(cur.k!=null&&cur.k>BENCH.target){
 const over=Math.round((cur.k-BENCH.target)/BENCH.target*100);
-items.push({sev:cur.k>BENCH.red?"high":"mid",icon:"⚖",title:`Food Loss ${over} % über Ziel`,text:`Aktuell ${cur.k} g je Mittagessen bei einem Ziel von maximal ${BENCH.target} g.`});
+items.push({sev:cur.k>BENCH.red?"high":"mid",icon:"⚖",title:`Food Loss ${over} % über Ziel`,text:`Aktuell ${cur.k} g je Portion bei einem Ziel von maximal ${BENCH.target} g.`});
 }
 if(cur.excludedDays>0){
-items.push({sev:"mid",icon:"📅",title:`${cur.excludedDays} ${cur.excludedDays===1?"Tag ist":"Tage sind"} nicht auswertbar`,text:"Essenszahl, Mittagsmüll oder eindeutige Zuordnung fehlen. Die KPI wird dadurch bewusst nicht verfälscht."});
+items.push({sev:"mid",icon:"📅",title:`${cur.excludedDays} ${cur.excludedDays===1?"Tag ist":"Tage sind"} nicht auswertbar`,text:"Essenszahl, Nassmüll oder Essenszahl fehlen. Die KPI wird dadurch bewusst nicht verfälscht."});
 }
 for(const c of CATS){
 const before=prev.cats[c.id]||0, now=cur.cats[c.id]||0;
@@ -6590,7 +6590,7 @@ const biggest=CATS.slice().sort((a,b)=>cur.cats[b.id]-cur.cats[a.id])[0];
 const quality=cur.mealDays?Math.round(cur.completeDays/cur.mealDays*100):0;
 let out=`FLOSIQ Wochenbericht · ${deDate(cb.start)}–${deDate(cb.end)}\n\n`;
 out+=`Nassmüll gesamt: ${fmtKg(cur.w)} kg.\n`;
-out+=cur.k!=null?`Food Loss je Mittagessen: ${cur.k} g (${targetInfo(cur.k).text}).\n`:`Food-Loss-KPI: noch nicht belastbar.\n`;
+out+=cur.k!=null?`Food Loss je Portion: ${cur.k} g (${targetInfo(cur.k).text}).\n`:`Food-Loss-KPI: noch nicht belastbar.\n`;
 out+=`Erfassungsqualität: ${cur.mealDays?quality+" %":"noch keine Bewertung"}.\n`;
 if(cur.w>0) out+=`Größte Abfallursache: ${biggest.label} mit ${fmtKg(cur.cats[biggest.id])} kg (${pct(cur.cats[biggest.id],cur.w)} %).\n`;
 if(prev.w>0){const d=Math.round((cur.w-prev.w)/prev.w*100);out+=`Veränderung zur Vorwoche: ${d>0?"+":""}${d} %.\n`;}
@@ -6691,7 +6691,7 @@ let quality="Keine Daten";
 if(meals>0&&hasLunch&&!unknown) quality="Vollständig";
 else if(unknown) quality="Historisch / nicht zugeordnet";
 else if(meals<=0&&hasWaste) quality="Essenszahl fehlt";
-else if(meals>0&&!hasLunch) quality="Mittagsmüll fehlt";
+else if(meals>0&&!hasLunch) quality="Nassmüll fehlt";
 
 const catSum=id=>es.filter(x=>x.category===id).reduce((s,x)=>s+Number(x.weight_kg||0),0);
 const serviceSum=id=>es.filter(x=>x.service===id).reduce((s,x)=>s+Number(x.weight_kg||0),0);
@@ -6700,7 +6700,7 @@ const dayValuation=valuationForEntries(es);
 rows.push({
 Datum:asDate(date).toLocaleDateString("de-DE"),
 Wochentag:asDate(date).toLocaleDateString("de-DE",{weekday:"long"}),
-Mittagessen:meals||"",
+Essen:meals||"",
 "Nassmüll gesamt kg":total==null?"":Number(total.toFixed(3)),
 "Tellerrücklauf kg":hasWaste?Number(catSum("plate").toFixed(3)):"",
 "Putzverlust kg":hasWaste?Number(catSum("prep").toFixed(3)):"",
@@ -6709,7 +6709,7 @@ Mittagessen:meals||"",
 "Zwischenverpflegung kg":hasWaste?Number(serviceSum("snack").toFixed(3)):"",
 "Mittagsverpflegung kg":hasWaste?Number(lunch.toFixed(3)):"",
 "Sonderveranstaltung kg":hasWaste?Number(serviceSum("event").toFixed(3)):"",
-"Food Loss g/Essen":k??"",
+"Food Loss g/Portion":k??"",
 Datenqualität:quality,
 "Geschätzter Warenwert €":dayValuation.valuedKg>0?Number(dayValuation.value.toFixed(2)):"",
 "Warenwert-Bewertung %":hasWaste?dayValuation.coverage:"",
@@ -6748,7 +6748,7 @@ const monthValuation=valuationForEntries(d.es);
 return{
 Zeitraum:`${deDate(start)}–${deDate(end)}`,
 "Nassmüll gesamt kg":Number(d.w.toFixed(3)),
-"Food Loss g/Essen":d.k??"",
+"Food Loss g/Portion":d.k??"",
 "Tage mit Essenszahl":d.mealDays,
 "Vollständig auswertbare Tage":d.completeDays,
 "Erfassungsqualität %":quality??"",
@@ -6764,7 +6764,7 @@ Zeitraum:`${deDate(start)}–${deDate(end)}`,
 function exportExcel(month){
 if(!window.XLSX)return toast("Excel-Export konnte nicht geladen werden.");
 const rows=exportRows(month);
-const hasAnyData=rows.some(r=>r.Mittagessen!==""||r["Nassmüll gesamt kg"]!=="");
+const hasAnyData=rows.some(r=>r.Essen!==""||r["Nassmüll gesamt kg"]!=="");
 if(!hasAnyData)return toast("Für diesen Monat gibt es noch keine Daten.");
 
 const summary=monthSummary(month);
@@ -6798,15 +6798,15 @@ XLSX.writeFile(wb,`FLOSIQ_${month}.xlsx`);
 function exportPdf(month){
 if(!window.jspdf?.jsPDF)return toast("PDF-Export konnte nicht geladen werden.");
 const allRows=exportRows(month);
-const rows=allRows.filter(r=>r.Mittagessen!==""||r["Nassmüll gesamt kg"]!=="");
+const rows=allRows.filter(r=>r.Essen!==""||r["Nassmüll gesamt kg"]!=="");
 if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
 const s=monthSummary(month); const {jsPDF}=window.jspdf;
 const doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
 doc.setFontSize(18);doc.text(`FLOSIQ Monatsbericht · ${month}`,14,14);
 doc.setFontSize(9);
-doc.text(`Nassmüll: ${s["Nassmüll gesamt kg"]} kg  |  Food Loss: ${s["Food Loss g/Essen"]||"—"} g/Essen  |  Datenqualität: ${s["Erfassungsqualität %"]||"—"} %  |  Warenwert: ${s["Geschätzter Warenwertverlust €"]!==""?fmtEur(s["Geschätzter Warenwertverlust €"]):"—"}`,14,21);
-const body=rows.map(r=>[r.Datum,r.Mittagessen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Essen"],r.Datenqualität,r["Geschätzter Warenwert €"]]);
-doc.autoTable({startY:27,head:[["Datum","Essen","Gesamt kg","Teller kg","Putz kg","Überprod. kg","Lager kg","g/Essen","Datenqualität","Warenwert €"]],body,styles:{fontSize:7,cellPadding:2},headStyles:{fillColor:[95,159,55]},alternateRowStyles:{fillColor:[245,247,243]},margin:{left:10,right:10}});
+doc.text(`Nassmüll: ${s["Nassmüll gesamt kg"]} kg  |  Food Loss: ${s["Food Loss g/Portion"]||"—"} g/Portion  |  Datenqualität: ${s["Erfassungsqualität %"]||"—"} %  |  Warenwert: ${s["Geschätzter Warenwertverlust €"]!==""?fmtEur(s["Geschätzter Warenwertverlust €"]):"—"}`,14,21);
+const body=rows.map(r=>[r.Datum,r.Essen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Portion"],r.Datenqualität,r["Geschätzter Warenwert €"]]);
+doc.autoTable({startY:27,head:[["Datum","Essen","Gesamt kg","Teller kg","Putz kg","Überprod. kg","Lager kg","g/Portion","Datenqualität","Warenwert €"]],body,styles:{fontSize:7,cellPadding:2},headStyles:{fillColor:[95,159,55]},alternateRowStyles:{fillColor:[245,247,243]},margin:{left:10,right:10}});
 doc.setFontSize(8);doc.text("FLOSIQ · Food Loss Intelligence · Management-Auswertung",14,202);
 doc.save(`FLOSIQ_${month}.pdf`);
 }
@@ -7092,7 +7092,7 @@ return;
 /* Nach dem vierten Behälter folgt nur noch die Essenszahl. */
 showPage("overview");
 openMealsDialog();
-toast("Jetzt noch die Mittagessen eintragen");
+toast("Jetzt noch die Essen eintragen");
 }
 
 function showPage(page){
@@ -7755,6 +7755,7 @@ if(!entryBeforeDelete){toast("Eintrag nicht gefunden.");return;}
 try{
 state.entries=state.entries.filter(x=>entryKey(x)!==key);
 saveLocal();
+if(window.FLOSIQ_CLOUD_SYNC?.push)await window.FLOSIQ_CLOUD_SYNC.push();
 }catch(error){
 console.error("FLOSIQ management delete save",error);
 toast("Löschen fehlgeschlagen: "+String(error?.message||error||"Speicherfehler"));
@@ -7764,7 +7765,8 @@ try{if(entryBeforeDelete.category==="storage")removeStorageExactValue(entryBefor
 try{renderOverview();}catch(error){console.warn("FLOSIQ overview refresh",error);}
 try{renderAnalytics();}catch(error){console.warn("FLOSIQ analytics refresh",error);}
 try{window.FLOSIQ_RENDER_DAY_EXPLORER?.();}catch(error){console.warn("FLOSIQ day explorer refresh",error);}
-toast("Eintrag gelöscht · Sicherung läuft.");
+const deleteStatus=window.FLOSIQ_CLOUD_SYNC?.status?.();
+toast(deleteStatus?.queued?"Lokal gelöscht · Cloud-Sicherung wartet":"Eintrag dauerhaft gelöscht ✓");
 };
 
 const mealsDlg=$("mealsDialog");
@@ -7899,9 +7901,9 @@ if(state.appView==="operational"){
 showPage("overview");
 renderOverview();
 const done=operationalTasks(date).every(x=>x.done);
-toast(done?"Tageserfassung vollständig ✓":"Mittagessen gespeichert ✓");
+toast(done?"Tageserfassung vollständig ✓":"Essen gespeichert ✓");
 }else{
-toast("Mittagessen gespeichert ✓");
+toast("Essen gespeichert ✓");
 }
 
 }catch(e){
@@ -10132,7 +10134,7 @@ function updateMealDialog(){
     hint.textContent="Management-Bestätigung kennzeichnet die gemeinsame Essenszahl als verifiziert. Die ursprüngliche operative Herkunft bleibt im Datensatz nachvollziehbar.";
   }else{
     title.textContent="Kennst du die heutige Essenszahl schon?";
-    intro.textContent="Optional · damit FLOSIQ den Food Loss je Mittagessen berechnen kann. Wenn die Zahl noch nicht vorliegt, kannst du sie einfach später ergänzen.";
+    intro.textContent="Optional · damit FLOSIQ den Food Loss je Portion berechnen kann. Wenn die Zahl noch nicht vorliegt, kannst du sie einfach später ergänzen.";
     const locked=row?.status==="verified"||row?.status==="billed";
     skip.hidden=locked;
     input.disabled=locked;
@@ -10204,14 +10206,14 @@ function updateOverviewMealStatus(){
   }
   if(row.status==="pending"){
     $("todayMeals").textContent="—";
-    $("mealsLabel").textContent=d===today()?"Mittagessen heute · offen":`Mittagessen am ${compactDate(d)} · offen`;
+    $("mealsLabel").textContent=d===today()?"Essen heute · offen":`Essen am ${compactDate(d)} · offen`;
     $("todayKpiSub").textContent="Essenszahl noch offen · später ergänzen";
   }else if(row.status==="provisional"){
-    $("mealsLabel").textContent=d===today()?"Mittagessen heute · vorläufig":`Mittagessen am ${compactDate(d)} · vorläufig`;
+    $("mealsLabel").textContent=d===today()?"Essen heute · vorläufig":`Essen am ${compactDate(d)} · vorläufig`;
     if(mealsFor(d)>0)$("todayKpiSub").textContent="Vorläufig · Essenszahl noch nicht vom Management bestätigt";
   }else{
-    $("mealsLabel").textContent=d===today()?"Mittagessen heute · verifiziert":`Mittagessen am ${compactDate(d)} · verifiziert`;
-    if(mealsFor(d)>0)$("todayKpiSub").textContent="Verifiziert · Gramm Food Loss pro Mittagessen";
+    $("mealsLabel").textContent=d===today()?"Essen heute · verifiziert":`Essen am ${compactDate(d)} · verifiziert`;
+    if(mealsFor(d)>0)$("todayKpiSub").textContent="Verifiziert · Gramm Food Loss pro Portion";
   }
 }
 
@@ -10389,7 +10391,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-10-12-cloud-persistence-v7-safe-restore";
+window.FLOSIQ_BUILD="2026-11-17-management-modern-persistent-delete";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -10524,16 +10526,14 @@ function mergeDurableStorage(currentPack,backupPack){
   const backup=backupPack?.storage&&typeof backupPack.storage==="object"?backupPack.storage:{};
   const merged={...backup};
 
-  /* Operative Arrays niemals durch einen kleineren/leeren Gerätestand zerstören.
-     Vorhandene aktuelle Datensätze gewinnen bei gleicher ID, fehlende Datensätze
-     bleiben aus der letzten dauerhaften Sicherung erhalten. */
+  /* Nach dem Start wurde die dauerhafte Sicherung bereits restauriert. Ab dann
+     ist der ausdrücklich gespeicherte aktuelle Stand maßgeblich. Das ist für
+     echte Löschungen entscheidend: Eine entfernte Zeile darf nicht aus einer
+     älteren Gerätesicherung wieder in den Datenbestand vereinigt werden. Fehlt
+     ein Speicherbereich vollständig, bleibt die letzte Sicherung als Notfall-
+     rückfall erhalten. */
   for(const [key,model] of Object.entries(ARRAY_MODELS)){
-    const oldMap=mapArray(model,backup[key]);
-    const curMap=mapArray(model,current[key]);
-    const union=new Map(oldMap);
-    for(const [recordKey,row] of curMap)union.set(recordKey,row);
-    if(union.size)merged[key]=JSON.stringify([...union.values()]);
-    else if(Object.prototype.hasOwnProperty.call(current,key))merged[key]=current[key];
+    if(Object.prototype.hasOwnProperty.call(current,key))merged[key]=current[key];
   }
 
   /* Bei Einstellungen gewinnt der aktuelle Wert. Fehlt er lokal komplett,
@@ -11365,7 +11365,7 @@ body.view-management #mgmtSpaceNav [data-mgmt-space-btn] > *{pointer-events:none
 "use strict";
 if(document.getElementById("mgmtDayExplorer")||typeof state==="undefined")return;
 var dash=document.querySelector(".mgmt-dashboard");if(!dash)return;
-var card=document.createElement("section");card.id="mgmtDayExplorer";card.className="mde";card.setAttribute("data-mgmt-space","analysis");card.innerHTML='<div class="mde-h"><div><div class="mde-o">TAGESDATEN</div><h2 id="mdeTitle">Einzelne Erfassungen</h2></div><button class="mde-btn" id="mdeToday" type="button">Heute</button></div><div class="mde-c"><button id="mdePrev" type="button" aria-label="Vorheriger Tag">‹</button><input id="mdeDate" type="date" aria-label="Tag auswählen"><button id="mdeNext" type="button" aria-label="Nächster Tag">›</button></div><div class="mde-k"><div><span>Nassmüll</span><b id="mdeWaste">—</b></div><div><span>Wiegungen</span><b id="mdeCount">—</b></div><div><span>Mittagessen</span><b id="mdeMeals">—</b></div><div><span>g / Essen</span><b id="mdeKpi">—</b></div></div><div class="mde-x"><div><span>Essenszahl</span><b id="mdeMealState">—</b><small id="mdeMealInfo">—</small></div><div><span>Speiseplan</span><b id="mdeMenu">Noch kein Speiseplan hinterlegt.</b></div></div><div class="mde-f" id="mdeFilters"></div><div class="mde-l" id="mdeList"></div>';
+var card=document.createElement("section");card.id="mgmtDayExplorer";card.className="mde";card.setAttribute("data-mgmt-space","analysis");card.innerHTML='<div class="mde-h"><div><div class="mde-o">TAGESDATEN</div><h2 id="mdeTitle">Einzelne Erfassungen</h2></div><button class="mde-btn" id="mdeToday" type="button">Heute</button></div><div class="mde-c"><button id="mdePrev" type="button" aria-label="Vorheriger Tag">‹</button><input id="mdeDate" type="date" aria-label="Tag auswählen"><button id="mdeNext" type="button" aria-label="Nächster Tag">›</button></div><div class="mde-k"><div><span>Nassmüll</span><b id="mdeWaste">—</b></div><div><span>Wiegungen</span><b id="mdeCount">—</b></div><div><span>Essen</span><b id="mdeMeals">—</b></div><div><span>g / Portion</span><b id="mdeKpi">—</b></div></div><div class="mde-x"><div><span>Essenszahl</span><b id="mdeMealState">—</b><small id="mdeMealInfo">—</small></div><div><span>Speiseplan</span><b id="mdeMenu">Noch kein Speiseplan hinterlegt.</b></div></div><div class="mde-f" id="mdeFilters"></div><div class="mde-l" id="mdeList"></div>';
 var anchor=dash.querySelector(".mgmt-kpi-main");dash.insertBefore(card,anchor||dash.firstChild);
 var quick=document.createElement("button");quick.id="mdeQuick";quick.className="mde-quick";quick.type="button";quick.textContent="Tagesdaten";var actions=dash.querySelector(".mgmt-head-actions");if(actions)actions.insertBefore(quick,actions.firstChild);
 var picked=today(),filter="all";try{var saved=localStorage.getItem("flosiq_management_day_v1");if(/^\d{4}-\d{2}-\d{2}$/.test(saved))picked=saved;}catch(_e){}if(picked>today())picked=today();
@@ -11380,6 +11380,7 @@ if(!confirm("Diese einzelne Wiegung wirklich löschen?\n\n"+cat(entry.category).
 try{
 state.entries=state.entries.filter(function(row){return entryKey(row)!==String(key);});
 saveLocal();
+if(window.FLOSIQ_CLOUD_SYNC&&window.FLOSIQ_CLOUD_SYNC.push)await window.FLOSIQ_CLOUD_SYNC.push();
 }catch(error){
 console.error("FLOSIQ delete save",error);
 toast("Löschen fehlgeschlagen: "+String(error&&error.message||error||"Speicherfehler"));
@@ -11389,11 +11390,281 @@ try{
 if(entry.category==="storage"&&typeof removeStorageExactValue==="function")removeStorageExactValue(entry);
 }catch(error){console.warn("FLOSIQ storage value cleanup",error);}
 try{draw();}catch(error){console.warn("FLOSIQ day explorer refresh",error);}
-toast("Eintrag gelöscht · Sicherung läuft.");
+var deleteStatus=window.FLOSIQ_CLOUD_SYNC&&window.FLOSIQ_CLOUD_SYNC.status?window.FLOSIQ_CLOUD_SYNC.status():null;
+toast(deleteStatus&&deleteStatus.queued?"Lokal gelöscht · Cloud-Sicherung wartet":"Eintrag dauerhaft gelöscht ✓");
 }
 $("mdePrev").onclick=function(){shift(-1);};$("mdeNext").onclick=function(){if(picked<today())shift(1);};$("mdeToday").onclick=function(){picked=today();draw();};$("mdeDate").onchange=function(){if(/^\d{4}-\d{2}-\d{2}$/.test(this.value)){picked=this.value;draw();}};$("mdeFilters").onclick=function(e){var del=e.target.closest("[data-mde-del]");if(del){removeEntry(del.dataset.mdeDel);return;}var b=e.target.closest("[data-mde-cat]");if(b){filter=b.dataset.mdeCat;draw();}};$("mdeList").onclick=function(e){var del=e.target.closest("[data-mde-del]");if(del)removeEntry(del.dataset.mdeDel);};quick.onclick=function(e){if(typeof window.FLOSIQ_OPEN_MGMT_SPACE==="function")window.FLOSIQ_OPEN_MGMT_SPACE(e,"analysis");else if(typeof setMgmtSpace==="function")setMgmtSpace("analysis",{scroll:false});draw();setTimeout(function(){card.scrollIntoView({behavior:"smooth",block:"start"});},40);};if(typeof renderAnalytics==="function"){var oldRenderAnalytics=renderAnalytics;renderAnalytics=function(){var r=oldRenderAnalytics.apply(this,arguments);draw();return r;};}window.FLOSIQ_RENDER_DAY_EXPLORER=draw;draw();var space="cockpit";try{space=localStorage.getItem("flosiq_management_space_v1")||"cockpit";}catch(_e){}card.classList.toggle("mgmt-space-hidden",space!=="analysis");
 })();
 </script>
 <!-- /FLOSIQ MANAGEMENT TAGESDATEN 2026-11-15 -->
 
+<!-- FLOSIQ MANAGEMENT UPDATE 2026-11-15 -->
+<style id="flosiq-management-update-20261115-style">
+.entry-edit-btn{border:1px solid #cfe0c5;background:#edf5e8;color:#4f901a;border-radius:10px;padding:8px 10px;font-weight:900;white-space:nowrap}.entry[data-entry-edit-key],.mde-e[data-entry-edit-key]{cursor:pointer;transition:border-color .15s,transform .15s}.entry[data-entry-edit-key]:active,.mde-e[data-entry-edit-key]:active{transform:scale(.995)}.entry[data-entry-edit-key]:focus,.mde-e[data-entry-edit-key]:focus{outline:2px solid #8bc53f;outline-offset:2px}.entry-edit-hint{display:block;margin-top:3px;color:#5f8c3f;font-size:10px;font-weight:850}
+#entryEditDialog .entry-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}#entryEditDialog .entry-edit-grid .wide{grid-column:1/-1}#entryEditDialog select,#entryEditDialog input,#entryEditDialog textarea{width:100%;min-height:48px;border:1px solid var(--line);border-radius:13px;background:var(--bg);color:var(--text);padding:11px;font:inherit}#entryEditDialog textarea{min-height:86px;resize:vertical}#entryEditDialog label{display:grid;gap:6px;font-size:12px;font-weight:850;color:var(--muted)}
+.compact-analysis-summary{margin:0 0 18px}.compact-analysis-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.compact-analysis-kpi{padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--card)}.compact-analysis-kpi span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.6px}.compact-analysis-kpi b{display:block;margin-top:6px;font-size:22px;letter-spacing:-.5px}.compact-analysis-focus{margin-top:9px;padding:14px 16px;border-radius:17px;background:var(--soft);line-height:1.45}.compact-analysis-focus span{display:block;color:var(--green2);font-size:10px;font-weight:950;letter-spacing:.8px}.compact-analysis-focus b{display:block;margin-top:5px;font-size:14px}
+body.view-management [data-mgmt-space="analysis"][data-mgmt-module="multiAnalysis"],body.view-management [data-mgmt-space="analysis"][data-mgmt-module="weekly"],body.view-management [data-mgmt-space="analysis"][data-mgmt-module="anomalies"],body.view-management [data-mgmt-space="analysis"][data-mgmt-module="measures"],body.view-management [data-mgmt-space="analysis"][data-mgmt-module="compare"],body.view-management [data-mgmt-space="analysis"][data-mgmt-module="impact"],body.view-management .detail-only[data-mgmt-space="analysis"],body.view-management #managementGroupLabel{display:none!important}
+#chartModeSeg,#chartRangeRow{display:none!important}.chart-selection-panel{margin-top:10px;padding:13px 15px;border:1px solid var(--line);border-radius:15px;background:var(--soft);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.chart-selection-panel small{display:block;color:var(--muted);font-size:11px}.chart-selection-panel b{font-size:17px;color:var(--green2)}.chart-selection-panel .chart-selection-value{text-align:right}.chart-tap-target{cursor:pointer;touch-action:manipulation;pointer-events:all}
+.export-card .export-title::after{content:" · mit Diagrammen";color:var(--green2)}
+@media(max-width:700px){.compact-analysis-grid{grid-template-columns:1fr 1fr}.entry-edit-btn{padding:7px 8px}.entry-actions{flex-wrap:wrap;justify-content:flex-end}#entryEditDialog .entry-edit-grid{grid-template-columns:1fr}}
+</style>
+<script id="flosiq-management-update-20261115">
+(function(){
+"use strict";
+
+/* Kalenderzeiträume: aktuelle Kalenderwoche, aktueller Monat, aktuelles Jahr. */
+var previousRangeBounds=rangeBounds;
+rangeBounds=function(days,offset){
+  offset=Number(offset||0);
+  var now=new Date(),start,end;
+  now.setHours(12,0,0,0);
+  if(Number(days)===7){
+    var weekday=(now.getDay()+6)%7;
+    start=new Date(now);start.setDate(now.getDate()-weekday-(offset*7));
+    end=new Date(start);end.setDate(start.getDate()+6);
+  }else if(Number(days)===30){
+    start=new Date(now.getFullYear(),now.getMonth()-offset,1,12);
+    end=new Date(now.getFullYear(),now.getMonth()-offset+1,0,12);
+  }else if(Number(days)===365){
+    start=new Date(now.getFullYear()-offset,0,1,12);
+    end=new Date(now.getFullYear()-offset,11,31,12);
+  }else return previousRangeBounds(days,offset);
+  return{start:localDate(start),end:localDate(end)};
+};
+analysisPeriodCaption=function(days){
+  if(Number(days)===7)return"Aktuelle Kalenderwoche";
+  if(Number(days)===30)return"Aktueller Kalendermonat";
+  if(Number(days)===365)return"Aktuelles Kalenderjahr";
+  return String(days)+" Tage";
+};
+
+/* KPI: gesamter Tages-Nassmüll geteilt durch alle Essen des Tages. */
+periodData=function(start,end){
+  var es=(state.entries||[]).filter(function(x){return x.date>=start&&x.date<=end;});
+  var ms=(state.meals||[]).filter(function(x){return x.date>=start&&x.date<=end;});
+  var w=es.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+  var mealRows=ms.filter(function(x){return Number(x.meals||0)>0;});
+  var wasteDates=new Set(es.map(function(x){return x.date;}));
+  var validMealRows=mealRows.filter(function(x){return wasteDates.has(x.date);});
+  var validDates=new Set(validMealRows.map(function(x){return x.date;}));
+  var mealsUsed=validMealRows.reduce(function(s,x){return s+Number(x.meals||0);},0);
+  var validWaste=es.filter(function(x){return validDates.has(x.date);}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+  return{
+    es:es,ms:ms,w:w,k:mealsUsed>0?Math.round(validWaste*1000/mealsUsed):null,
+    completeDays:validMealRows.length,mealDays:mealRows.length,excludedDays:mealRows.length-validMealRows.length,
+    legacyExcluded:0,missingLunchDays:mealRows.length-validMealRows.length,mealsUsed:mealsUsed,lunchW:validWaste,
+    cats:Object.fromEntries(CATS.map(function(c){return[c.id,es.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0)];})),
+    services:Object.fromEntries(SERVICES.map(function(v){return[v.id,es.filter(function(x){return x.service===v.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0)];}))
+  };
+};
+dailyFoodLossKpi=function(date){
+  var meals=mealsFor(date);if(meals<=0)return null;
+  var entries=(state.entries||[]).filter(function(x){return x.date===date;});
+  if(!entries.length)return null;
+  var waste=entries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+  return Math.round(waste*1000/meals);
+};
+
+buildChartPoints=function(cur,cb,mode){
+  mode=mode||state.chartMode;
+  var days=[],cursor=asDate(cb.start);
+  while(localDate(cursor)<=cb.end){
+    var date=localDate(cursor),dayEntries=cur.es.filter(function(x){return x.date===date;});
+    var waste=dayEntries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+    var lunchWaste=dayEntries.filter(function(x){return x.service==="lunch";}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+    var mealRow=cur.ms.find(function(x){return x.date===date;}),meals=Number(mealRow&&mealRow.meals||0),hasWaste=dayEntries.length>0;
+    var foodLoss=meals>0&&hasWaste?waste*1000/meals:null;
+    days.push({date:date,waste:waste,lunchWaste:lunchWaste,meals:meals,foodLoss:foodLoss,hasWaste:hasWaste,label:deDate(date),full:compactDate(date)});
+    cursor.setDate(cursor.getDate()+1);
+  }
+  if(mode==="daily")return days;
+  var grouped={};
+  days.forEach(function(d){
+    var key=groupKey(d.date,mode),g=grouped[key]||(grouped[key]={key:key,start:d.date,end:d.date,waste:0,lunchWaste:0,meals:0,kpiWaste:0,kpiMeals:0,hasWaste:false});
+    g.end=d.date;g.waste+=d.waste;g.lunchWaste+=d.lunchWaste;g.meals+=d.meals;g.hasWaste=g.hasWaste||d.hasWaste;
+    if(d.foodLoss!=null){g.kpiWaste+=d.waste;g.kpiMeals+=d.meals;}
+  });
+  return Object.values(grouped).sort(function(a,b){return a.key.localeCompare(b.key);}).map(function(g){
+    var label="",full="";
+    if(mode==="weekly"){label=deDate(g.start)+"–"+deDate(g.end);full="Woche "+compactDate(g.start)+" bis "+compactDate(g.end);}
+    else if(mode==="monthly"){var dt=asDate(g.start);label=dt.toLocaleDateString("de-DE",{month:"short",year:"2-digit"});full=dt.toLocaleDateString("de-DE",{month:"long",year:"numeric"});}
+    else{label=String(g.key);full="Jahr "+g.key;}
+    return{date:g.key,waste:g.waste,lunchWaste:g.lunchWaste,meals:g.meals,foodLoss:g.kpiMeals>0?Math.round(g.kpiWaste*1000/g.kpiMeals):null,hasWaste:g.hasWaste,label:label,full:full};
+  });
+};
+
+chartBounds=function(){return rangeBounds(state.days);};
+chartRangeOptions=function(){return[{days:Number(state.days),label:analysisPeriodCaption(state.days)}];};
+normalizeChartRange=function(){state.chartRange=Number(state.days);};
+renderChartControls=function(){
+  state.chartMode=Number(state.days)===365?"monthly":"daily";
+  state.chartRange=Number(state.days);
+  document.querySelectorAll("[data-chart-mode]").forEach(function(btn){btn.classList.toggle("active",btn.dataset.chartMode===state.chartMode);});
+  var row=$("chartRangeRow");if(row)row.innerHTML="";
+};
+
+/* Tagesexport nutzt ebenfalls den gesamten Nassmüll je Portion. */
+exportRows=function(month){
+  var bounds=monthBounds(month),rows=[],d=asDate(bounds.start),last=asDate(bounds.end);
+  while(d<=last){
+    var date=localDate(d),es=(state.entries||[]).filter(function(x){return x.date===date;}),mealRow=(state.meals||[]).find(function(x){return x.date===date;});
+    var meals=Number(mealRow&&mealRow.meals||0),hasWaste=es.length>0,total=hasWaste?es.reduce(function(s,x){return s+Number(x.weight_kg||0);},0):null;
+    var k=meals>0&&hasWaste?Math.round(total*1000/meals):null;
+    var quality=meals>0&&hasWaste?"Vollständig":meals<=0&&hasWaste?"Essenszahl fehlt":meals>0&&!hasWaste?"Nassmüll fehlt":"Keine Daten";
+    var catSum=function(id){return es.filter(function(x){return x.category===id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);};
+    var serviceSum=function(id){return es.filter(function(x){return x.service===id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);};
+    var valuation=valuationForEntries(es);
+    rows.push({Datum:asDate(date).toLocaleDateString("de-DE"),Wochentag:asDate(date).toLocaleDateString("de-DE",{weekday:"long"}),Essen:meals||"","Nassmüll gesamt kg":total==null?"":Number(total.toFixed(3)),"Tellerrücklauf kg":hasWaste?Number(catSum("plate").toFixed(3)):"","Putzverlust kg":hasWaste?Number(catSum("prep").toFixed(3)):"","Überproduktion kg":hasWaste?Number(catSum("overproduction").toFixed(3)):"","Lager / abgelaufen kg":hasWaste?Number(catSum("storage").toFixed(3)):"","Zwischenverpflegung kg":hasWaste?Number(serviceSum("snack").toFixed(3)):"","Mittagsverpflegung kg":hasWaste?Number(serviceSum("lunch").toFixed(3)):"","Sonderveranstaltung kg":hasWaste?Number(serviceSum("event").toFixed(3)):"","Food Loss g/Portion":k==null?"":k,Datenqualität:quality,"Geschätzter Warenwert €":valuation.valuedKg>0?Number(valuation.value.toFixed(2)):"","Warenwert-Bewertung %":hasWaste?valuation.coverage:"","Anzahl Müll-Einträge":es.length});
+    d.setDate(d.getDate()+1);
+  }
+  return rows;
+};
+
+/* Professioneller PDF-Bericht mit KPI-Karten und zwei Diagrammen. */
+exportPdf=function(month){
+  if(!window.jspdf||!window.jspdf.jsPDF)return toast("PDF-Export konnte nicht geladen werden.");
+  var all=exportRows(month),rows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";});
+  if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
+  var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"}),summary=monthSummary(month),bounds=monthBounds(month);
+  var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),green=[103,170,45],dark=[28,49,31],muted=[103,112,105];
+  doc.setFillColor.apply(doc,green);doc.rect(0,0,297,28,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(21);doc.text("FLOSIQ Managementbericht",12,13);doc.setFontSize(10);doc.setFont("helvetica","normal");doc.text(monthLabel+" · Food Loss Intelligence",12,21);
+  var cards=[
+    ["Nassmüll gesamt",fmtKg(summary["Nassmüll gesamt kg"])+" kg"],
+    ["Food Loss je Portion",summary["Food Loss g/Portion"]!==""?summary["Food Loss g/Portion"]+" g":"—"],
+    ["Datenqualität",summary["Erfassungsqualität %"]!==""?summary["Erfassungsqualität %"]+" %":"—"],
+    ["Warenwertverlust",summary["Geschätzter Warenwertverlust €"]!==""?fmtEur(summary["Geschätzter Warenwertverlust €"]):"—"]
+  ];
+  cards.forEach(function(c,i){var x=12+i*70;doc.setFillColor(245,248,243);doc.roundedRect(x,34,64,22,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c[0].toUpperCase(),x+4,41);doc.setTextColor.apply(doc,dark);doc.setFontSize(15);doc.text(String(c[1]),x+4,51);});
+  doc.setTextColor.apply(doc,dark);doc.setFontSize(12);doc.text("Tagesverlauf Nassmüll",12,66);doc.text("Verteilung nach Abfallursache",205,66);
+  var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);}));
+  var cx=14,cy=73,cw=178,ch=53,bw=Math.max(2.2,cw/Math.max(chartRows.length,1)-1);
+  doc.setDrawColor(220,226,218);doc.line(cx,cy+ch,cx+cw,cy+ch);
+  chartRows.forEach(function(r,i){var v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,x=cx+i*(cw/Math.max(chartRows.length,1));doc.setFillColor.apply(doc,green);doc.roundedRect(x,cy+ch-h,bw,h,0.8,0.8,"F");if(i%5===0||i===chartRows.length-1){doc.setTextColor.apply(doc,muted);doc.setFontSize(6);doc.text(String(Number(r.Datum.slice(0,2))),x,cy+ch+4);}});
+  var entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;}),catTotal=entries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
+  CATS.forEach(function(c,i){var v=entries.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0),share=catTotal>0?v/catTotal:0,y=75+i*14;doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c.label,205,y);doc.setFillColor(233,237,231);doc.roundedRect(205,y+3,65,5,2,2,"F");doc.setFillColor.apply(doc,c.id==="plate"?[66,130,183]:c.id==="prep"?[226,174,55]:c.id==="overproduction"?[224,126,43]:[145,145,145]);if(share>0)doc.roundedRect(205,y+3,65*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(fmtKg(v)+" kg · "+Math.round(share*100)+" %",273,y+7,{align:"right"});});
+  doc.setTextColor.apply(doc,dark);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text("Kurzbewertung",12,143);doc.setFontSize(9);doc.setFont("helvetica","normal");var pd=periodData(bounds.start,bounds.end),top=CATS.slice().sort(function(a,b){return pd.cats[b.id]-pd.cats[a.id];})[0];var note=pd.k==null?"Für eine belastbare Kennzahl müssen Essen und Nassmüll am selben Tag erfasst sein.":"Der Food Loss liegt bei "+pd.k+" g je Portion. Größte Abfallursache: "+top.label+" mit "+fmtKg(pd.cats[top.id])+" kg.";doc.text(doc.splitTextToSize(note,270),12,150);
+  doc.addPage("a4","landscape");doc.setFillColor.apply(doc,green);doc.rect(0,0,297,18,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Tageswerte · "+monthLabel,12,12);
+  var body=rows.map(function(r){return[r.Datum,r.Essen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Portion"],r.Datenqualität,r["Geschätzter Warenwert €"]];});
+  doc.autoTable({startY:24,head:[["Datum","Essen","Gesamt kg","Teller kg","Putz kg","Überprod. kg","Lager kg","g/Portion","Datenqualität","Warenwert €"]],body:body,styles:{fontSize:7,cellPadding:2.1,textColor:dark},headStyles:{fillColor:green,textColor:[255,255,255]},alternateRowStyles:{fillColor:[246,248,244]},margin:{left:10,right:10,bottom:12}});
+  var pages=doc.getNumberOfPages();for(var p=1;p<=pages;p++){doc.setPage(p);doc.setTextColor.apply(doc,muted);doc.setFontSize(7);doc.text("FLOSIQ · Food Loss Intelligence",12,204);doc.text("Seite "+p+" von "+pages,285,204,{align:"right"});}
+  doc.save("FLOSIQ_Managementbericht_"+month+".pdf");
+};
+
+/* Einträge antippen und vollständig bearbeiten. */
+var editDialog=document.createElement("dialog");editDialog.id="entryEditDialog";editDialog.innerHTML='<div class="modal"><h3>Erfassungsdaten ändern</h3><div class="entry-edit-grid"><label>Datum<input id="entryEditDate" type="date"></label><label>Gewicht in kg<input id="entryEditWeight" type="text" inputmode="decimal"></label><label>Kategorie<select id="entryEditCategory"></select></label><label>Verpflegungsbereich<select id="entryEditService"></select></label><label class="wide">Bemerkung<textarea id="entryEditNote" maxlength="300"></textarea></label></div><div class="modal-actions"><button id="entryEditCancel" type="button">Abbrechen</button><button id="entryEditSave" class="save" type="button">Änderungen speichern</button></div></div>';document.body.appendChild(editDialog);
+var editingKey="";
+function rowKey(row){return String(row&&((row.id!=null&&row.id!=="")?row.id:(row.created_at||row.createdAt||""))||"");}
+function openEntryEdit(key){
+  var entry=(state.entries||[]).find(function(x){return rowKey(x)===String(key);});if(!entry)return toast("Eintrag nicht gefunden.");editingKey=String(key);
+  $("entryEditDate").value=entry.date||today();$("entryEditWeight").value=String(Number(entry.weight_kg||0)).replace(".",",");$("entryEditNote").value=entry.note||"";
+  $("entryEditCategory").innerHTML=CATS.map(function(c){return'<option value="'+esc(c.id)+'">'+esc(c.label)+'</option>';}).join("");$("entryEditCategory").value=entry.category;
+  var services=SERVICES.slice();if(entry.service==="unassigned"&&!services.some(function(s){return s.id==="unassigned";}))services.push({id:"unassigned",label:"Nicht zugeordnet"});
+  $("entryEditService").innerHTML=services.map(function(s){return'<option value="'+esc(s.id)+'">'+esc(s.label)+'</option>';}).join("");$("entryEditService").value=entry.service||"lunch";
+  editDialog.showModal();
+}
+function enhanceEntryRows(){
+  document.querySelectorAll("#entryList .entry,#mdeList .mde-e").forEach(function(row){
+    var del=row.querySelector("[data-del],[data-mde-del]");if(!del)return;var key=del.getAttribute("data-del")||del.getAttribute("data-mde-del")||"";
+    if(row.getAttribute("data-entry-edit-key")!==key)row.setAttribute("data-entry-edit-key",key);row.tabIndex=0;row.setAttribute("role","button");
+    var copy=row.querySelector("small");if(copy&&!row.querySelector(".entry-edit-hint")){var hint=document.createElement("span");hint.className="entry-edit-hint";hint.textContent="Antippen zum Bearbeiten";copy.insertAdjacentElement("afterend",hint);}
+    var actions=row.querySelector(".entry-actions,.mde-a");if(actions&&!actions.querySelector(".entry-edit-btn")){var btn=document.createElement("button");btn.type="button";btn.className="entry-edit-btn";btn.setAttribute("data-entry-edit-button",key);btn.textContent="Ändern";actions.insertBefore(btn,actions.firstChild);}
+  });
+}
+document.addEventListener("click",function(e){
+  var btn=e.target.closest&&e.target.closest("[data-entry-edit-button]");if(btn){e.preventDefault();e.stopImmediatePropagation();openEntryEdit(btn.getAttribute("data-entry-edit-button"));return;}
+  var row=e.target.closest&&e.target.closest("[data-entry-edit-key]");if(row&&!e.target.closest("button,input,select,textarea")){e.preventDefault();e.stopImmediatePropagation();openEntryEdit(row.getAttribute("data-entry-edit-key"));}
+},true);
+document.addEventListener("keydown",function(e){var row=e.target.closest&&e.target.closest("[data-entry-edit-key]");if(row&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openEntryEdit(row.getAttribute("data-entry-edit-key"));}});
+$("entryEditCancel").onclick=function(){editDialog.close();};
+$("entryEditSave").onclick=async function(){
+  var index=(state.entries||[]).findIndex(function(x){return rowKey(x)===editingKey;}),weight=Number(String($("entryEditWeight").value||"").replace(",",".")),date=$("entryEditDate").value;
+  if(index<0)return toast("Eintrag nicht gefunden.");if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return toast("Bitte ein gültiges Datum wählen.");if(!Number.isFinite(weight)||weight<0)return toast("Bitte ein gültiges Gewicht eingeben.");
+  state.entries[index]=Object.assign({},state.entries[index],{date:date,weight_kg:weight,category:$("entryEditCategory").value,service:$("entryEditService").value,note:$("entryEditNote").value.trim(),edited_at:new Date().toISOString()});
+  saveLocal();editDialog.close();
+  try{if(window.FLOSIQ_CLOUD_SYNC&&window.FLOSIQ_CLOUD_SYNC.push)await window.FLOSIQ_CLOUD_SYNC.push();}catch(error){console.warn("FLOSIQ edit cloud sync",error);}
+  try{renderOverview();}catch(_e){}try{renderAnalytics();}catch(_e){}try{window.FLOSIQ_RENDER_DAY_EXPLORER&&window.FLOSIQ_RENDER_DAY_EXPLORER();}catch(_e){}enhanceEntryRows();
+  var editStatus=window.FLOSIQ_CLOUD_SYNC&&window.FLOSIQ_CLOUD_SYNC.status?window.FLOSIQ_CLOUD_SYNC.status():null;
+  toast(editStatus&&editStatus.queued?"Änderung lokal gespeichert · Cloud wartet":"Erfassungsdaten dauerhaft geändert ✓");
+};
+new MutationObserver(function(){enhanceEntryRows();ensureChartPanel();decorateChartTargets();}).observe(document.body,{childList:true,subtree:true});
+
+/* Dauerhafte Datenansicht unter dem Verlauf, robust für Touch und Maus. */
+function ensureChartPanel(){var chart=$("lineChart");if(!chart||$("chartSelectionPanel"))return;var panel=document.createElement("div");panel.id="chartSelectionPanel";panel.className="chart-selection-panel";panel.innerHTML='<div><small>DATENANSICHT</small><b id="chartSelectionLabel">Punkt oder Balken antippen</b></div><div class="chart-selection-value"><small id="chartSelectionMetric">Verlauf</small><b id="chartSelectionValue">—</b></div>';chart.insertAdjacentElement("afterend",panel);}
+function decorateChartTargets(){document.querySelectorAll("#lineChart [data-chart-tooltip]").forEach(function(el){el.setAttribute("tabindex","0");el.setAttribute("role","button");});}
+function chartTargetFromEvent(e){if(e.target&&e.target.closest){var direct=e.target.closest("#lineChart [data-chart-tooltip]");if(direct)return direct;}var path=e.composedPath?e.composedPath():[];return path.find(function(n){return n&&n.getAttribute&&n.getAttribute("data-chart-tooltip");})||null;}
+function showPersistentChartData(target){if(!target)return;ensureChartPanel();var raw=target.getAttribute("data-chart-tooltip")||"",cut=raw.lastIndexOf("|");if(cut<0)return;$("chartSelectionLabel").textContent=raw.slice(0,cut);$("chartSelectionMetric").textContent=$("chartMetricTitle")?$("chartMetricTitle").textContent:"Verlauf";$("chartSelectionValue").textContent=raw.slice(cut+1);}
+var lastChartTouch=0;["pointerup","click"].forEach(function(type){document.addEventListener(type,function(e){var target=chartTargetFromEvent(e);if(!target)return;var now=Date.now();if(type==="click"&&now-lastChartTouch<600)return;if(type==="pointerup")lastChartTouch=now;showPersistentChartData(target);},true);});
+document.addEventListener("keydown",function(e){var t=e.target&&e.target.closest&&e.target.closest("#lineChart [data-chart-tooltip]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();showPersistentChartData(t);}});
+
+/* Kompakte Analyse: vier Kernwerte plus ein klarer Fokus. */
+var compact=document.createElement("section");compact.id="compactAnalysisSummary";compact.className="compact-analysis-summary";compact.setAttribute("data-mgmt-space","analysis");var analysisAnchor=document.querySelector(".mgmt-multi-analysis");if(analysisAnchor)analysisAnchor.insertAdjacentElement("beforebegin",compact);
+function renderCompactAnalysis(){
+  var b=rangeBounds(state.days),p=periodData(b.start,b.end),meals=(p.ms||[]).reduce(function(s,x){return s+Number(x.meals||0);},0),top=CATS.slice().sort(function(a,c){return p.cats[c.id]-p.cats[a.id];})[0],quality=p.mealDays?Math.round(p.completeDays/p.mealDays*100):0;
+  var focus=p.w<=0?"Erfassung starten und Datenbasis aufbauen.":p.k==null?"Essen und Nassmüll am selben Tag vollständig erfassen.":actionForCategory(top.id);
+  compact.innerHTML='<div class="compact-analysis-grid"><div class="compact-analysis-kpi"><span>Food Loss / Portion</span><b>'+(p.k==null?'—':p.k+' g')+'</b></div><div class="compact-analysis-kpi"><span>Essen gesamt</span><b>'+Math.round(meals).toLocaleString("de-DE")+'</b></div><div class="compact-analysis-kpi"><span>Nassmüll</span><b>'+fmtKg(p.w)+' kg</b></div><div class="compact-analysis-kpi"><span>Datenqualität</span><b>'+quality+' %</b></div></div><div class="compact-analysis-focus"><span>WICHTIGSTER FOKUS</span><b>'+esc(focus)+'</b></div>';
+}
+
+var originalRenderOverview=renderOverview;renderOverview=function(){var r=originalRenderOverview.apply(this,arguments);var d=state.viewDate||today(),k=dailyFoodLossKpi(d);if($("todayKpi"))$("todayKpi").textContent=k==null?"—":k;if($("todayKpiSub"))$("todayKpiSub").textContent=k==null?"Essen oder Nassmüll fehlt":"Gramm Food Loss pro Portion · gesamter Tages-Nassmüll";enhanceEntryRows();return r;};
+var originalRenderAnalytics=renderAnalytics;renderAnalytics=function(){state.chartMode=Number(state.days)===365?"monthly":"daily";state.chartRange=Number(state.days);var r=originalRenderAnalytics.apply(this,arguments);if($("stickyPeriodDates")){var b=rangeBounds(state.days);$("stickyPeriodDates").textContent=deDate(b.start)+"–"+deDate(b.end);}if($("analysisRangeText")){var c=rangeBounds(state.days);$("analysisRangeText").textContent=analysisPeriodCaption(state.days)+" · "+deDate(c.start)+"–"+deDate(c.end);}renderCompactAnalysis();ensureChartPanel();decorateChartTargets();enhanceEntryRows();return r;};
+
+/* Sichtbare Grundtexte angleichen. */
+function applyFoodCopy(){
+  var map={periodCaption:analysisPeriodCaption(state.days),chartMetricSub:"Entwicklung im aktuellen Kalenderzeitraum",exportNote:"PDF mit Diagrammen und Tageswerten · Excel mit vollständiger Tageswert-Auflistung."};Object.keys(map).forEach(function(id){if($(id))$(id).textContent=map[id];});
+  document.querySelectorAll("#daysSeg [data-days]").forEach(function(btn){btn.title=btn.dataset.days==="7"?"Aktuelle Kalenderwoche":btn.dataset.days==="30"?"Aktueller Kalendermonat":"Aktuelles Kalenderjahr";});
+}
+applyFoodCopy();renderOverview();renderAnalytics();enhanceEntryRows();ensureChartPanel();decorateChartTargets();
+})();
+</script>
+<!-- /FLOSIQ MANAGEMENT UPDATE 2026-11-15 -->
+
    
+
+<!-- FLOSIQ MODERN UI 2026-11-17 -->
+<style id="flosiq-modern-ui-20261117">
+:root{
+  --green:#8acb42;--green2:#4f9b19;--dark:#173c20;--bg:#f3f6f1;--card:#ffffff;
+  --text:#172019;--muted:#6f7b72;--line:#dfe7dc;--soft:#edf6e8;
+  --shadow:0 12px 34px rgba(37,64,41,.075);--shadow-soft:0 5px 18px rgba(37,64,41,.055)
+}
+body{background:radial-gradient(circle at 50% -160px,#e9f5e4 0,transparent 420px),var(--bg)}
+.shell{max-width:760px;padding-top:24px}
+header{margin-bottom:25px}.brand-name{letter-spacing:-1px}.brand img{border-radius:15px;box-shadow:0 8px 24px rgba(73,130,40,.18)}
+.card,.mde,.compact-analysis-kpi,.chart-selection-panel{border-color:var(--line);box-shadow:var(--shadow-soft)}
+.card{border-radius:22px}.mde{border-radius:24px!important;box-shadow:var(--shadow)!important}
+.section-title{font-size:12px;letter-spacing:1.15px;margin-top:30px;color:#758079}
+.mgmt-dashboard .mgmt-kpi-main,.mgmt-dashboard .mgmt-chart-section,.export-card,.rescue-analysis-card{border-radius:25px!important}
+.mgmt-head{padding:18px 19px!important;border-radius:24px!important;background:linear-gradient(145deg,#173d22,#235c2e)!important;box-shadow:0 16px 38px rgba(24,62,34,.18)!important}
+.mgmt-head h1,.mgmt-head h2,.mgmt-head b{letter-spacing:-.55px}
+#mgmtSpaceNav{gap:5px!important;padding:5px!important;border-radius:17px!important;background:#edf2eb!important;border:1px solid #dfe7dc!important}
+#mgmtSpaceNav [data-mgmt-space-btn]{min-height:46px!important;border-radius:13px!important;transition:background .16s ease,color .16s ease,transform .16s ease!important}
+#mgmtSpaceNav [data-mgmt-space-btn].active{background:#fff!important;color:var(--green2)!important;box-shadow:0 5px 15px rgba(42,73,43,.09)!important}
+button,.chart-tap-target{transition:transform .14s ease,box-shadow .14s ease,background-color .14s ease}
+button:active{transform:scale(.975)}
+.primary,.save{background:linear-gradient(135deg,#8acb42,#4f9b19)!important;box-shadow:0 8px 22px rgba(79,155,25,.22)!important}
+.entry,.mde-e{border-radius:16px}.mde-e{background:#fff!important;box-shadow:0 3px 12px rgba(39,69,42,.04)}
+.entry-edit-btn,.mde-btn,.mde-quick{min-height:40px;border-radius:12px!important;background:#edf6e8!important;color:#4f951d!important}
+.mde-del{border-radius:12px!important}.entry-actions,.mde-a{gap:8px!important}
+.compact-analysis-grid{gap:11px}.compact-analysis-kpi{border-radius:19px;padding:16px;background:linear-gradient(160deg,#fff,#f8faf7)}
+.compact-analysis-kpi b{font-size:24px}.compact-analysis-focus{border:1px solid #dce9d6;border-radius:19px;background:linear-gradient(145deg,#edf6e8,#f7faf5)}
+.chart-selection-panel{border-radius:18px;padding:15px 16px;background:linear-gradient(145deg,#f2f8ee,#fff)}
+#lineChart{border-radius:21px!important;background:linear-gradient(180deg,#fff,#fbfcfa)!important}
+.export-card{overflow:hidden}.export-title{font-size:20px!important;letter-spacing:-.4px}
+dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-spacing:-.45px}
+#entryEditDialog input,#entryEditDialog select,#entryEditDialog textarea{border-radius:15px;background:#f7f9f6}
+.nav{border-radius:30px;box-shadow:0 18px 48px rgba(29,46,32,.18)}
+.action-circle{border-radius:22px;background:linear-gradient(145deg,#9bd754,#4f9b19)}
+.cloud-status.good,.status.good{box-shadow:inset 0 0 0 1px rgba(66,129,26,.12)}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0e120f;--card:#171c18;--text:#f2f5f1;--muted:#a4aea6;--line:#2a332c;--soft:#1f3020}
+  body{background:radial-gradient(circle at 50% -170px,#1b3420 0,transparent 420px),var(--bg)}
+  .compact-analysis-kpi,#lineChart,.mde-e{background:#171c18!important}
+  #mgmtSpaceNav{background:#151c16!important;border-color:#2a332c!important}
+  #mgmtSpaceNav [data-mgmt-space-btn].active{background:#253327!important}
+}
+@media(max-width:700px){
+  .shell{padding:16px 14px 28px}.card{border-radius:20px}.mgmt-head{padding:16px!important}
+  .compact-analysis-grid{gap:8px}.compact-analysis-kpi{padding:13px}.compact-analysis-kpi b{font-size:21px}
+  #mgmtSpaceNav [data-mgmt-space-btn]{min-height:44px!important;font-size:11px!important}
+}
+</style>
+<!-- /FLOSIQ MODERN UI 2026-11-17 -->
