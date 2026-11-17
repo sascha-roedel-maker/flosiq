@@ -11537,16 +11537,16 @@ exportPdf=function(month){
     ["Warenwertverlust",summary["Geschätzter Warenwertverlust €"]!==""?fmtEur(summary["Geschätzter Warenwertverlust €"]):"—"]
   ];
   cards.forEach(function(c,i){var x=12+i*55;doc.setFillColor(245,248,243);doc.roundedRect(x,34,50,22,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFontSize(7);doc.setFont("helvetica","bold");doc.text(c[0].toUpperCase(),x+3,41);doc.setTextColor.apply(doc,dark);doc.setFontSize(13);doc.text(String(c[1]),x+3,51);});
-  doc.setTextColor.apply(doc,dark);doc.setFontSize(12);doc.text("Tagesverlauf Nassmüll",12,66);doc.text("Verteilung nach Abfallursache",205,66);
+  doc.setTextColor.apply(doc,dark);doc.setFontSize(12);doc.text("Tagesverlauf Nassmüll · genaue Werte in kg",12,66);doc.text("Verteilung nach Abfallursache",205,66);
   var max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);}));
   var cx=14,cy=73,cw=178,ch=53,bw=Math.max(2.2,cw/Math.max(chartRows.length,1)-1);
   doc.setDrawColor(220,226,218);doc.line(cx,cy+ch,cx+cw,cy+ch);
   chartRows.forEach(function(r,i){
     var v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,step=cw/Math.max(chartRows.length,1),x=cx+i*step;
     doc.setFillColor.apply(doc,green);doc.roundedRect(x,cy+ch-h,bw,h,0.8,0.8,"F");
-    /* Messwert kompakt über dem Balken, Einheit steht in der Diagrammlegende. */
-    var valueLabel=v>=10?String(Math.round(v)):v.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
-    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(chartRows.length>28?4.1:4.8);
+    /* Tatsächliches Nassmüllgewicht ohne Verkürzung auf ganze oder eine Nachkommastelle. */
+    var valueLabel=v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3});
+    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(chartRows.length>28?3.6:4.5);
     doc.text(valueLabel,x+bw/2,Math.max(cy+4,cy+ch-h-2),{align:"center"});
     /* Jeder Balken erhält den Kalendertag im Format 01–31. */
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(chartRows.length>28?4.5:5.2);
