@@ -6804,7 +6804,8 @@ Zeitraum:`${deDate(start)}–${deDate(end)}`,
 function exportExcel(month){
 if(!window.XLSX)return toast("Excel-Export konnte nicht geladen werden.");
 const rows=exportRows(month);
-const hasAnyData=rows.some(r=>r.Essen!==""||r["Nassmüll gesamt kg"]!=="");
+const rescueForMonth=window.FLORESQ_RESCUE_SUMMARY?.(monthBounds(month).start,monthBounds(month).end);
+const hasAnyData=rows.some(r=>r.Essen!==""||r["Nassmüll gesamt kg"]!=="")||Number(rescueForMonth?.count||0)>0;
 if(!hasAnyData)return toast("Für diesen Monat gibt es noch keine Daten.");
 
 const summary=monthSummary(month);
@@ -11655,7 +11656,8 @@ exportRows=function(month){
     var catSum=function(id){return es.filter(function(x){return x.category===id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);};
     var serviceSum=function(id){return es.filter(function(x){return x.service===id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0);};
     var valuation=valuationForEntries(es);
-    rows.push({Datum:asDate(date).toLocaleDateString("de-DE"),Wochentag:asDate(date).toLocaleDateString("de-DE",{weekday:"long"}),Essen:meals||"","Nassmüll gesamt kg":total==null?"":Number(total.toFixed(3)),"Tellerrücklauf kg":hasWaste?Number(catSum("plate").toFixed(3)):"","Putzverlust kg":hasWaste?Number(catSum("prep").toFixed(3)):"","Überproduktion kg":hasWaste?Number(catSum("overproduction").toFixed(3)):"","Lager / abgelaufen kg":hasWaste?Number(catSum("storage").toFixed(3)):"","Zwischenverpflegung kg":hasWaste?Number(serviceSum("snack").toFixed(3)):"","Mittagsverpflegung kg":hasWaste?Number(serviceSum("lunch").toFixed(3)):"","Sonderveranstaltung kg":hasWaste?Number(serviceSum("event").toFixed(3)):"","Food Loss g/Portion":k==null?"":k,Datenqualität:quality,"Geschätzter Warenwert €":valuation.valuedKg>0?Number(valuation.value.toFixed(2)):"","Warenwert-Bewertung %":hasWaste?valuation.coverage:"","Anzahl Müll-Einträge":es.length});
+    var rescueToday=window.FLORESQ_RESCUE_SUMMARY?.(date,date);
+    rows.push({Datum:asDate(date).toLocaleDateString("de-DE"),Wochentag:asDate(date).toLocaleDateString("de-DE",{weekday:"long"}),Essen:meals||"","Nassmüll gesamt kg":total==null?"":Number(total.toFixed(3)),"Tellerrücklauf kg":hasWaste?Number(catSum("plate").toFixed(3)):"","Putzverlust kg":hasWaste?Number(catSum("prep").toFixed(3)):"","Überproduktion kg":hasWaste?Number(catSum("overproduction").toFixed(3)):"","Rettung erfasst kg":rescueToday&&rescueToday.count?Number(rescueToday.rescuedKg.toFixed(3)):"","Lager / abgelaufen kg":hasWaste?Number(catSum("storage").toFixed(3)):"","Zwischenverpflegung kg":hasWaste?Number(serviceSum("snack").toFixed(3)):"","Mittagsverpflegung kg":hasWaste?Number(serviceSum("lunch").toFixed(3)):"","Sonderveranstaltung kg":hasWaste?Number(serviceSum("event").toFixed(3)):"","Food Loss g/Portion":k==null?"":k,Datenqualität:quality,"Geschätzter Warenwert €":valuation.valuedKg>0?Number(valuation.value.toFixed(2)):"","Warenwert-Bewertung %":hasWaste?valuation.coverage:"","Anzahl Müll-Einträge":es.length});
     d.setDate(d.getDate()+1);
   }
   return rows;
@@ -11665,7 +11667,7 @@ exportRows=function(month){
 exportPdf=function(month){
   if(!window.jspdf||!window.jspdf.jsPDF)return toast("PDF-Export konnte nicht geladen werden.");
   var all=exportRows(month),rows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";});
-  if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
+  if(!rows.length&&!window.FLORESQ_RESCUE_SUMMARY?.(monthBounds(month).start,monthBounds(month).end)?.count)return toast("Für diesen Monat gibt es noch keine Daten.");
   var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"}),summary=monthSummary(month),bounds=monthBounds(month);
   var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),chartTotal=chartRows.reduce(function(sum,r){return sum+Number(r["Nassmüll gesamt kg"]||0);},0),averageDaily=chartRows.length?chartTotal/chartRows.length:0;
   var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),green=[103,170,45],dark=[28,49,31],muted=[103,112,105];
@@ -11702,8 +11704,9 @@ exportPdf=function(month){
   CATS.forEach(function(c,i){var v=entries.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0),share=catTotal>0?v/catTotal:0,y=75+i*14;doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c.label,205,y);doc.setFillColor(233,237,231);doc.roundedRect(205,y+3,65,5,2,2,"F");doc.setFillColor.apply(doc,c.id==="plate"?[66,130,183]:c.id==="prep"?[226,174,55]:c.id==="overproduction"?[224,126,43]:[145,145,145]);if(share>0)doc.roundedRect(205,y+3,65*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(fmtKg(v)+" kg · "+Math.round(share*100)+" %",273,y+7,{align:"right"});});
   doc.setTextColor.apply(doc,dark);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text("Kurzbewertung",12,143);doc.setFontSize(9);doc.setFont("helvetica","normal");var pd=periodData(bounds.start,bounds.end),top=CATS.slice().sort(function(a,b){return pd.cats[b.id]-pd.cats[a.id];})[0];var note=pd.k==null?"Für eine belastbare Kennzahl müssen Essen und Nassmüll am selben Tag erfasst sein.":"Der Food Loss liegt bei "+pd.k+" g je Portion. Größte Abfallursache: "+top.label+" mit "+fmtKg(pd.cats[top.id])+" kg.";doc.text(doc.splitTextToSize(note,270),12,150);
   doc.addPage("a4","landscape");doc.setFillColor.apply(doc,green);doc.rect(0,0,297,18,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Tageswerte · "+monthLabel,12,12);
-  var body=rows.map(function(r){return[r.Datum,r.Essen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Portion"],r.Datenqualität,r["Geschätzter Warenwert €"]];});
-  doc.autoTable({startY:24,head:[["Datum","Essen","Gesamt kg","Teller kg","Putz kg","Überprod. kg","Lager kg","g/Portion","Datenqualität","Warenwert €"]],body:body,styles:{fontSize:7,cellPadding:2.1,textColor:dark},headStyles:{fillColor:green,textColor:[255,255,255]},alternateRowStyles:{fillColor:[246,248,244]},margin:{left:10,right:10,bottom:12}});
+  var reportRows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!==""||r["Rettung erfasst kg"]!=="";});
+  var body=reportRows.map(function(r){return[r.Datum,r.Essen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Rettung erfasst kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Portion"],r.Datenqualität,r["Geschätzter Warenwert €"]];});
+  doc.autoTable({startY:24,head:[["Datum","Essen","Gesamt kg","Teller kg","Putz kg","Überprod. kg","Rettung kg","Lager kg","g/Portion","Datenqualität","Warenwert €"]],body:body,styles:{fontSize:6.5,cellPadding:1.7,textColor:dark},headStyles:{fillColor:green,textColor:[255,255,255]},alternateRowStyles:{fillColor:[246,248,244]},margin:{left:10,right:10,bottom:12}});
   var pages=doc.getNumberOfPages();for(var p=1;p<=pages;p++){doc.setPage(p);doc.setTextColor.apply(doc,muted);doc.setFontSize(7);doc.text("FLORESQ · Smart Food Loss Management",12,204);doc.text("Seite "+p+" von "+pages,285,204,{align:"right"});}
   doc.save("FLORESQ_Managementbericht_"+month+".pdf");
 };
@@ -12013,7 +12016,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
   window.FLOSIQ_TEAM_PDF_EXPORT=function(month){
     if(!window.jspdf||!window.jspdf.jsPDF)return toast("PDF-Export konnte nicht geladen werden.");
     var all=exportRows(month),rows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";});
-    if(!rows.length)return toast("Für diesen Monat gibt es noch keine Daten.");
+    if(!rows.length&&!window.FLORESQ_RESCUE_SUMMARY?.(monthBounds(month).start,monthBounds(month).end)?.count)return toast("Für diesen Monat gibt es noch keine Daten.");
 
     var bounds=monthBounds(month),summary=monthSummary(month),entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;});
     var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),totalWaste=Number(summary["Nassmüll gesamt kg"]||0),average=chartRows.length?totalWaste/chartRows.length:0;
