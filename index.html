@@ -11235,6 +11235,17 @@ body.view-management #mgmtSpaceNav button{position:relative!important;z-index:3!
   function managementMealDate(){
     return byId('wasteDate')?.value||(typeof state!=='undefined'&&state.viewDate)||(typeof today==='function'?today():'');
   }
+  function syncActiveEntryDate(iso){
+    if(!iso)return;
+    const short=typeof compactDate==='function'?compactDate(iso):iso;
+    const wasteDate=byId('wasteDate'),mealsDate=byId('mealsDate');
+    if(wasteDate)wasteDate.value=iso;
+    if(mealsDate)mealsDate.value=iso;
+    if(byId('wasteDateLabel'))byId('wasteDateLabel').textContent=short;
+    if(byId('mealsDateLabel'))byId('mealsDateLabel').textContent=short;
+    const operationalDate=byId('opDateBtn')?.querySelector('span');
+    if(operationalDate)operationalDate.textContent=short;
+  }
   function refreshManagementMealCapture(){
     const card=byId('mgmtCaptureMealsCard'),title=byId('mgmtCaptureMealsTitle'),status=byId('mgmtCaptureMealsStatus'),btn=byId('mgmtCaptureMealsBtn');
     if(!card||!title||!status||!btn||typeof state==='undefined')return;
@@ -11259,6 +11270,29 @@ body.view-management #mgmtSpaceNav button{position:relative!important;z-index:3!
       if(typeof openMealsDialog==='function')openMealsDialog();
     };
   }
+
+  /* Eine Datumsauswahl gilt überall für denselben Erfassungstag. */
+  const baseSetCustomDateEntrySync=setCustomDate;
+  setCustomDate=function(target,iso){
+    const result=baseSetCustomDateEntrySync.apply(this,arguments);
+    if(iso&&typeof state!=='undefined'){
+      state.viewDate=iso;
+      syncActiveEntryDate(iso);
+      if(target!=='overview'&&typeof renderOverview==='function')renderOverview();
+    }
+    refreshManagementMealCapture();
+    return result;
+  };
+
+  /* Pfeile, Heute-Button und Kalender halten auch den unteren Datumsbutton aktuell. */
+  const baseRenderOverviewEntrySync=renderOverview;
+  renderOverview=function(){
+    const result=baseRenderOverviewEntrySync.apply(this,arguments);
+    const iso=(typeof state!=='undefined'&&state.viewDate)||(typeof today==='function'?today():'');
+    syncActiveEntryDate(iso);
+    refreshManagementMealCapture();
+    return result;
+  };
 
   /* Management-Erfassen direkt öffnen – kein Quick-Add-Dialog. */
   const quick=byId('quickAddBtn');
