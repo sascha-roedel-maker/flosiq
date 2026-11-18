@@ -12597,9 +12597,11 @@ body.view-management #analytics #mgmtMiniGrid .mgmt-mini{min-height:104px!import
 body.view-management #analytics #mgmtMiniGrid .mgmt-mini>b{font-size:25px!important}
 body.view-management #analytics #mealVerifyCard{margin:14px 0!important}
 body.view-management #analytics .mgmt-reports-intro{margin:0 0 12px!important}
-body.view-management #analytics .fr-config-link{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:var(--card)}
-body.view-management #analytics .fr-config-link span{font-size:12px;font-weight:800;color:var(--muted)}
+body.view-management #analytics .fr-config-link,body.view-management #analytics .fr-weekly-report-link{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:var(--card)}
+body.view-management #analytics .fr-config-link span,body.view-management #analytics .fr-weekly-report-link span{font-size:12px;font-weight:800;color:var(--muted)}
 body.view-management #analytics .fr-config-link #mgmtSettingsBtn{margin-left:auto}
+body.view-management #analytics .fr-weekly-report-link #weeklyReportBtn{margin-left:auto;min-height:42px;padding:9px 13px;border-radius:12px;background:var(--soft);color:var(--green2);border:1px solid var(--line);font-weight:900}
+body.view-management [data-mgmt-space].mgmt-space-hidden{display:none!important}
 .fr-rescue-hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(170px,.8fr);gap:16px;align-items:center;padding:23px 24px;margin:8px 0 16px;border-radius:24px;background:linear-gradient(125deg,#103b5c 0%,#116a9b 58%,#1786bd 100%);color:#fff;box-shadow:0 12px 24px rgba(13,92,135,.17)}
 .fr-rescue-kicker{font-size:10px!important;color:#c5ecff!important;font-weight:900;letter-spacing:.11em}
 .fr-rescue-main h2{font-size:23px!important;color:#fff!important;margin:7px 0 8px;letter-spacing:-.5px}
@@ -12644,7 +12646,7 @@ body.view-management #analytics .rescue-analysis-kpi b{font-size:23px!important}
 .fr-rescue-advice{margin:14px 0 0;padding:12px 14px;background:#eff7fc;color:#24516c;border-radius:13px;font-size:12px;line-height:1.5;font-weight:750}
 .fr-rescue-source{margin:11px 2px 0;color:var(--muted);font-size:10px;line-height:1.5}
 body.view-management:not(.mgmt-light) .fr-rescue-timeline,
-body.view-management:not(.mgmt-light) .fr-config-link{background:#171e1a}
+body.view-management:not(.mgmt-light) .fr-config-link,body.view-management:not(.mgmt-light) .fr-weekly-report-link{background:#171e1a}
 body.view-management:not(.mgmt-light) .fr-rescue-advice{background:#1b3544;color:#cfebfc}
 body.view-management:not(.mgmt-light) .fr-context-grid>div{background:#152019}
 @media(max-width:700px){
@@ -12770,13 +12772,32 @@ if(help&&settings&&!$id("frSettingsLink")){
  const panel=document.createElement("div");panel.className="fr-config-link";panel.id="frSettingsLink";panel.dataset.mgmtSpace="help";
  const text=document.createElement("span");text.textContent="Weitere Module und Darstellung anpassen";panel.appendChild(text);panel.appendChild(settings);
  help.parentNode.insertBefore(panel,help);
+ const currentSpace=document.querySelector('#mgmtSpaceNav [data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+ panel.classList.toggle("mgmt-space-hidden",currentSpace!=="help");
+ panel.setAttribute("aria-hidden",currentSpace==="help"?"false":"true");
+}
+const weeklyButton=$id("weeklyReportBtn"),reportIntro=document.querySelector(".mgmt-reports-intro");
+if(weeklyButton&&reportIntro&&!$id("frWeeklyReportLink")){
+ const row=document.createElement("div");row.className="fr-weekly-report-link";row.id="frWeeklyReportLink";row.dataset.mgmtSpace="reports";
+ const label=document.createElement("span");label.textContent="Wochenauswertung erstellen";
+ row.appendChild(label);row.appendChild(weeklyButton);
+ reportIntro.insertAdjacentElement("afterend",row);
+ const activeSpace=document.querySelector('#mgmtSpaceNav [data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+ row.classList.toggle("mgmt-space-hidden",activeSpace!=="reports");
+ row.setAttribute("aria-hidden",activeSpace==="reports"?"false":"true");
 }
 const chart=$id("frRescueBars");
 if(chart&&!chart.parentElement.classList.contains("fr-trend-scroller")){
  const scroll=document.createElement("div");scroll.className="fr-trend-scroller";chart.parentNode.insertBefore(scroll,chart);scroll.appendChild(chart);
 }
 try{
- if(typeof mgmtModules!=="undefined"&&mgmtModules.rescueAnalysis===false){mgmtModules.rescueAnalysis=true;if(typeof saveMgmtModules==="function")saveMgmtModules();}
+ if(typeof mgmtModules!=="undefined"){
+  let modified=false;
+  for(const key of ["rescueAnalysis","foodLossKpi","wasteKpi","valueKpi","qualityKpi"]){
+   if(mgmtModules[key]===false){mgmtModules[key]=true;modified=true;}
+  }
+  if(modified&&typeof saveMgmtModules==="function")saveMgmtModules();
+ }
  if(typeof applyMgmtModules==="function")applyMgmtModules();
 }catch(_){}
 if(typeof renderAnalytics==="function"){
