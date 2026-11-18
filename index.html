@@ -12561,3 +12561,231 @@ body.view-operational #opMainTaskBtn.rescue-ready small{color:#e3f4ff!important}
 }
 </style>
 <!-- /FLORESQ TABLET + MODERN UI -->
+
+
+<!-- FLORESQ MANAGEMENT FOCUS · Rettung sichtbar machen · 2026-11-18 -->
+<style id="floresq-management-rescue-focus-v1">
+/* Übersicht statt überladener Modul-Sammlung. Bestehende Module bleiben im Code erhalten. */
+body.view-management #analytics .mgmt-dashboard{padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+body.view-management #analytics .mgmt-dashboard-head,
+body.view-management #analytics .mgmt-chart-section[data-mgmt-space="cockpit"],
+body.view-management #analytics .mgmt-kpi-basis,
+body.view-management #analytics [data-mgmt-module="topCauseKpi"],
+body.view-management #analytics [data-mgmt-module="brief"],
+body.view-management #analytics #compactAnalysisSummary,
+body.view-management #analytics [data-mgmt-module="multiAnalysis"],
+body.view-management #analytics [data-mgmt-module="impact"],
+body.view-management #analytics [data-mgmt-module="compare"],
+body.view-management #analytics [data-mgmt-module="weekly"],
+body.view-management #analytics [data-mgmt-module="insight"],
+body.view-management #analytics [data-mgmt-module="anomalies"],
+body.view-management #analytics [data-mgmt-module="measures"],
+body.view-management #analytics .detail-only,
+body.view-management #analytics .mgmt-hero[data-mgmt-space="help"],
+body.view-management #analytics #managementGroupLabel{display:none!important}
+body.view-management #mgmtSpaceNav{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+body.view-management #mgmtSpaceNav [data-mgmt-space-btn]{font-size:12px!important;font-weight:850!important;gap:5px!important;padding:11px 4px!important}
+body.view-management #mgmtSpaceNav [data-mgmt-space-btn="analysis"].active{background:#e1f1fc!important;color:#12689f!important}
+body.view-management .mgmt-space-intro{margin:2px 0 12px!important;padding:12px 15px!important;border-radius:16px!important}
+body.view-management .mgmt-space-intro b{font-size:18px!important}
+body.view-management .mgmt-space-intro small{font-size:11px!important}
+body.view-management #analytics .mgmt-kpi-main{margin:12px 0!important;border:1px solid var(--line)!important;border-radius:22px!important;background:var(--card)!important;padding:16px!important;box-shadow:none!important}
+body.view-management #analytics .mgmt-kpi-copy .mgmt-kpi-value{font-size:clamp(38px,6vw,52px)!important}
+body.view-management #analytics .mgmt-kpi-label{font-size:13px!important}
+body.view-management #analytics #mgmtMiniGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin:12px 0!important}
+body.view-management #analytics #mgmtMiniGrid .mgmt-mini{min-height:104px!important;padding:14px!important;box-shadow:none!important;border-radius:18px!important}
+body.view-management #analytics #mgmtMiniGrid .mgmt-mini>b{font-size:25px!important}
+body.view-management #analytics #mealVerifyCard{margin:14px 0!important}
+body.view-management #analytics .mgmt-reports-intro{margin:0 0 12px!important}
+body.view-management #analytics .fr-config-link{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:var(--card)}
+body.view-management #analytics .fr-config-link span{font-size:12px;font-weight:800;color:var(--muted)}
+body.view-management #analytics .fr-config-link #mgmtSettingsBtn{margin-left:auto}
+.fr-rescue-hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(170px,.8fr);gap:16px;align-items:center;padding:23px 24px;margin:8px 0 16px;border-radius:24px;background:linear-gradient(125deg,#103b5c 0%,#116a9b 58%,#1786bd 100%);color:#fff;box-shadow:0 12px 24px rgba(13,92,135,.17)}
+.fr-rescue-kicker{font-size:10px!important;color:#c5ecff!important;font-weight:900;letter-spacing:.11em}
+.fr-rescue-main h2{font-size:23px!important;color:#fff!important;margin:7px 0 8px;letter-spacing:-.5px}
+.fr-rescue-number{font-size:clamp(35px,5vw,54px);line-height:1.05;font-weight:950;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.fr-rescue-main p{margin:9px 0 0;color:#d9effb;font-size:12px;line-height:1.45;max-width:470px}
+.fr-rescue-aside{align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:14px 0 10px 17px;border-left:1px solid rgba(255,255,255,.25)}
+.fr-rescue-aside>span{color:#d0eaf7;font-size:11px;font-weight:700}
+.fr-rescue-aside strong{font-size:25px;color:#fff;letter-spacing:-.5px}
+.fr-rescue-aside button{margin-top:8px;min-height:44px;border:0;border-radius:12px;background:#fff;color:#135b80;font-size:12px;font-weight:900;display:flex;justify-content:center;align-items:center;gap:9px;padding:11px}
+.fr-rescue-aside button:active{transform:scale(.98)}
+/* Ein einziges, nachvollziehbares Rettungs-Dashboard */
+body.view-management #analytics [data-mgmt-module="rescueAnalysis"][data-mgmt-space="analysis"]{display:block}
+body.view-management #analytics [data-mgmt-module="rescueAnalysis"]>.section-title{display:none!important}
+body.view-management #analytics .rescue-analysis-card{margin:4px 0 12px!important;padding:20px!important;border-radius:22px!important;box-shadow:none!important}
+body.view-management #analytics .rescue-analysis-head h3{font-size:22px!important;line-height:1.2}
+body.view-management #analytics .rescue-analysis-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:9px!important}
+body.view-management #analytics .rescue-analysis-kpi{min-width:0!important;padding:13px!important}
+body.view-management #analytics .rescue-analysis-kpi b{font-size:23px!important}
+.fr-rescue-timeline{margin:12px 0 18px;padding:19px 19px 14px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow-soft)}
+.fr-panel-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fr-panel-title span{display:block;color:#1682bc;font-size:10px;font-weight:900;letter-spacing:1px}
+.fr-panel-title h3{margin:4px 0 0;font-size:21px;letter-spacing:-.5px}
+.fr-panel-title small{color:var(--muted);font-size:11px;align-self:center}
+.fr-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0 19px}
+.fr-context-grid>div{padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line);min-width:0}
+.fr-context-grid span{font-size:10px;color:var(--muted);font-weight:750;display:block}
+.fr-context-grid b{font-size:20px;font-weight:900;margin-top:6px;display:block;font-variant-numeric:tabular-nums}
+.fr-trend-legend{display:flex;gap:15px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-weight:800}
+.fr-trend-legend>span{display:flex;align-items:center;gap:6px}
+.fr-swatch{display:inline-block;width:10px;height:10px;border-radius:3px}
+.fr-swatch.rescue{background:#238fd0}.fr-swatch.waste{background:#df892c}
+.fr-trend-scroller{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.fr-trend-grid{display:grid;grid-template-columns:repeat(var(--fr-cols,7),minmax(0,1fr));gap:6px;min-width:100%;margin:10px 0 0}
+.fr-period{display:grid;grid-template-rows:26px 132px 29px;min-width:0;gap:4px;align-items:stretch;text-align:center}
+.fr-period-values{display:flex;align-items:end;justify-content:center;gap:3px;white-space:nowrap;font-size:9px;line-height:1;font-weight:850;font-variant-numeric:tabular-nums}
+.fr-period-values .fr-rv{color:#1887bd}.fr-period-values .fr-wv{color:#b77222}
+.fr-period-bars{display:flex;align-items:end;justify-content:center;gap:4px;border-bottom:1px solid var(--line);position:relative}
+.fr-bar{width:min(43%,25px);height:var(--fr-h,3px);min-height:3px;border-radius:5px 5px 0 0}
+.fr-bar.rescue{background:linear-gradient(0deg,#176b9e,#4db2e5)}
+.fr-bar.waste{background:linear-gradient(0deg,#a76322,#e8a04b)}
+.fr-period-label{font-size:10px;font-weight:800;line-height:1.2;color:var(--muted);overflow-wrap:anywhere}
+.fr-rescue-advice{margin:14px 0 0;padding:12px 14px;background:#eff7fc;color:#24516c;border-radius:13px;font-size:12px;line-height:1.5;font-weight:750}
+.fr-rescue-source{margin:11px 2px 0;color:var(--muted);font-size:10px;line-height:1.5}
+body.view-management:not(.mgmt-light) .fr-rescue-timeline,
+body.view-management:not(.mgmt-light) .fr-config-link{background:#171e1a}
+body.view-management:not(.mgmt-light) .fr-rescue-advice{background:#1b3544;color:#cfebfc}
+body.view-management:not(.mgmt-light) .fr-context-grid>div{background:#152019}
+@media(max-width:700px){
+ body.view-management #mgmtSpaceNav [data-mgmt-space-btn]{font-size:10px!important;min-height:48px!important}
+ body.view-management #analytics #mgmtMiniGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.view-management #analytics #mgmtMiniGrid [data-mgmt-module="qualityKpi"]{grid-column:1/-1}
+ body.view-management #analytics .mgmt-kpi-main{padding:13px!important}
+ .fr-rescue-hero{grid-template-columns:1fr!important;gap:11px;padding:19px 18px!important}
+ .fr-rescue-aside{border-left:0;border-top:1px solid rgba(255,255,255,.24);padding:12px 0 0;display:grid;grid-template-columns:1fr auto;align-items:center}
+ .fr-rescue-aside>span{grid-column:1}.fr-rescue-aside strong{grid-column:2;grid-row:1/3}
+ .fr-rescue-aside button{grid-column:1/-1;margin-top:4px}
+ body.view-management #analytics .rescue-analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .fr-rescue-timeline{padding:15px 12px}
+ .fr-context-grid{gap:6px}.fr-context-grid>div{padding:10px 7px}
+ .fr-context-grid span{font-size:9px}.fr-context-grid b{font-size:15px}
+ .fr-period-values{font-size:8px}
+ .fr-period-label{font-size:9px}
+}
+</style>
+
+<script id="floresq-management-rescue-focus-v1">
+(function setupFloresqMgmtFocus(){
+"use strict";
+const $id=(id)=>document.getElementById(id);
+const localeKg=(v)=>Math.max(0,Number(v)||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3});
+const unitKg=(v)=>localeKg(v)+" kg";
+const readRescues=()=>{
+  try{const rows=JSON.parse(localStorage.getItem("flosiq_rescues_v1")||"[]");return Array.isArray(rows)?rows.filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||""))&&Number(r.weightKg)>0):[];}catch(_){return[];}
+};
+const readDecisions=()=>{
+  try{const rows=JSON.parse(localStorage.getItem("flosiq_rescue_decisions_v1")||"[]");return Array.isArray(rows)?rows.filter(r=>r&&r.date&&r.decision):[];}catch(_){return[];}
+};
+const safeWeight=x=>Math.max(0,Number(x)||0);
+const inPeriod=(date,start,end)=>String(date||"")>=start&&String(date||"")<=end;
+function rescueSummary(start,end){
+ const rescues=readRescues().filter(r=>inPeriod(r.date,start,end));
+ const waste=(typeof state!=="undefined"&&Array.isArray(state.entries)?state.entries:[]).filter(r=>r&&r.category==="overproduction"&&inPeriod(r.date,start,end));
+ const decisions=readDecisions().filter(r=>inPeriod(r.date,start,end));
+ return {
+  rescuedKg:rescues.reduce((sum,r)=>sum+safeWeight(r.weightKg),0),
+  count:rescues.length,
+  wasteKg:waste.reduce((sum,r)=>sum+safeWeight(r.weight_kg),0),
+  checked:decisions.filter(r=>r.decision==="check").length,
+  discarded:decisions.filter(r=>r.decision==="discard").length,
+  rescues,waste
+ };
+}
+window.FLORESQ_RESCUE_SUMMARY=rescueSummary;
+function isoUTC(time){return new Date(time).toISOString().slice(0,10);}
+function utcDate(iso){const [y,m,d]=String(iso).split("-").map(Number);return Date.UTC(y,m-1,d);}
+function shortDate(iso){const p=String(iso).split("-");return p.length===3?p[2]+"."+p[1]:iso;}
+function periodBuckets(start,end,days){
+ const dayToKey=new Map(),groups=[],dictionary=new Map();
+ const startUTC=utcDate(start),endUTC=utcDate(end),type=Number(days);
+ if(!Number.isFinite(startUTC)||!Number.isFinite(endUTC)||endUTC<startUTC)return {groups,dayToKey};
+ for(let t=startUTC,n=0;t<=endUTC&&n<375;t+=86400000,n++){
+  const date=isoUTC(t);
+  const key=type===365?date.slice(0,7):type===30?"week-"+Math.floor(n/7):date;
+  let group=dictionary.get(key);
+  if(!group){
+   const label=type===365?new Date(t).toLocaleDateString("de-DE",{month:"short"}):type===30?"W"+(Math.floor(n/7)+1):shortDate(date);
+   group={key,label,rescued:0,waste:0,start:date,end:date};
+   groups.push(group);dictionary.set(key,group);
+  }
+  group.end=date;dayToKey.set(date,key);
+ }
+ if(type===30)groups.forEach(g=>g.label=shortDate(g.start)+"–"+shortDate(g.end));
+ return {groups,dayToKey,dictionary};
+}
+function renderFocus(){
+ if(typeof state==="undefined"||typeof rangeBounds!=="function"||!$id("frRescueHero"))return;
+ const b=rangeBounds(state.days), data=rescueSummary(b.start,b.end);
+ const rvalue=$id("frRescueHeroKg"),wvalue=$id("frRescueHeroWaste");
+ if(rvalue)rvalue.textContent=unitKg(data.rescuedKg);
+ if(wvalue)wvalue.textContent=unitKg(data.wasteKg);
+ const subtitle=$id("frRescueHeroDesc");
+ if(subtitle)subtitle.textContent=data.count
+  ?data.count+" Rettungseintrag"+(data.count===1?"":"e")+" dokumentiert · QM-Freigabe und tatsächliche Nutzung separat prüfen."
+  :"Noch keine Rettung in diesem Zeitraum dokumentiert. Jede gerettete Menge macht einen Unterschied.";
+ const a=$id("frAnalysisRescued");if(a)a.textContent=unitKg(data.rescuedKg);
+ const d=$id("frAnalysisDisposed");if(d)d.textContent=unitKg(data.wasteKg);
+ let foodLoss=null;
+ try{foodLoss=typeof periodData==="function"?periodData(b.start,b.end).k:null;}catch(_){}
+ const k=$id("frAnalysisFoodLoss");if(k)k.textContent=foodLoss==null?"—":foodLoss+" g";
+ const dateLabel=$id("frRescueRange");
+ if(dateLabel)dateLabel.textContent=shortDate(b.start)+(b.start===b.end?"":" – "+shortDate(b.end));
+ /* Die Reihe erfasst dokumentierte Mengen und setzt sie nicht mit QM-Freigaben gleich. */
+ const {groups,dayToKey,dictionary}=periodBuckets(b.start,b.end,state.days);
+ for(const row of data.rescues){const g=dictionary.get(dayToKey.get(row.date));if(g)g.rescued+=safeWeight(row.weightKg);}
+ for(const row of data.waste){const g=dictionary.get(dayToKey.get(row.date));if(g)g.waste+=safeWeight(row.weight_kg);}
+ const root=$id("frRescueBars");
+ if(root){
+  const max=Math.max(.01,...groups.map(g=>Math.max(g.rescued,g.waste)));
+  root.style.setProperty("--fr-cols",String(Math.max(1,groups.length)));
+  root.style.minWidth=groups.length>8?"850px":"100%";
+  root.innerHTML=groups.map(g=>{
+   const rH=g.rescued>0?Math.max(4,Math.round(126*g.rescued/max)):3;
+   const wH=g.waste>0?Math.max(4,Math.round(126*g.waste/max)):3;
+   const rText=localeKg(g.rescued),wText=localeKg(g.waste);
+   return '<div class="fr-period" title="'+g.label+': '+rText+' kg erfasst, '+wText+' kg entsorgt">'+
+    '<div class="fr-period-values"><span class="fr-rv">'+rText+'</span><span class="fr-wv">'+wText+'</span></div>'+
+    '<div class="fr-period-bars"><i class="fr-bar rescue" style="--fr-h:'+rH+'px"></i><i class="fr-bar waste" style="--fr-h:'+wH+'px"></i></div>'+
+    '<div class="fr-period-label">'+g.label+'</div></div>';
+  }).join("");
+  root.setAttribute("aria-label","Zur Rettung erfasst: "+localeKg(data.rescuedKg)+" kg; Überproduktion entsorgt: "+localeKg(data.wasteKg)+" kg im gewählten Zeitraum.");
+ }
+ const advice=$id("frRescueAdvice");
+ if(advice){
+  advice.textContent=!data.count&&data.wasteKg<=0
+   ?"Noch keine Mengen im Zeitraum: Erfasse Rettungen und Überproduktion, damit ein belastbarer Vergleich entsteht."
+   :!data.count
+    ?"Überproduktion wurde entsorgt, aber noch keine Rettung dokumentiert. Prüfe mögliche Weiterverwendungen im Team – unter Beachtung der Hygienevorgaben."
+    :data.wasteKg<=0
+     ?"Rettungen sind dokumentiert. Weil keine entsorgte Überproduktion erfasst ist, lässt sich daraus noch keine Rettungsquote berechnen."
+     :"Im Zeitraum wurden "+unitKg(data.rescuedKg)+" zur Rettung erfasst und "+unitKg(data.wasteKg)+" Überproduktion entsorgt. Das sind getrennte Kennzahlen – keine automatisch berechnete Erfolgsquote.";
+ }
+}
+const button=$id("frOpenRescue");
+if(button)button.addEventListener("click",()=>{const tab=document.querySelector('#mgmtSpaceNav [data-mgmt-space-btn="analysis"]');if(tab)tab.click();});
+/* Zusätzliche Einstellungen aus dem Haupt-Cockpit in die Hilfe verschieben. */
+const help=document.querySelector(".mgmt-help-tools"), settings=$id("mgmtSettingsBtn");
+if(help&&settings&&!$id("frSettingsLink")){
+ const panel=document.createElement("div");panel.className="fr-config-link";panel.id="frSettingsLink";panel.dataset.mgmtSpace="help";
+ const text=document.createElement("span");text.textContent="Weitere Module und Darstellung anpassen";panel.appendChild(text);panel.appendChild(settings);
+ help.parentNode.insertBefore(panel,help);
+}
+const chart=$id("frRescueBars");
+if(chart&&!chart.parentElement.classList.contains("fr-trend-scroller")){
+ const scroll=document.createElement("div");scroll.className="fr-trend-scroller";chart.parentNode.insertBefore(scroll,chart);scroll.appendChild(chart);
+}
+try{
+ if(typeof mgmtModules!=="undefined"&&mgmtModules.rescueAnalysis===false){mgmtModules.rescueAnalysis=true;if(typeof saveMgmtModules==="function")saveMgmtModules();}
+ if(typeof applyMgmtModules==="function")applyMgmtModules();
+}catch(_){}
+if(typeof renderAnalytics==="function"){
+ const previous=renderAnalytics;
+ renderAnalytics=function(){const result=previous.apply(this,arguments);try{renderFocus();}catch(error){console.warn("FLORESQ Rettungsauswertung",error);}return result;};
+}
+window.addEventListener("pageshow",()=>{try{renderFocus();}catch(_){}});
+window.addEventListener("storage",(event)=>{if(event.key==="flosiq_rescues_v1"||event.key==="flosiq_rescue_decisions_v1")renderFocus();});
+try{renderFocus();}catch(error){console.warn("FLORESQ Rettung initialisieren",error);}
+})();
+</script>
+<!-- /FLORESQ MANAGEMENT FOCUS -->
