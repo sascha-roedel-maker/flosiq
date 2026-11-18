@@ -12586,6 +12586,8 @@ body.view-management #analytics [data-mgmt-module="measures"],
 body.view-management #analytics .detail-only,
 body.view-management #analytics .mgmt-hero[data-mgmt-space="help"],
 body.view-management #analytics #managementGroupLabel{display:none!important}
+body.view-management[data-floresq-space="reports"] #analyticsStickyPeriod,
+body.view-management[data-floresq-space="help"] #analyticsStickyPeriod{display:none!important}
 body.view-management #mgmtSpaceNav{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
 body.view-management #mgmtSpaceNav [data-mgmt-space-btn]{font-size:12px!important;font-weight:850!important;gap:5px!important;padding:11px 4px!important}
 body.view-management #mgmtSpaceNav [data-mgmt-space-btn="analysis"].active{background:#e1f1fc!important;color:#12689f!important}
@@ -12674,6 +12676,16 @@ body.view-management:not(.mgmt-light) .fr-context-grid>div{background:#152019}
 (function setupFloresqMgmtFocus(){
 "use strict";
 const $id=(id)=>document.getElementById(id);
+const nav=$id("mgmtSpaceNav");
+if(nav){
+  const syncSpace=()=>{
+    const current=nav.querySelector('[data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+    document.body.dataset.floresqSpace=current;
+  };
+  const navWatcher=new MutationObserver(syncSpace);
+  navWatcher.observe(nav,{subtree:true,attributes:true,attributeFilter:["class"]});
+  syncSpace();
+}
 const localeKg=(v)=>Math.max(0,Number(v)||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3});
 const unitKg=(v)=>localeKg(v)+" kg";
 const readRescues=()=>{
