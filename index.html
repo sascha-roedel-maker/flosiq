@@ -3372,16 +3372,16 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 
 <nav class="mgmt-space-nav" id="mgmtSpaceNav" aria-label="Management Bereiche">
 <button type="button" class="active" data-mgmt-space-btn="cockpit" onclick="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'cockpit')" ontouchend="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'cockpit')">
-<span>⌂</span><b>Cockpit</b>
+<span>⌂</span><b>Überblick</b>
 </button>
 <button type="button" data-mgmt-space-btn="analysis" onclick="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'analysis')" ontouchend="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'analysis')">
-<span>⌁</span><b>Analyse</b>
+<span>♻</span><b>Rettung</b>
 </button>
 <button type="button" data-mgmt-space-btn="reports" onclick="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'reports')" ontouchend="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'reports')">
 <span>▦</span><b>Berichte</b>
 </button>
 <button type="button" data-mgmt-space-btn="help" onclick="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'help')" ontouchend="return window.FLOSIQ_OPEN_MGMT_SPACE(event,'help')">
-<span>?</span><b>FAQ</b>
+<span>?</span><b>Hilfe</b>
 </button>
 </nav>
 
@@ -3417,7 +3417,7 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="mgmt-dashboard-head">
 <div>
 <div class="mgmt-overline">PERFORMANCE IM ÜBERBLICK</div>
-<div class="mgmt-dashboard-title">Food Loss Management</div>
+<div class="mgmt-dashboard-title">Verluste & Rettung</div>
 <div class="mgmt-range" id="analysisRangeText">Aktuelle Kalenderwoche</div>
 </div>
 <div class="mgmt-head-actions">
@@ -3432,6 +3432,18 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 </div>
 </div>
 
+<section class="fr-rescue-hero" id="frRescueHero" data-mgmt-space="cockpit" aria-labelledby="frRescueHeroTitle">
+  <div class="fr-rescue-main">
+    <div class="fr-rescue-kicker">♻ FOOD RESCUE · IM GEWÄHLTEN ZEITRAUM</div>
+    <h2 id="frRescueHeroTitle">Lebensmittel retten</h2>
+    <div class="fr-rescue-number" id="frRescueHeroKg">—</div>
+    <p id="frRescueHeroDesc">Rettungsdaten werden geladen.</p>
+  </div>
+  <div class="fr-rescue-aside">
+    <span>Überproduktion entsorgt</span><strong id="frRescueHeroWaste">—</strong>
+    <button id="frOpenRescue" type="button">Rettung auswerten <span aria-hidden="true">→</span></button>
+  </div>
+</section>
 <div class="mgmt-kpi-main" data-mgmt-module="foodLossKpi" data-mgmt-space="cockpit">
 <div class="mgmt-kpi-copy">
 <div class="mgmt-kpi-label">Food Loss je Portion</div>
@@ -3545,10 +3557,10 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <section data-mgmt-module="rescueAnalysis" data-mgmt-space="analysis">
 <div class="section-title section-title-row mgmt-chart-title-row"><div><span>Food-Rettung</span><small class="section-subline">Entscheidungen bei Überproduktion verstehen</small></div></div>
 <div class="rescue-analysis-card">
-<div class="rescue-analysis-head"><div><span>FLORESQ RETTUNGSMONITOR</span><h3>Was macht das Team mit Überproduktion?</h3></div><div class="rescue-analysis-status" id="rescueAnalysisStatus">BEREIT</div></div>
+<div class="rescue-analysis-head"><div><span>FOOD RESCUE · AUSWERTUNG</span><h3>Wie viel Lebensmittel retten wir?</h3></div><div class="rescue-analysis-status" id="rescueAnalysisStatus">BEREIT</div></div>
 <div class="rescue-analysis-grid">
-<div class="rescue-analysis-kpi"><span>Gerettete Menge</span><b id="rescueMgmtKg">0,00 kg</b><small id="rescueMgmtPortions">0 Portionen</small></div>
-<div class="rescue-analysis-kpi"><span>Erfolgreich gerettet</span><b id="rescueMgmtCompleted">0×</b><small>gespeicherte Rettungen</small></div>
+<div class="rescue-analysis-kpi"><span>Zur Rettung erfasst</span><b id="rescueMgmtKg">0,00 kg</b><small id="rescueMgmtPortions">0 Portionen</small></div>
+<div class="rescue-analysis-kpi"><span>Rettungen dokumentiert</span><b id="rescueMgmtCompleted">0×</b><small>gespeicherte Rettungen</small></div>
 <div class="rescue-analysis-kpi"><span>Rettung geprüft</span><b id="rescueMgmtChecked">0×</b><small>„Rettung prüfen“ gewählt</small></div>
 <div class="rescue-analysis-kpi warn"><span>Direkt entsorgt</span><b id="rescueMgmtDiscarded">0×</b><small>„Muss entsorgt werden“ gewählt</small></div>
 </div>
@@ -3558,8 +3570,20 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="rescue-decision-legend"><span><i></i>Rettung geprüft</span><span><i></i>Direkt entsorgt</span></div>
 </div>
 <div class="rescue-analysis-insight" id="rescueMgmtInsight"><b>Noch keine Entscheidung erfasst.</b> Sobald Überproduktion anfällt, wird hier sichtbar, wie das Team reagiert.</div>
-<div class="rescue-analysis-foot">Die Kennzahl zählt die beiden Schaltflächen im Überproduktionsschritt. Sie zeigt einen Prozess – keine persönliche Mitarbeiterbewertung. Ältere Klicks vor Einführung dieser Messung können nicht rückwirkend gezählt werden.</div>
+<div class="rescue-analysis-foot">Die Prüfquote zählt Entscheidungen, keine erfolgreichen Rettungen. Erfasste Rettungsgewichte sind noch kein Nachweis einer hygienischen Freigabe. Ältere Klicks können nicht nachträglich gezählt werden.</div>
 </div>
+</section>
+<section class="fr-rescue-timeline" id="frRescueTimeline" data-mgmt-space="analysis" aria-labelledby="frRescueTrendTitle">
+ <div class="fr-panel-title"><div><span>RETTUNG & VERLUSTE</span><h3 id="frRescueTrendTitle">Mengen im Zeitverlauf</h3></div><small id="frRescueRange">Gewählter Zeitraum</small></div>
+ <div class="fr-context-grid">
+  <div><span>Rettung erfasst</span><b id="frAnalysisRescued">—</b></div>
+  <div><span>Überproduktion entsorgt</span><b id="frAnalysisDisposed">—</b></div>
+  <div><span>Food Loss / Portion</span><b id="frAnalysisFoodLoss">—</b></div>
+ </div>
+ <div class="fr-trend-legend"><span><i class="fr-swatch rescue"></i> Zur Rettung erfasst</span><span><i class="fr-swatch waste"></i> Überproduktion entsorgt</span></div>
+ <div class="fr-trend-grid" id="frRescueBars" role="img" aria-label="Gewichtsvergleich nach Zeitraum"></div>
+ <p class="fr-rescue-advice" id="frRescueAdvice">Keine Rettungsdaten vorhanden.</p>
+ <p class="fr-rescue-source">Hinweis: Die beiden Mengen stammen aus getrennten Erfassungen und werden nicht miteinander verrechnet. Rettungsgewicht bedeutet nicht automatisch QM-Freigabe. Die Rettungsprotokolle stammen aus den auf diesem Gerät verfügbaren Daten.</p>
 </section>
 </section>
 
@@ -6758,6 +6782,7 @@ const {start,end}=monthBounds(month);
 const d=periodData(start,end);
 const quality=d.mealDays?Math.round(d.completeDays/d.mealDays*100):null;
 const monthValuation=valuationForEntries(d.es);
+const rescueData=window.FLORESQ_RESCUE_SUMMARY?.(start,end)||{rescuedKg:0,count:0};
 return{
 Zeitraum:`${deDate(start)}–${deDate(end)}`,
 "Nassmüll gesamt kg":Number(d.w.toFixed(3)),
@@ -6768,6 +6793,8 @@ Zeitraum:`${deDate(start)}–${deDate(end)}`,
 "Tellerrücklauf kg":Number(d.cats.plate.toFixed(3)),
 "Putzverlust kg":Number(d.cats.prep.toFixed(3)),
 "Überproduktion kg":Number(d.cats.overproduction.toFixed(3)),
+"Zur Rettung erfasst kg":Number(rescueData.rescuedKg.toFixed(3)),
+"Rettungseinträge":rescueData.count,
 "Lager / abgelaufen kg":Number(d.cats.storage.toFixed(3)),
 "Geschätzter Warenwertverlust €":monthValuation.valuedKg>0?Number(monthValuation.value.toFixed(2)):"",
 "Warenwert-Bewertung %":d.w>0?monthValuation.coverage:""
@@ -8905,14 +8932,14 @@ applyMgmtModules();
 const MGMT_SPACE_KEY="flosiq_management_space_v1";
 const MGMT_SPACE_META={
 cockpit:{
-eyebrow:"MANAGEMENT COCKPIT",
-title:"Das Wichtigste auf einen Blick",
-text:"Kern-KPIs, Verlauf und Management-Brief."
+eyebrow:"ÜBERBLICK",
+title:"Dein Betrieb auf einen Blick",
+text:"Rettungen, Food Loss und Warenwert in einem Blick."
 },
 analysis:{
-eyebrow:"ANALYSE",
-title:"Ursachen, Trends und Zusammenhänge",
-text:"Mehrfachanalyse, Vergleich, Auffälligkeiten und Detailbewertung."
+eyebrow:"FOOD RESCUE",
+title:"Rettung sichtbar machen",
+text:"Gerettete Mengen, entsorgte Überproduktion und Entwicklung."
 },
 reports:{
 eyebrow:"BERICHTE",
@@ -11412,8 +11439,8 @@ body.view-management #mgmtSpaceNav [data-mgmt-space-btn] > *{pointer-events:none
 <script id="flosiq-mgmt-tabs-hard-fix-20260826e-script">
 (()=>{
   const META={
-    cockpit:{eyebrow:'MANAGEMENT COCKPIT',title:'Das Wichtigste auf einen Blick',text:'Kern-KPIs, Verlauf und Management-Brief.'},
-    analysis:{eyebrow:'ANALYSE',title:'Ursachen, Trends und Zusammenhänge',text:'Mehrfachanalyse, Vergleich, Auffälligkeiten und Detailbewertung.'},
+    cockpit:{eyebrow:'ÜBERBLICK',title:'Dein Betrieb auf einen Blick',text:'Rettungen, Food Loss und Warenwert.'},
+    analysis:{eyebrow:'FOOD RESCUE',title:'Rettung sichtbar machen',text:'Gerettete Mengen, entsorgte Überproduktion und Entwicklung.'},
     reports:{eyebrow:'BERICHTE',title:'Export & Dokumentation',text:'Alles für Monatsbericht, Weitergabe und Nachweis.'},
     help:{eyebrow:'FAQ & METHODIK',title:'Wie FLORESQ rechnet',text:'Warenwertmodell, Food-Loss-Logik und verständliche Erklärungen.'}
   };
@@ -11646,7 +11673,7 @@ exportPdf=function(month){
   var cards=[
     ["Nassmüll gesamt",fmtKg(summary["Nassmüll gesamt kg"])+" kg"],
     ["Food Loss je Portion",summary["Food Loss g/Portion"]!==""?summary["Food Loss g/Portion"]+" g":"—"],
-    ["Ø Tagesmüll",chartRows.length?fmtKg(averageDaily)+" kg":"—"],
+    ["Rettung erfasst",fmtKg(summary["Zur Rettung erfasst kg"])+" kg"],
     ["Datenqualität",summary["Erfassungsqualität %"]!==""?summary["Erfassungsqualität %"]+" %":"—"],
     ["Warenwertverlust",summary["Geschätzter Warenwertverlust €"]!==""?fmtEur(summary["Geschätzter Warenwertverlust €"]):"—"]
   ];
@@ -12018,7 +12045,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
       ["ESSEN",Math.round(meals).toLocaleString("de-DE")],
       ["NASSMÜLL",teamNumber(totalWaste,2)+" kg"],
       ["JE PORTION",foodLoss!==""?foodLoss+" g":"—"],
-      ["Ø PRO TAG",chartRows.length?teamNumber(average,2)+" kg":"—"]
+      ["RETTUNG ERFASST",teamNumber(summary["Zur Rettung erfasst kg"],2)+" kg"]
     ];
     cards.forEach(function(card,i){var x=12+i*47;doc.setFillColor.apply(doc,light);doc.roundedRect(x,43,43,25,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(card[0],x+4,50);doc.setTextColor.apply(doc,dark);doc.setFontSize(13);doc.text(String(card[1]),x+4,61);});
 
