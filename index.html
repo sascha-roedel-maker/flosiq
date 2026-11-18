@@ -11927,8 +11927,17 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("Nassmüll in kg · jeder Balken steht für einen erfassten Kalendertag",12,177);
     var cx=14,cy=184,cw=182,ch=39,max=Math.max(1,...chartRows.map(function(r){return Number(r["Nassmüll gesamt kg"]||0);})),daysInMonth=all.length,step=cw/Math.max(daysInMonth,1),barWidth=Math.max(2.2,step-1.2);
     doc.setDrawColor(219,226,217);doc.line(cx,cy+ch,cx+cw,cy+ch);
-    chartRows.forEach(function(r){var day=Math.max(1,Number(String(r.Datum).slice(0,2))||1),v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,x=cx+(day-1)*step;doc.setFillColor.apply(doc,green);if(h>0)doc.roundedRect(x,cy+ch-h,barWidth,h,.7,.7,"F");else doc.circle(x+barWidth/2,cy+ch-.5,.7,"F");});
-    [1,5,10,15,20,25,daysInMonth].filter(function(v,i,a){return v<=daysInMonth&&a.indexOf(v)===i;}).forEach(function(day){doc.setTextColor.apply(doc,muted);doc.setFontSize(6);doc.text(String(day).padStart(2,"0"),cx+(day-1)*step+barWidth/2,cy+ch+5,{align:"center"});});
+    chartRows.forEach(function(r){
+      var day=Math.max(1,Number(String(r.Datum).slice(0,2))||1),v=Number(r["Nassmüll gesamt kg"]||0),h=v/max*ch,x=cx+(day-1)*step,center=x+barWidth/2;
+      doc.setFillColor.apply(doc,green);if(h>0)doc.roundedRect(x,cy+ch-h,barWidth,h,.7,.7,"F");else doc.circle(center,cy+ch-.5,.7,"F");
+      /* Jeder sichtbare Balken trägt unten seinen Kalendertag und oben den
+         tatsächlichen Messwert. Die kleine Schrift hält auch 31 Tage lesbar. */
+      doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(4.3);
+      var valueLabel=Number(v).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3});
+      doc.text(valueLabel,center,Math.max(cy+3.5,cy+ch-h-1.3),{align:"center"});
+      doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(5.2);
+      doc.text(String(day).padStart(2,"0"),center,cy+ch+5,{align:"center"});
+    });
     if(chartRows.length){var avgY=cy+ch-(average/max*ch);doc.setDrawColor.apply(doc,blue);if(doc.setLineDashPattern)doc.setLineDashPattern([2,1],0);doc.line(cx,avgY,cx+cw,avgY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.text("Ø "+teamNumber(average,2)+" kg",cx+cw,avgY-1,{align:"right"});}
 
     /* Positives Fazit und ein gemeinsamer nächster Schritt. */
@@ -11986,3 +11995,128 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
 })();
 </script>
 <!-- /FLOSIQ TEAM REPORT 2026-11-17 -->
+
+<!-- FLOSIQ OPERATIVE RETTUNGSBUTTON 2026-11-18 -->
+<style id="flosiq-operative-rescue-button-20261118">
+body.view-operational #opMealsBtn.op-rescue-action{
+  background:linear-gradient(135deg,#238fd0,#12689f)!important;
+  border-color:#0d5f93!important;color:#fff!important;
+  box-shadow:0 10px 24px rgba(18,104,159,.24)!important
+}
+body.view-operational #opMealsBtn.op-rescue-action .op-step-number{
+  background:rgba(255,255,255,.18)!important;color:#fff!important;
+  border:1px solid rgba(255,255,255,.24)!important;font-size:21px!important
+}
+body.view-operational #opMealsBtn.op-rescue-action .op-action-copy b,
+body.view-operational #opMealsBtn.op-rescue-action .op-action-copy small,
+body.view-operational #opMealsBtn.op-rescue-action .op-action-state{color:#fff!important}
+body.view-operational #opMealsBtn.op-rescue-action .op-action-copy small{opacity:.88}
+#opMealsSecondaryBtn{
+  width:100%;min-height:42px;border:1px solid var(--line);border-radius:13px;
+  background:var(--card);color:var(--muted);font:inherit;font-size:12px;font-weight:850;
+  display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer
+}
+#opMealsSecondaryBtn:active{transform:scale(.988);background:var(--soft)}
+body.view-operational #opMainTaskBtn.rescue-ready{
+  background:linear-gradient(135deg,#238fd0,#12689f)!important;
+  box-shadow:0 14px 30px rgba(18,104,159,.27)!important;color:#fff!important
+}
+body.view-operational #opMainTaskBtn.rescue-ready .op-main-task-kicker,
+body.view-operational #opMainTaskBtn.rescue-ready small{color:#e3f4ff!important}
+</style>
+<script id="flosiq-operative-rescue-button-20261118-script">
+(()=>{
+  "use strict";
+  const byId=id=>document.getElementById(id);
+  const RESCUE_STORE="flosiq_rescues_v1";
+
+  function rescueRowsFor(date){
+    try{
+      const rows=JSON.parse(localStorage.getItem(RESCUE_STORE)||"[]");
+      return Array.isArray(rows)?rows.filter(row=>row&&row.date===date):[];
+    }catch(_error){return[];}
+  }
+  function rescueSummary(date){
+    const rows=rescueRowsFor(date);
+    return{count:rows.length,kg:rows.reduce((sum,row)=>sum+Number(row.weightKg||0),0)};
+  }
+  function rescueKg(value){
+    return Number(value||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function binRoundComplete(date){
+    if(typeof operationalTasks!=="function")return false;
+    return operationalTasks(date).filter(task=>task.type==="bin").every(task=>task.done);
+  }
+  function openRescueFromOperational(){
+    if(typeof window.FLOSIQ_RESCUE_PROMPT==="function")window.FLOSIQ_RESCUE_PROMPT();
+    else if(typeof toast==="function")toast("Die Rettungsfunktion wird gerade vorbereitet.");
+  }
+  function enhanceRescueButton(){
+    const button=byId("opMealsBtn");
+    if(!button)return;
+    const date=(typeof state!=="undefined"&&(state.viewDate||today()))||today();
+    const rescued=rescueSummary(date);
+    button.classList.remove("done","zero-done");
+    button.classList.add("op-rescue-action");
+    button.setAttribute("aria-label","Rettung prüfen – Lebensmittel vor dem Entsorgen sinnvoll weiterverwenden");
+    const number=button.querySelector(".op-step-number"),title=button.querySelector(".op-action-copy b");
+    if(number)number.textContent="♻";
+    if(title)title.textContent=rescued.count?"Weitere Rettung prüfen":"Rettung prüfen";
+    const stateText=byId("opMealsState"),arrow=byId("opMealsCheck");
+    if(stateText)stateText.textContent=rescued.count
+      ?`Heute ${rescueKg(rescued.kg)} kg gerettet · weiter prüfen`
+      :"Überproduktion retten, bevor sie im Eimer landet";
+    if(arrow)arrow.textContent="›";
+
+    let mealButton=byId("opMealsSecondaryBtn");
+    if(!mealButton){
+      mealButton=document.createElement("button");
+      mealButton.id="opMealsSecondaryBtn";mealButton.type="button";
+      mealButton.innerHTML="👥 <span>Essenszahl für g/Portion ergänzen</span>";
+      button.insertAdjacentElement("afterend",mealButton);
+      mealButton.addEventListener("click",event=>{
+        event.preventDefault();event.stopPropagation();
+        if(typeof openMealsDialog==="function")openMealsDialog();
+      });
+    }
+
+    const done=binRoundComplete(date),main=byId("opMainTaskBtn");
+    if(done&&main){
+      main.disabled=false;main.classList.remove("complete");main.classList.add("rescue-ready");
+      byId("opMainTaskKicker").textContent="JETZT RETTEN";
+      byId("opMainTaskIcon").textContent="♻";
+      byId("opNextText").textContent=rescued.count?"Weitere Rettung prüfen":"Kann noch etwas gerettet werden?";
+      byId("opMainTaskHint").textContent=rescued.count?`Heute bereits ${rescueKg(rescued.kg)} kg gerettet`:"Kurz prüfen, bevor Überproduktion entsorgt wird";
+      byId("opMainTaskArrow").textContent="→";
+      const status=byId("opStatusText");if(status)status.textContent="Pflichtrunde vollständig. Jetzt Überproduktion retten, bevor sie entsorgt wird.";
+    }else if(main){main.classList.remove("rescue-ready");}
+
+    const finish=button.closest(".op-simple-details")?.parentElement?.querySelector(".op-finish-note span:last-child");
+    if(finish)finish.textContent="4 Behälter = Pflicht · Rettung sichtbar prüfen · Essenszahl für die Auswertung ergänzen.";
+  }
+
+  /* Alte Essenszahl-Belegung am fünften Hauptbutton vollständig abfangen. */
+  document.addEventListener("click",event=>{
+    if(event.target.closest?.("#opMealsBtn")){
+      event.preventDefault();event.stopImmediatePropagation();openRescueFromOperational();return;
+    }
+    if(event.target.closest?.("#opMainTaskBtn")){
+      const date=(state.viewDate||today());
+      if(binRoundComplete(date)){
+        event.preventDefault();event.stopImmediatePropagation();openRescueFromOperational();
+      }
+    }
+  },true);
+
+  if(typeof renderOperationalHome==="function"){
+    const renderOperationalHomeBeforeRescueButton=renderOperationalHome;
+    renderOperationalHome=function(){
+      const result=renderOperationalHomeBeforeRescueButton.apply(this,arguments);
+      enhanceRescueButton();
+      return result;
+    };
+  }
+  enhanceRescueButton();
+})();
+</script>
+<!-- /FLOSIQ OPERATIVE RETTUNGSBUTTON 2026-11-18 -->
