@@ -3266,6 +3266,15 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <div class="capture-status-pill">Bereit zur Erfassung</div>
 </div>
 
+<section class="mgmt-capture-meals" id="mgmtCaptureMealsCard" aria-label="Essenszahl erfassen">
+<div class="mgmt-capture-meals-copy">
+<span>ESSEN · TAGESZAHL</span>
+<b id="mgmtCaptureMealsTitle">Essenszahl eintragen</b>
+<small id="mgmtCaptureMealsStatus">Für die Berechnung von Food Loss pro Portion.</small>
+</div>
+<button id="mgmtCaptureMealsBtn" type="button">Eintragen / ändern <span>›</span></button>
+</section>
+
 <div class="op-current-bin" id="opCurrentBin">
 <div class="op-current-bin-label">JETZT WIEGEN</div>
 <div class="op-current-bin-name" id="opCurrentBinName">Tellerrücklauf</div>
@@ -11138,6 +11147,21 @@ body.view-management .nav #quickAddBtn.active,
 body.view-management .nav [data-page="analytics"].active{background:#edf4e8!important;color:#4f901a!important;box-shadow:inset 0 0 0 1px #d4e5ca!important}
 
 /* MANAGEMENT-Erfassung mittig und reduziert. */
+.mgmt-capture-meals{display:none}
+body.view-management #capture .mgmt-capture-meals{
+  display:flex!important;align-items:center;justify-content:space-between;gap:14px;
+  margin:0 0 12px;padding:15px 16px;border:1px solid #d9e6d2;border-radius:18px;
+  background:linear-gradient(135deg,#f7fbf4,#edf6e8);color:#1c291d
+}
+body.view-management #capture .mgmt-capture-meals-copy{display:grid;gap:3px;min-width:0}
+body.view-management #capture .mgmt-capture-meals-copy span{font-size:10px;font-weight:900;letter-spacing:1.25px;color:#579b1e}
+body.view-management #capture .mgmt-capture-meals-copy b{font-size:17px;line-height:1.2}
+body.view-management #capture .mgmt-capture-meals-copy small{font-size:11px;line-height:1.35;color:#6d786f}
+body.view-management #capture #mgmtCaptureMealsBtn{
+  flex:0 0 auto;min-height:46px;padding:0 14px;border:1px solid #bcd7ad;border-radius:14px;
+  background:#5fa91f;color:#fff;font-weight:900;cursor:pointer;touch-action:manipulation
+}
+body.view-management #capture #mgmtCaptureMealsBtn span{font-size:19px;margin-left:5px}
 body.view-management #capture .capture-shell{max-width:720px!important;margin:0 auto!important}
 body.view-management #capture .capture-status-pill,
 body.view-management #capture .op-current-bin,
@@ -11171,6 +11195,8 @@ body.view-management #mgmtSpaceNav button{position:relative!important;z-index:3!
 #viewModeDialog .view-content,#viewModeDialog .view-choice,#viewModeDialog #viewModeCancel{pointer-events:auto!important;touch-action:manipulation!important}
 
 @media(max-width:560px){
+  body.view-management #capture .mgmt-capture-meals{align-items:stretch;flex-direction:column}
+  body.view-management #capture #mgmtCaptureMealsBtn{width:100%}
   body.view-management #capture #serviceButtons{grid-template-columns:1fr!important}
   body.view-management #capture .servicebtn{justify-content:flex-start!important;text-align:left!important;padding:13px!important}
 }
@@ -11205,12 +11231,42 @@ body.view-management #mgmtSpaceNav button{position:relative!important;z-index:3!
   const opMeals=byId('opMealsBtn');
   if(opMeals){opMeals.tabIndex=0;opMeals.onclick=()=>{if(typeof openMealsDialog==='function')openMealsDialog();};}
 
+  /* Essenszahl bleibt in der Management-Erfassung direkt erreichbar. */
+  function managementMealDate(){
+    return byId('wasteDate')?.value||(typeof state!=='undefined'&&state.viewDate)||(typeof today==='function'?today():'');
+  }
+  function refreshManagementMealCapture(){
+    const card=byId('mgmtCaptureMealsCard'),title=byId('mgmtCaptureMealsTitle'),status=byId('mgmtCaptureMealsStatus'),btn=byId('mgmtCaptureMealsBtn');
+    if(!card||!title||!status||!btn||typeof state==='undefined')return;
+    const date=managementMealDate();
+    const row=(state.meals||[]).find(item=>item.date===date);
+    const label=typeof compactDate==='function'&&date?compactDate(date):date;
+    title.textContent=`Essenszahl${label?` · ${label}`:''}`;
+    if(row&&Number(row.meals)>0){
+      const verified=row.status==='verified'||row.status==='billed';
+      status.textContent=`${Number(row.meals).toLocaleString('de-DE')} Essen · ${verified?'verifiziert':'vorläufig'}`;
+      btn.innerHTML='Ändern <span>›</span>';
+    }else{
+      status.textContent='Für die Berechnung von Food Loss pro Portion.';
+      btn.innerHTML='Eintragen <span>›</span>';
+    }
+  }
+  const managementMealsBtn=byId('mgmtCaptureMealsBtn');
+  if(managementMealsBtn){
+    managementMealsBtn.onclick=()=>{
+      const date=managementMealDate();
+      if(typeof state!=='undefined'&&date)state.viewDate=date;
+      if(typeof openMealsDialog==='function')openMealsDialog();
+    };
+  }
+
   /* Management-Erfassen direkt öffnen – kein Quick-Add-Dialog. */
   const quick=byId('quickAddBtn');
   if(quick){
     quick.onclick=()=>{
       if(typeof state!=='undefined'&&state.appView==='management'){
         if(typeof showPage==='function')showPage('capture');
+        setTimeout(refreshManagementMealCapture,0);
         return;
       }
       if(typeof state!=='undefined'&&state.appView==='operational'){
@@ -11238,6 +11294,15 @@ body.view-management #mgmtSpaceNav button{position:relative!important;z-index:3!
   });
   const cancel=byId('viewModeCancel');
   if(cancel)cancel.onclick=()=>{if(viewDlg?.open)viewDlg.close();};
+
+  byId('wasteDateBtn')?.addEventListener('click',()=>setTimeout(refreshManagementMealCapture,80));
+  const baseRenderManagementMealCapture=render;
+  render=function(){
+    const result=baseRenderManagementMealCapture.apply(this,arguments);
+    refreshManagementMealCapture();
+    return result;
+  };
+  refreshManagementMealCapture();
 
   /* Management-Zeitraum: direkte native onclicks, ohne globale Capture-Listener. */
   document.querySelectorAll('#daysSeg [data-days]').forEach(btn=>{
