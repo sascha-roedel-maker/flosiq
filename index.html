@@ -10414,7 +10414,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-18-date-sync-hardening-v2";
+window.FLOSIQ_BUILD="2026-11-18-tablet-modern-v1";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -12407,3 +12407,129 @@ body.view-operational #opMainTaskBtn.rescue-ready small{color:#e3f4ff!important}
 })();
 </script>
 <!-- /FLOSIQ DATE SYNC HARDENING -->
+
+<!-- FLOSIQ TABLET + MODERN UI · 2026-11-18 -->
+<style id="flosiq-tablet-modern-ui-20261118">
+/* Ruhigere Flächen und klarere Interaktion auf allen Geräten. */
+#viewModeBtn,#modePill,.management-theme-btn{box-shadow:0 6px 18px rgba(32,61,35,.07)}
+.op-action,.date-field,.servicebtn,.catbtn{transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
+
+/* Tablet: Breite wirklich nutzen, Touch-Ziele vergrößern und Inhalte aufteilen. */
+@media (min-width:760px) and (max-width:1366px){
+  body{
+    background:
+      radial-gradient(circle at 8% -10%,rgba(139,197,63,.18),transparent 34%),
+      radial-gradient(circle at 96% 8%,rgba(67,145,31,.10),transparent 30%),
+      var(--bg)!important
+  }
+  .shell{max-width:1080px!important;padding:24px 28px 54px!important}
+  header{
+    min-height:88px;margin:0 0 22px!important;padding:14px 16px!important;
+    border:1px solid rgba(112,143,111,.18);border-radius:24px;
+    background:rgba(255,255,255,.82);box-shadow:0 14px 38px rgba(38,67,41,.08);
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)
+  }
+  .brand{gap:15px!important}.brand img{width:58px!important;height:58px!important;border-radius:18px!important}
+  .brand-name{font-size:32px!important;letter-spacing:-1.15px!important}.claim{font-size:13px!important;letter-spacing:.2px}
+  .header-actions{gap:9px!important}.view-mode-btn{min-height:48px!important;padding:0 16px!important;border-radius:16px!important}
+  .management-theme-btn{width:48px!important;height:48px!important;border-radius:16px!important}
+  #modePill{min-height:48px!important;display:flex!important;align-items:center!important;padding:0 14px!important;border-radius:16px!important}
+
+  /* Operative Tablet-Startseite: Hauptaktion links, Tagesstatus rechts. */
+  body.view-operational .op-simple-home{
+    max-width:none!important;display:grid!important;
+    grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);
+    grid-template-areas:
+      "top top"
+      "progress checklist"
+      "task checklist"
+      "repeat checklist"
+      "help checklist"
+      "rescue otherday"
+      "finish finish";
+    gap:14px 20px!important;padding:5px 0 32px!important;align-items:start
+  }
+  body.view-operational .op-simple-top{grid-area:top;margin:0 2px 2px!important;padding:0 2px}
+  body.view-operational .op-simple-top b{font-size:25px!important}.op-simple-eyebrow{font-size:10px!important}
+  body.view-operational .op-simple-count{height:44px!important;min-width:66px!important;font-size:15px!important}
+  body.view-operational .op-simple-progress-card{grid-area:progress;margin:0!important;padding:18px!important;border-radius:22px!important}
+  body.view-operational .op-simple-progress-icon{width:52px!important;height:52px!important;border-radius:16px!important;font-size:20px!important}
+  body.view-operational .op-simple-progress-head{grid-template-columns:52px minmax(0,1fr)!important}
+  body.view-operational .op-simple-progress-card b{font-size:17px!important}.op-simple-progress-card small{font-size:12px!important}
+  body.view-operational .op-main-task{grid-area:task;min-height:300px!important;border-radius:34px!important;padding:32px!important;box-shadow:0 24px 55px rgba(79,151,21,.25)!important}
+  body.view-operational .op-main-task-icon{width:76px!important;height:76px!important;border-radius:23px!important;font-size:32px!important}
+  body.view-operational .op-main-task b{font-size:32px!important;max-width:430px!important}.op-main-task small{font-size:14px!important}
+  body.view-operational .op-repeat-weigh{grid-area:repeat;margin:0!important;min-height:78px!important;border-radius:21px!important}
+  body.view-operational .op-simple-help{grid-area:help;padding:5px 10px!important}
+  body.view-operational #rescueTeaser{grid-area:rescue;margin:0!important;border-radius:22px!important}
+  body.view-operational #opStatusDetails{grid-area:checklist;margin:0!important;border-radius:24px!important;box-shadow:0 12px 32px rgba(35,63,38,.06)}
+  body.view-operational .op-simple-details summary{padding:18px!important;font-size:14px!important}
+  body.view-operational .op-simple-checklist{padding:11px!important;gap:8px!important}
+  body.view-operational .op-simple-checklist .op-action{min-height:68px!important;padding:11px 13px!important;border-radius:16px!important;grid-template-columns:42px minmax(0,1fr) 30px!important}
+  body.view-operational .op-simple-checklist .op-step-number{width:40px!important;height:40px!important;border-radius:13px!important;font-size:15px!important}
+  body.view-operational .op-simple-checklist .op-action-copy b{font-size:14px!important}.op-simple-checklist .op-action-copy small{font-size:11px!important}
+  body.view-operational #opMealsSecondaryBtn{min-height:54px!important;border-radius:15px!important;font-size:13px!important}
+  body.view-operational .op-readonly-note{padding:4px 18px 17px!important;font-size:11px!important}
+  body.view-operational .op-other-day{grid-area:otherday;margin:0!important;border-radius:22px!important;box-shadow:0 10px 28px rgba(35,63,38,.05)}
+  body.view-operational .op-daynav>button{height:54px!important;border-radius:16px!important}
+  body.view-operational .op-finish-note{grid-area:finish;margin:3px 8px 0!important;font-size:12px!important}
+  body.view-operational .nav{width:min(560px,calc(100% - 40px))!important;border-radius:26px!important}
+
+  /* Management: mehr Informationsfläche, größere Diagramme und ruhigeres Raster. */
+  body.view-management .shell{max-width:1100px!important}
+  body.view-management:not(.mgmt-light) header{background:rgba(14,20,16,.86);border-color:#2b3830;box-shadow:0 16px 42px rgba(0,0,0,.25)}
+  body.view-management #analyticsStickyPeriod{padding:14px 16px!important;border-radius:22px!important;gap:12px!important}
+  body.view-management #mgmtSpaceNav{padding:7px!important;border-radius:20px!important;gap:7px!important}
+  body.view-management #mgmtSpaceNav button{min-height:56px!important;border-radius:15px!important;font-size:12px!important}
+  body.view-management .mgmt-space-intro{padding:17px 19px!important;border-radius:21px!important}
+  body.view-management .mgmt-dashboard{padding:26px!important;border-radius:32px!important}
+  body.view-management .mgmt-dashboard-title{font-size:26px!important}
+  body.view-management .mgmt-kpi-main{grid-template-columns:minmax(0,1fr) 190px!important;gap:30px!important;padding:28px 4px 24px!important}
+  body.view-management .mgmt-kpi-value{font-size:58px!important}
+  body.view-management .mgmt-gauge{width:164px!important;height:164px!important}
+  body.view-management .mgmt-mini-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:13px!important;margin-top:18px!important}
+  body.view-management .mgmt-mini{min-height:126px!important;padding:17px!important;border-radius:18px!important}
+  body.view-management .mgmt-mini>b{font-size:25px!important}
+  body.view-management .chart-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+  body.view-management #lineChart{min-height:320px!important;padding:17px!important;border-radius:24px!important}
+  body.view-management #lineChart svg{height:286px!important}
+  body.view-management .compact-analysis-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}
+  body.view-management .rescue-analysis-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:11px!important}
+  body.view-management .export-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:11px!important}
+  body.view-management .export-actions button{min-height:54px!important;border-radius:16px!important}
+  body.view-management .nav{width:min(760px,calc(100% - 44px))!important;padding:9px!important;border-radius:27px!important}
+  body.view-management .nav #quickAddBtn,body.view-management .nav [data-page="analytics"]{height:64px!important;border-radius:18px!important}
+
+  /* Management-Erfassung: Datum/Gewicht und Ursache/Bereich nebeneinander. */
+  body.view-management #capture .capture-shell{max-width:1040px!important;padding:24px!important;border-radius:30px!important}
+  body.view-management #capture .capture-head{margin-bottom:16px!important}
+  body.view-management #capture .capture-head h1{font-size:36px!important}
+  body.view-management #capture .mgmt-capture-meals{padding:18px 20px!important;border-radius:21px!important;margin-bottom:15px!important}
+  body.view-management #capture .mgmt-capture-meals-copy b{font-size:20px!important}
+  body.view-management #capture #mgmtCaptureMealsBtn{min-height:52px!important;padding:0 18px!important;border-radius:15px!important}
+  body.view-management #capture .capture-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+  body.view-management #capture .capture-card{padding:18px!important;border-radius:21px!important}
+  body.view-management #capture #weightInput{font-size:42px!important;min-height:76px!important}
+  body.view-management #capture .capture-save-wrap{margin-top:15px!important}
+  body.view-management #capture #saveWasteBtn{min-height:58px!important;border-radius:18px!important;font-size:18px!important}
+
+  dialog .modal{padding:28px!important}dialog .modal h3{font-size:25px!important}
+}
+
+@media (min-width:760px) and (max-width:860px){
+  .shell{padding-left:20px!important;padding-right:20px!important}
+  body.view-operational .op-simple-home{grid-template-columns:minmax(0,1fr) 330px;gap:13px 15px!important}
+  body.view-operational .op-main-task{min-height:275px!important;padding:27px 22px!important}
+  body.view-operational .op-main-task b{font-size:28px!important}
+  body.view-management .mgmt-dashboard{padding:21px!important}
+  body.view-management .mgmt-kpi-main{grid-template-columns:minmax(0,1fr) 150px!important;gap:18px!important}
+  body.view-management .mgmt-gauge{width:140px!important;height:140px!important}
+  body.view-management .mgmt-mini{padding:14px!important}.mgmt-mini>b{font-size:21px!important}
+}
+
+@media (hover:hover) and (pointer:fine){
+  .op-action:hover,.catbtn:hover,.servicebtn:hover,.date-field:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(39,69,42,.08)}
+  #mgmtSpaceNav button:hover{transform:translateY(-1px)}
+}
+</style>
+<!-- /FLOSIQ TABLET + MODERN UI -->
