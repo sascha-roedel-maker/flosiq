@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="FLOSIQ">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>FLOSIQ</title>
@@ -10411,7 +10414,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-17-management-modern-persistent-delete";
+window.FLOSIQ_BUILD="2026-11-18-date-sync-hardening-v2";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -12313,3 +12316,94 @@ body.view-operational #opMainTaskBtn.rescue-ready small{color:#e3f4ff!important}
 })();
 </script>
 <!-- /FLOSIQ OPERATIVE RETTUNGSBUTTON 2026-11-18 -->
+
+<!-- FLOSIQ DATE SYNC HARDENING · iOS/PWA · 2026-11-18 -->
+<script id="flosiq-date-sync-hardening-v2">
+(()=>{
+  const byId=id=>document.getElementById(id);
+  const ACTIVE_DATE_KEY="flosiq_active_entry_date_v2";
+  const validDate=iso=>/^\d{4}-\d{2}-\d{2}$/.test(String(iso||""));
+  const shortDate=iso=>typeof compactDate==="function"?compactDate(iso):iso;
+
+  function writeActiveDate(iso,{rerender=false,remember=true}={}){
+    if(!validDate(iso)||iso>(typeof today==="function"?today():iso))return false;
+    if(typeof state!=="undefined")state.viewDate=iso;
+    if(remember){try{sessionStorage.setItem(ACTIVE_DATE_KEY,iso);}catch(_error){}}
+    const short=shortDate(iso);
+    const waste=byId("wasteDate"),meals=byId("mealsDate");
+    if(waste)waste.value=iso;
+    if(meals)meals.value=iso;
+    if(byId("wasteDateLabel"))byId("wasteDateLabel").textContent=short;
+    if(byId("mealsDateLabel"))byId("mealsDateLabel").textContent=short;
+    const lower=byId("opDateBtn")?.querySelector("span");
+    if(lower)lower.textContent=short;
+    if(rerender&&typeof renderOverview==="function")renderOverview();
+    return true;
+  }
+
+  /* Das Management-Fenster liest den sichtbaren Erfassungstag unmittelbar
+     vor jedem Öffnen neu ein. So kann kein älterer Dialogwert gewinnen. */
+  if(typeof openMealsDialog==="function"){
+    const openMealsDialogBeforeHardDateSync=openMealsDialog;
+    openMealsDialog=function(){
+      if(typeof state!=="undefined"&&state.appView==="management"&&byId("capture")?.classList.contains("active")){
+        const chosen=byId("wasteDate")?.value||state.viewDate||today();
+        writeActiveDate(chosen,{remember:true});
+      }
+      return openMealsDialogBeforeHardDateSync.apply(this,arguments);
+    };
+  }
+
+  /* Kalendertage vereinheitlichen – unabhängig davon, aus welchem Fenster
+     der Kalender geöffnet wurde. */
+  if(typeof setCustomDate==="function"){
+    const setCustomDateBeforeHardDateSync=setCustomDate;
+    setCustomDate=function(target,iso){
+      const result=setCustomDateBeforeHardDateSync.apply(this,arguments);
+      if(validDate(iso))writeActiveDate(iso,{remember:true});
+      return result;
+    };
+  }
+
+  /* iOS-sichere direkte Pfeile. Capture-Phase verhindert, dass ein älterer
+     nachgelagerter Handler das gerade gewählte Datum wieder überschreibt. */
+  document.addEventListener("click",event=>{
+    const control=event.target.closest?.("#opPrevDayBtn,#opNextDayBtn,#opTodayBtn,#mgmtCaptureMealsBtn");
+    if(!control)return;
+    if(control.id==="mgmtCaptureMealsBtn"){
+      event.preventDefault();event.stopImmediatePropagation();
+      const chosen=byId("wasteDate")?.value||(typeof state!=="undefined"&&state.viewDate)||today();
+      writeActiveDate(chosen,{remember:true});
+      if(typeof openMealsDialog==="function")openMealsDialog();
+      return;
+    }
+    event.preventDefault();event.stopImmediatePropagation();
+    const current=(typeof state!=="undefined"&&state.viewDate)||today();
+    const chosen=control.id==="opTodayBtn"?today():addDays(current,control.id==="opPrevDayBtn"?-1:1);
+    if(chosen>today()){if(typeof toast==="function")toast("Du bist bereits bei heute.");return;}
+    writeActiveDate(chosen,{rerender:true,remember:true});
+  },true);
+
+  /* Jede operative Neuberechnung zieht den unteren Datumsbutton nach. */
+  if(typeof renderOperationalHome==="function"){
+    const renderOperationalHomeBeforeHardDateSync=renderOperationalHome;
+    renderOperationalHome=function(){
+      const result=renderOperationalHomeBeforeHardDateSync.apply(this,arguments);
+      const iso=(typeof state!=="undefined"&&state.viewDate)||today();
+      writeActiveDate(iso,{remember:false});
+      return result;
+    };
+  }
+
+  /* Beim Rücksprung in eine installierte iOS-PWA läuft im Altcode nach 700 ms
+     ein Sicherheitsstart. Danach stellen wir den zuletzt gewählten Tag wieder her. */
+  window.addEventListener("pageshow",()=>setTimeout(()=>{
+    let saved="";try{saved=sessionStorage.getItem(ACTIVE_DATE_KEY)||"";}catch(_error){}
+    if(validDate(saved)&&saved<=today())writeActiveDate(saved,{rerender:true,remember:false});
+    else writeActiveDate((typeof state!=="undefined"&&state.viewDate)||today(),{remember:false});
+  },900));
+
+  writeActiveDate((typeof state!=="undefined"&&state.viewDate)||today(),{remember:false});
+})();
+</script>
+<!-- /FLOSIQ DATE SYNC HARDENING -->
