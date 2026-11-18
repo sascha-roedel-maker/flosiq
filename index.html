@@ -7413,6 +7413,17 @@ $("weightInput").select();
 return false;
 }
 
+/* iOS/Safari kann beim Wechsel in den großen operativen Wiegebildschirm den
+   flüchtigen JS-Auswahlwert verlieren, obwohl der richtige Behälter sichtbar
+   und im DOM markiert ist. Vor dem Speichern deshalb die Auswahl zuverlässig
+   aus der sichtbaren Erfassung zurückholen. */
+if(!state.selectedCat&&state.appView==="operational"){
+const markedCategory=document.querySelector("#categoryButtons [data-cat].selected")?.dataset?.cat;
+const visibleLabel=$("opCurrentBinName")?.textContent?.trim();
+const visibleCategory=CATS.find(item=>item.label===visibleLabel)?.id;
+state.selectedCat=markedCategory||visibleCategory||null;
+}
+
 if(!state.selectedCat){
 toast("Bitte Abfallursache wählen.");
 return false;
