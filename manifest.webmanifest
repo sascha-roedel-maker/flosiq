@@ -1,11 +1,11 @@
 {
-  "name": "FLOSIQ – Food Loss Intelligence",
-  "short_name": "FLOSIQ",
+  "name": "FLORESQ – Smart Food Loss Management",
+  "short_name": "FLORESQ",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f6f3",
-  "theme_color": "#8BC53F",
+  "theme_color": "#075c40",
   "icons": [
     {
       "src": "./icon-192.png",
