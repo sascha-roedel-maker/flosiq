@@ -13387,3 +13387,177 @@ body.view-management.mgmt-light .fr-cockpit-balance{background:#fff}
 </script>
 <!-- /FLORESQ COCKPIT RETTUNGSBILANZ -->
 
+
+
+<!-- FLORESQ MANAGEMENT INTUITIVE LOGIK V3 2026-11-19 -->
+<style id="floresq-management-logik-v3-style">
+/* Entscheidungen statt Klickstatistiken: Rettung ist ein klarer eigener Bereich. */
+body.view-management #analytics [data-mgmt-module="rescueAnalysis"][data-mgmt-space="analysis"]{display:none!important}
+body.view-management #analytics #mgmtDayExplorer[data-mgmt-space="reports"]{margin:0 0 16px!important}
+body.view-management #analytics .fr-rescue-timeline{margin-top:6px!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div{padding:16px 13px!important;border-radius:16px!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div:first-child{background:#edf7fd!important;border-color:#d3eaf6!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div:first-child b{color:#177eae}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div:nth-child(2){background:#fff7ec!important;border-color:#f3dfc5!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div:nth-child(2) b{color:#a66b27}
+body.view-management #analytics #frRescuePerformanceTrend{display:none!important}
+body.view-management #analytics .fr-rescue-timeline .fr-rescue-advice{font-weight:650!important;line-height:1.6!important}
+body.view-management #analytics .fr-management-pulse{grid-template-columns:1.4fr 1fr 1fr!important;margin:8px 0 14px}
+body.view-management #analytics .fr-management-pulse .fr-pulse-card.rescue{display:none!important}
+body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child{background:#f2f9ed!important;border-color:#dcebcf!important}
+body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child:before{background:#79b933}
+body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child b{color:#28572a!important}
+.fr-management-insights{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 17px}
+.fr-insight{border:1px solid #e0e9df;background:#fff;border-radius:17px;padding:15px 16px;box-shadow:0 7px 22px rgba(30,58,35,.045);min-width:0}
+.fr-insight-head{font-size:10px;font-weight:900;letter-spacing:.065em;text-transform:uppercase;color:#6c8371;margin-bottom:7px}
+.fr-insight h3{font-size:15px;line-height:1.3;margin:0 0 6px;color:#26432d}
+.fr-insight p{font-size:12px;line-height:1.5;color:#66766b;margin:0}
+.fr-management-context{margin-top:9px;font-size:11px!important;color:#66756c!important;line-height:1.5}
+@media(max-width:760px){
+ body.view-management #analytics .fr-management-pulse{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child{grid-column:1/-1}
+ body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child b{font-size:35px!important}
+ .fr-management-insights{grid-template-columns:1fr;gap:8px}
+ .fr-insight{padding:13px 14px}
+ body.view-management #analytics .fr-rescue-timeline .fr-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.view-management #analytics .fr-rescue-timeline .fr-context-grid>div:last-child{grid-column:1/-1}
+}
+</style>
+
+
+<script id="floresq-management-logik-v3-script">
+(function setupFloresqIntuitivesManagement(){
+ "use strict";
+ const byId=id=>document.getElementById(id);
+ const nav=byId("mgmtSpaceNav"),intro=byId("mgmtSpaceIntro");
+ const pulse=byId("frManagementPulse"),hero=byId("frRescueHero");
+ // In jedem Bereich nur die Informationen zeigen, die zur Frage des Bereichs passen.
+ const dayExplorer=byId("mgmtDayExplorer");
+ if(dayExplorer){
+  dayExplorer.dataset.mgmtSpace="reports";
+  dayExplorer.setAttribute("aria-label","Tagesdaten und einzelne Wiegungen");
+  const heading=dayExplorer.querySelector(".mde-o");
+  if(heading)heading.textContent="TAGESDATEN & EINZELWIEGUNGEN";
+ }
+ const quick=byId("mdeQuick");
+ if(quick){
+  quick.textContent="Tagesdaten";
+  quick.onclick=function(event){
+   if(typeof window.FLOSIQ_OPEN_MGMT_SPACE==="function")window.FLOSIQ_OPEN_MGMT_SPACE(event,"reports");
+   else if(typeof setMgmtSpace==="function")setMgmtSpace("reports",{scroll:false});
+   if(typeof window.FLOSIQ_RENDER_DAY_EXPLORER==="function")window.FLOSIQ_RENDER_DAY_EXPLORER();
+   setTimeout(()=>dayExplorer?.scrollIntoView({behavior:"smooth",block:"start"}),40);
+  };
+ }
+ const oldRescuePer100=byId("frAnalysisPer100Meals")?.parentElement;
+ if(oldRescuePer100)oldRescuePer100.remove(); // Rettung/100 Essen ist nicht die Entsorgungsquote.
+ const rescueCard=byId("frAnalysisRescued")?.parentElement;
+ if(rescueCard){const t=rescueCard.querySelector("span");if(t)t.textContent="Zur Wiederverwendung gesichert";}
+ const lossCard=byId("frAnalysisDisposed")?.parentElement;
+ if(lossCard){const t=lossCard.querySelector("span");if(t)t.textContent="Überproduktion entsorgt";}
+ const lossMeal=byId("frAnalysisFoodLoss")?.parentElement;
+ if(lossMeal){const t=lossMeal.querySelector("span");if(t)t.textContent="Abfall pro Essen";}
+ const rescueTitle=byId("frRescueTrendTitle");
+ if(rescueTitle)rescueTitle.textContent="Was wurde gesichert – was entsorgt?";
+ const rescueEyebrow=document.querySelector(".fr-rescue-timeline .fr-panel-title span");
+ if(rescueEyebrow)rescueEyebrow.textContent="FOOD RESCUE · MENGENVERLAUF";
+ const source=document.querySelector(".fr-rescue-timeline .fr-rescue-source");
+ if(source)source.textContent="Gut zu wissen: „Gesichert“ heißt zur Wiederverwendung aufbewahrt, nicht nachweislich verzehrt. Bei erneut geretteten Lebensmitteln sind Mehrfacherfassungen möglich. Die orange Menge ist tatsächlich entsorgte Überproduktion. Es wird nichts voneinander abgezogen.";
+ const heroTitle=byId("frRescueHeroTitle");
+ if(heroTitle)heroTitle.textContent="Zur Wiederverwendung gesichert";
+ const heroIntro=byId("frRescueHeroDesc");
+ if(heroIntro)heroIntro.classList.add("fr-management-context");
+ // Hauptzahl zuerst: Abfall je Essen. Die Rettung bleibt unmittelbar darunter sichtbar.
+ if(pulse&&hero){
+  hero.parentElement.insertBefore(pulse,hero);
+  const first=pulse.querySelector(".fr-pulse-card:not(.rescue)");
+  const perMeal=byId("frPulseFoodLoss")?.closest(".fr-pulse-card");
+  if(perMeal&&first&&perMeal!==first)pulse.insertBefore(perMeal,first);
+ }
+ const insights=document.createElement("div");
+ insights.id="frManagementInsights";
+ insights.dataset.mgmtSpace="cockpit";
+ insights.className="fr-management-insights";
+ insights.innerHTML=
+  '<article class="fr-insight"><div class="fr-insight-head">01 · So läuft der Betrieb</div><h3 id="frInsightTrend">Abfall pro Essen wird ausgewertet</h3><p id="frInsightTrendDetail">Ein Vergleich erscheint bei ausreichenden Zahlen.</p></article>'+
+  '<article class="fr-insight"><div class="fr-insight-head">02 · Hier lohnt sich hinzuschauen</div><h3 id="frInsightCause">Größte Abfallart</h3><p id="frInsightCauseDetail">Die Ursachen werden aus den gewogenen Abfallarten sichtbar.</p></article>';
+ if(pulse)pulse.insertAdjacentElement("afterend",insights);
+ else if(hero)hero.insertAdjacentElement("beforebegin",insights);
+ const fmt=value=>Math.max(0,Number(value)||0).toLocaleString("de-DE",{maximumFractionDigits:1});
+ const fmtKg=value=>Math.max(0,Number(value)||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
+ const mapping={overproduction:"Überproduktion",plate:"Tellerrücklauf",prep:"Putzverlust",storage:"MHD / Lagerverlust"};
+ const currentSpace=()=>nav?.querySelector('[data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+ function syncSpace(){
+  const space=currentSpace();
+  if(dayExplorer){
+   dayExplorer.classList.toggle("mgmt-space-hidden",space!=="reports");
+   dayExplorer.setAttribute("aria-hidden",space==="reports"?"false":"true");
+  }
+  if(insights){
+   insights.classList.toggle("mgmt-space-hidden",space!=="cockpit");
+   insights.setAttribute("aria-hidden",space==="cockpit"?"false":"true");
+  }
+  if(space==="analysis"){
+   const title=byId("mgmtSpaceTitle"),desc=byId("mgmtSpaceText");
+   if(title)title.textContent="Was rettet unser Team?";
+   if(desc)desc.textContent="Gesicherte Mengen und entsorgte Überproduktion – verständlich gegenübergestellt.";
+  }else if(space==="cockpit"){
+   const title=byId("mgmtSpaceTitle"),desc=byId("mgmtSpaceText");
+   if(title)title.textContent="Dein Betrieb auf einen Blick";
+   if(desc)desc.textContent="Abfall pro Essen, wichtigste Abfallart und Rettungsleistung.";
+  }else if(space==="reports"){
+   const desc=byId("mgmtSpaceText");
+   if(desc)desc.textContent="Einzelwiegungen, Tagesdaten und Berichte zum Export.";
+  }
+ }
+ function refresh(){
+  try{
+   syncSpace();
+   if(typeof state==="undefined"||typeof rangeBounds!=="function"||typeof periodData!=="function")return;
+   const bounds=rangeBounds(Number(state.days)||7);
+   const previousBounds=rangeBounds(Number(state.days)||7,1);
+   const cur=periodData(bounds.start,bounds.end),prev=periodData(previousBounds.start,previousBounds.end);
+   const trend=byId("frInsightTrend"),detail=byId("frInsightTrendDetail");
+   if(cur.k==null){
+    if(trend)trend.textContent="Abfall pro Essen noch nicht berechenbar";
+    if(detail)detail.textContent="Für den Zeitraum brauchen wir Essenszahlen und erfassten Abfall an denselben Tagen.";
+   }else if(prev.k==null){
+    if(trend)trend.textContent=fmt(cur.k)+" g Abfall pro Essen";
+    if(detail)detail.textContent="Das ist der Durchschnitt der auswertbaren Essenstage. Für den Vergleich fehlt noch die Vorperiode.";
+   }else{
+    const diff=cur.k-prev.k;
+    if(trend)trend.textContent=fmt(cur.k)+" g pro Essen · "+(diff<0?"↓ "+fmt(-diff)+" g weniger":diff>0?"↑ "+fmt(diff)+" g mehr":"unverändert");
+    if(detail)detail.textContent=(diff<0?"Weniger Abfall je Essen als in der Vorperiode.":diff>0?"Mehr Abfall je Essen als in der Vorperiode.":"Gleich viel Abfall je Essen wie in der Vorperiode.")+" Vergleich auf Basis der jeweils auswertbaren Tage.";
+   }
+   const cause=byId("frInsightCause"),causeDetail=byId("frInsightCauseDetail");
+   const list=Object.keys(mapping).map(key=>({key,amount:Math.max(0,Number(cur.cats?.[key])||0)})).sort((a,b)=>b.amount-a.amount);
+   if(cur.w>0&&list.length&&list[0].amount>0){
+    const top=list[0],percent=Math.round(top.amount/cur.w*100);
+    if(cause)cause.textContent=mapping[top.key]+" · "+percent+" %";
+    if(causeDetail)causeDetail.textContent=fmtKg(top.amount)+" von "+fmtKg(cur.w)+" Gesamt-Abfall. Ein sinnvoller Ansatzpunkt, um Ursachen im Betrieb zu prüfen.";
+   }else{
+    if(cause)cause.textContent="Noch kein Abfall erfasst";
+    if(causeDetail)causeDetail.textContent="Sobald gewogen wurde, zeigt FLORESQ die größte Abfallart.";
+   }
+   const advice=byId("frRescueAdvice");
+   if(advice){
+    const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(bounds.start,bounds.end):null;
+    if(rescue&&rescue.count>0)advice.textContent="Das Team hat "+fmtKg(rescue.rescuedKg)+" zur Wiederverwendung gesichert. "+fmtKg(rescue.wasteKg)+" Überproduktion wurde entsorgt. Diese beiden Gewichte zeigen unterschiedliche Vorgänge und sind keine endgültige Rettungsquote.";
+    else if(rescue&&rescue.wasteKg>0)advice.textContent="Überproduktion wurde entsorgt, aber für diesen Zeitraum ist noch keine Rettung erfasst. Prüfe mit dem Team geeignete Wiederverwendungen.";
+    else advice.textContent="Noch keine Rettungs- oder Entsorgungsmengen im Zeitraum. Die Auswertung erscheint automatisch, sobald gewogen wurde.";
+   }
+  }catch(error){console.warn("FLORESQ Managementlogik",error);}
+ }
+ if(typeof renderAnalytics==="function"){
+  const original=renderAnalytics;
+  renderAnalytics=function(){const output=original.apply(this,arguments);refresh();return output;};
+ }
+ if(nav)new MutationObserver(syncSpace).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
+ window.addEventListener("pageshow",refresh);
+ window.addEventListener("storage",event=>{if(["flosiq_rescues_v1","flosiq_analysis_days","flosiq_analysis_offset"].includes(event.key))refresh();});
+ refresh();
+})();
+</script>
+<!-- /FLORESQ MANAGEMENT INTUITIVE LOGIK V3 -->
+
