@@ -13828,6 +13828,85 @@ body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark>i{
  body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark>i{max-height:55px!important}
 }
 
+
+/* fq-weekchart-v8: echte Wochenwerte, lesbare Beschriftung und verifizierbare Brancheneinordnung */
+body.view-management #analytics #fqExecutive .fq-trend-panel{
+ display:flex!important;flex-direction:column!important;gap:10px!important;
+ grid-template-columns:none!important;grid-template-rows:none!important;
+ padding:16px 16px 15px!important;overflow:visible!important;
+}
+body.view-management #analytics #fqExecutive .fq-trend-panel>.fq-spark-title{
+ flex:0 0 auto!important;line-height:1.45!important;color:#365f47!important;
+}
+body.view-management #analytics #fqExecutive .fq-weekchart-context{
+ font-size:11px;font-weight:750;color:#77867c;line-height:1.4;
+}
+body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark{
+ display:grid!important;grid-template-columns:repeat(var(--fq-cols,5),minmax(0,1fr))!important;
+ gap:5px!important;align-items:stretch!important;position:relative!important;
+ height:auto!important;min-height:0!important;max-height:none!important;
+ flex:none!important;border:0!important;border-radius:0!important;
+ padding:6px 2px!important;margin:0!important;
+ min-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;
+}
+body.view-management #analytics #fqExecutive .fq-target-line{
+ position:absolute!important;left:0!important;right:0!important;
+ bottom:calc(31px + 9px + var(--fq-goal-bottom,65px))!important;
+ height:0!important;border-top:1.5px dashed #88b188!important;
+ pointer-events:none!important;z-index:1!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-cell{
+ display:grid!important;grid-template-rows:24px 110px 31px!important;
+ align-items:end!important;gap:9px!important;min-width:0!important;
+ text-align:center!important;position:relative!important;z-index:2!important;
+ font-variant-numeric:tabular-nums!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-value{
+ display:block!important;height:24px!important;line-height:24px!important;
+ color:#163e2b!important;font-size:12px!important;font-weight:950!important;
+ white-space:nowrap!important;position:static!important;margin:0!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-plot{
+ height:110px!important;min-height:110px!important;max-height:110px!important;
+ display:flex!important;justify-content:center!important;align-items:flex-end!important;
+ border-bottom:1px solid #cfddcf!important;overflow:hidden!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-bar{
+ display:block!important;position:static!important;flex:0 1 56px!important;
+ width:min(100%,56px)!important;max-width:56px!important;
+ min-height:0!important;max-height:110px!important;
+ border-radius:6px 6px 0 0!important;transform:none!important;
+ background:linear-gradient(180deg,#a2c7c6,#3b827c)!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-cell.top .fq-week-bar{
+ background:linear-gradient(180deg,#b2f576,#50b376)!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-cell.good .fq-week-bar{
+ background:linear-gradient(180deg,#aedb8e,#569d70)!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-cell.high .fq-week-bar{
+ background:linear-gradient(180deg,#eda660,#c77937)!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-label{
+ display:block!important;line-height:1.2!important;align-self:start!important;
+ font-size:10px!important;font-weight:850!important;color:#6c7a70!important;
+ overflow-wrap:normal!important;
+}
+body.view-management #analytics #fqExecutive .fq-week-cell.missing .fq-week-value{color:#a3ada5!important}
+body.view-management #analytics #fqExecutive .fq-week-no-data{color:#c2d0c5;font-size:20px;line-height:1}
+body.view-management #analytics #fqExecutive .fq-weekchart-note{
+ background:#f3f8f2;border:1px solid #e1eddf;border-radius:11px;padding:10px 12px;
+ color:#62776a;font-size:10px;line-height:1.55;
+}
+body.view-management #analytics #fqExecutive .fq-weekchart-note b{color:#285d3b}
+body.view-management #analytics #fqExecutive .fq-weekchart-note span{display:block;margin-top:4px}
+@media(max-width:760px){
+ body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark{gap:4px!important;padding:5px 0!important}
+ body.view-management #analytics #fqExecutive .fq-week-value{font-size:10px!important}
+ body.view-management #analytics #fqExecutive .fq-week-label{font-size:9px!important}
+ body.view-management #analytics #fqExecutive .fq-week-bar{max-width:38px!important}
+}
+
 </style>
 
 
@@ -13912,24 +13991,77 @@ id("fqRescueButton").addEventListener("click",e=>navigate("analysis",e));
 id("fqReportsButton").addEventListener("click",e=>navigate("reports",e));
 id("fqCostButton").addEventListener("click",()=>{if(typeof openValueCalculator==="function")openValueCalculator();else id("glValueSetupBtn")?.click();});
 function displaySpark(bounds,days){
- const mealByDay=new Map(),wasteByDay=new Map();
- for(const m of state.meals||[])if(m.date>=bounds.start&&m.date<=bounds.end&&n(m.meals)>0)mealByDay.set(m.date,(mealByDay.get(m.date)||0)+n(m.meals));
- for(const e of state.entries||[])if(e.date>=bounds.start&&e.date<=bounds.end)wasteByDay.set(e.date,(wasteByDay.get(e.date)||0)+n(e.weight_kg));
- const weeks=new Map();let num=0;const start=Date.parse(bounds.start+"T00:00:00Z"),end=Date.parse(bounds.end+"T00:00:00Z");
- for(let t=start;t<=end&&num<375;t+=86400000,num++){
-  const date=new Date(t).toISOString().slice(0,10);
-  const key=days===365?date.slice(0,7):days===30?"W"+Math.floor(num/7):date;
-  const group=weeks.get(key)||{key,meals:0,waste:0};
-  if(mealByDay.has(date)&&wasteByDay.has(date)){group.meals+=mealByDay.get(date);group.waste+=wasteByDay.get(date);}
-  weeks.set(key,group);
+ const validMeals=new Map(),waste=new Map();
+ for(const m of state.meals||[]){
+  if(m.date>=bounds.start&&m.date<=bounds.end&&n(m.meals)>0)
+   validMeals.set(m.date,(validMeals.get(m.date)||0)+n(m.meals));
  }
- const values=[...weeks.values()].map(g=>({key:g.key,gram:g.meals>0?g.waste*1000/g.meals:null}));
- const max=Math.max(1,...values.map(x=>x.gram??0));
- id("fqSpark").innerHTML=values.map(x=>{
-  const height=x.gram==null?3:Math.max(4,Math.round(x.gram/max*54));
-  return '<i class="'+(x.gram==null?"empty":"")+'" style="--bar-height:'+height+'px" title="'+x.key+": "+(x.gram==null?"kein Wert":f(x.gram,0)+" g")+'"></i>';
+ for(const entry of state.entries||[]){
+  if(entry.date>=bounds.start&&entry.date<=bounds.end)
+   waste.set(entry.date,(waste.get(entry.date)||0)+n(entry.weight_kg));
+ }
+ function week(d){
+  const t=new Date(d+"T12:00:00Z");
+  t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));
+  const yr=t.getUTCFullYear(),first=new Date(Date.UTC(yr,0,1));
+  const num=Math.ceil((((t-first)/86400000)+1)/7);
+  return{key:yr+"-W"+num,label:"KW "+String(num).padStart(2,"0")};
+ }
+ const grouped=new Map();
+ const first=Date.parse(bounds.start+"T00:00:00Z"),last=Date.parse(bounds.end+"T00:00:00Z");
+ let i=0;
+ for(let ts=first;ts<=last&&i<375;ts+=86400000,i++){
+  const date=new Date(ts).toISOString().slice(0,10);
+  const d=new Date(date+"T12:00:00Z"),isoMonth=date.slice(0,7);
+  let key,label;
+  if(days===365){key=isoMonth;label=d.toLocaleDateString("de-DE",{month:"short"});}
+  else if(days===30){const w=week(date);key=w.key;label=w.label;}
+  else{key=date;label=days===1?d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit"});}
+  const row=grouped.get(key)||{key,label,meals:0,waste:0,days:0};
+  if(validMeals.has(date)&&waste.has(date)){
+   row.meals+=validMeals.get(date);
+   row.waste+=waste.get(date);
+   row.days++;
+  }
+  grouped.set(key,row);
+ }
+ const points=[...grouped.values()].map(g=>({...g,g:g.meals>0?g.waste*1000/g.meals:null}));
+ const chart=id("fqSpark"),pane=chart?.closest(".fq-trend-panel");
+ if(!chart||!pane)return;
+ let headline=pane.querySelector(".fq-weekchart-context");
+ if(!headline){
+  headline=document.createElement("div");headline.className="fq-weekchart-context";
+  chart.insertAdjacentElement("beforebegin",headline);
+ }
+ let note=pane.querySelector(".fq-weekchart-note");
+ if(!note){
+  note=document.createElement("div");note.className="fq-weekchart-note";
+  chart.insertAdjacentElement("afterend",note);
+ }
+ const goal=75,hasData=points.filter(x=>x.g!==null);
+ const chartTop=Math.max(110,goal+15,...hasData.map(x=>x.g));
+ const height=110,scale=x=>Math.min(height,Math.max(0,x/chartTop*height));
+ const targetY=scale(goal);
+ const lastPresent=hasData.at(-1),prior=hasData.length>1?hasData.at(-2):null;
+ let trend="";
+ if(lastPresent&&prior){
+  const diff=Math.round(lastPresent.g-prior.g);
+  trend=diff<0?" · zuletzt "+Math.abs(diff)+" g besser":diff>0?" · zuletzt "+diff+" g schlechter":" · zuletzt unverändert";
+ }
+ headline.textContent=hasData.length+" von "+points.length+" Zeitabschnitten auswertbar"+trend;
+ chart.style.setProperty("--fq-cols",String(Math.max(1,points.length)));
+ chart.style.setProperty("--fq-goal-bottom",targetY.toFixed(1)+"px");
+ chart.innerHTML='<div class="fq-target-line" aria-hidden="true"></div>'+points.map(p=>{
+  const known=p.g!==null,bar=known?Math.max(2,scale(p.g)):0;
+  const cls=known?(p.g<=50?"top":p.g<=75?"good":p.g<=108?"middle":"high"):"missing";
+  const value=known?Math.round(p.g).toLocaleString("de-DE")+" g":"—";
+  return '<div class="fq-week-cell '+cls+'" title="'+p.label+": "+(known?value+" pro Essen, "+p.days+" Messtage":"keine auswertbaren Tage")+'">'+
+   '<span class="fq-week-value">'+value+'</span>'+
+   '<div class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</div>'+
+   '<span class="fq-week-label">'+p.label+'</span></div>';
  }).join("");
- id("fqSpark").setAttribute("aria-label","Verlauf des Abfalls je Essen in "+values.length+" Zeitabschnitten; fehlende Angaben werden nicht als null bewertet.");
+ chart.setAttribute("aria-label","Abfall pro Essen: "+points.map(p=>p.label+" "+(p.g===null?"keine Daten":Math.round(p.g)+" Gramm")).join("; ")+". Ziel 75 Gramm.");
+ note.innerHTML='<b>75 g</b> · FLORESQ-Ziel aus UAW-Ergebnissen nach Verbesserungen (2020). <b>108 g</b> · damaliger Ø vor Maßnahmen. <b>≤ 50 g</b> · ambitioniertes Spitzenniveau. <span>Vergleich nur bei gleichem Messumfang.</span>';
 }
 function renderCostDetails(entries,summary){
  const target=id("fqCostRows"),panel=id("fqCostDetails");
