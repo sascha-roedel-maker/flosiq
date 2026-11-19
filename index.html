@@ -10464,7 +10464,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-19-management-light-rescue-v2";
+window.FLOSIQ_BUILD="2026-11-19-management-light-rescue-v3";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -13219,6 +13219,12 @@ body.view-management.mgmt-light .fr-rescue-advice{background:#eaf6fc!important;c
       const pulse=byId("frManagementPulse");
       const active=nav?.querySelector('[data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
       if(pulse){pulse.classList.toggle("mgmt-space-hidden",active!=="cockpit");pulse.setAttribute("aria-hidden",active==="cockpit"?"false":"true");}
+      /* Tagesdaten und Essenszahl folgen demselben Tag wie die obere Management-Navigation. */
+      const bounds=activeBounds(),dayInput=byId("mdeDate");
+      if(Number(state?.days)===1&&bounds&&dayInput&&dayInput.value!==bounds.end){
+        dayInput.value=bounds.end;
+        dayInput.dispatchEvent(new Event("change",{bubbles:true}));
+      }
       renderPulse();renderMealQualityForSelectedPeriod();
     }catch(error){console.warn("FLORESQ Management Light",error);}
   }
