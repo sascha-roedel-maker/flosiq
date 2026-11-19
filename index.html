@@ -13907,6 +13907,15 @@ body.view-management #analytics #fqExecutive .fq-weekchart-note span{display:blo
  body.view-management #analytics #fqExecutive .fq-week-bar{max-width:38px!important}
 }
 
+
+.fq-goal-chip{
+ display:inline-flex;align-items:center;gap:6px;margin-top:9px;
+ padding:6px 10px;border-radius:10px;border:1px solid rgba(184,237,159,.25);
+ color:#c3e9b6;background:rgba(135,204,111,.11);
+ font-size:11px;font-weight:850;line-height:1.4;
+}
+@media(max-width:760px){.fq-goal-chip{font-size:10px}}
+
 </style>
 
 
@@ -13937,6 +13946,12 @@ root.innerHTML=[
 '<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
 ].join("");
 top.insertAdjacentElement("afterend",root);
+const basis=id("fqMealBasis");
+if(basis){
+ const goalLine=document.createElement("div");goalLine.id="fqGoalGap";goalLine.className="fq-goal-chip";
+ goalLine.textContent="Branchenorientiertes FLORESQ-Ziel · 75 g";
+ basis.insertAdjacentElement("afterend",goalLine);
+}
 // Die feste Management-Leiste wird durch einen kleinen Button in der normalen Seitenfolge ersetzt.
 const shortcut=document.createElement("div");
 shortcut.className="fq-management-shortcut";
@@ -14112,6 +14127,13 @@ function render(){
   id("fqWasteSum").textContent=kg(p.w);
   id("fqRescueSum").textContent=kg(rescue.rescuedKg);
   id("fqRescueNote").textContent=n(rescue.count)+" erfasste Rettungen · keine Verzehrbestätigung";
+  const gap=id("fqGoalGap");
+  if(gap){
+   if(p.k==null)gap.textContent="Ziel 75 g · noch keine vollständigen Daten";
+   else if(p.k<=50)gap.textContent="Spitzenniveau erreicht · ≤ 50 g";
+   else if(p.k<=75)gap.textContent="FLORESQ-Ziel erreicht · 75 g";
+   else gap.textContent=Math.round(p.k-75)+" g bis zum FLORESQ-Ziel · 75 g";
+  }
   displaySpark(b,days);
   const total=n(p.w),values=cats.map(c=>({...c,weight:n(p.cats?.[c.id])}));
   id("fqWasteStack").innerHTML=values.map(c=>'<i style="--paint:'+c.color+';--share:'+(total?100*c.weight/total:0).toFixed(3)+'%" title="'+c.label+": "+kg(c.weight)+'"></i>').join("");
