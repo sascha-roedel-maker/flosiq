@@ -12021,6 +12021,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     if(!rows.length&&!window.FLORESQ_RESCUE_SUMMARY?.(monthBounds(month).start,monthBounds(month).end)?.count)return toast("Für diesen Monat gibt es noch keine Daten.");
 
     var bounds=monthBounds(month),summary=monthSummary(month),entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;});
+    var rescue=window.FLORESQ_RESCUE_REPORT(bounds.start,bounds.end);
     var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),totalWaste=Number(summary["Nassmüll gesamt kg"]||0),average=chartRows.length?totalWaste/chartRows.length:0;
     var meals=all.reduce(function(sum,r){return sum+Number(r.Essen||0);},0),foodLoss=summary["Food Loss g/Portion"];
     var cats=CATS.map(function(c){return{id:c.id,label:c.label,value:entries.filter(function(x){return x.category===c.id;}).reduce(function(sum,x){return sum+Number(x.weight_kg||0);},0)};});
@@ -12030,6 +12031,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"});
     var monthStart=asDate(bounds.start),previousDate=new Date(monthStart.getFullYear(),monthStart.getMonth()-1,1,12),previousMonth=previousDate.getFullYear()+"-"+String(previousDate.getMonth()+1).padStart(2,"0");
     var previousBounds=monthBounds(previousMonth),previousAll=exportRows(previousMonth),previousHasData=previousAll.some(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!=="";}),previousSummary=monthSummary(previousMonth);
+    var rescuePrevious=window.FLORESQ_RESCUE_REPORT(previousBounds.start,previousBounds.end);
     var previousChartRows=previousAll.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),previousWaste=Number(previousSummary["Nassmüll gesamt kg"]||0),previousAverage=previousChartRows.length?previousWaste/previousChartRows.length:0,previousFoodLoss=previousSummary["Food Loss g/Portion"];
     var previousEntries=(state.entries||[]).filter(function(x){return x.date>=previousBounds.start&&x.date<=previousBounds.end;}),previousCats=CATS.map(function(c){return{id:c.id,value:previousEntries.filter(function(x){return x.category===c.id;}).reduce(function(sum,x){return sum+Number(x.weight_kg||0);},0)};});
     var previousLabel=asDate(previousBounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),hasFoodComparison=previousHasData&&foodLoss!==""&&previousFoodLoss!==""&&Number(previousFoodLoss)>0;
@@ -12052,16 +12054,26 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
       ["JE PORTION",foodLoss!==""?foodLoss+" g":"—"],
       ["RETTUNG ERFASST",teamNumber(summary["Zur Rettung erfasst kg"],2)+" kg"]
     ];
-    cards.forEach(function(card,i){var x=12+i*47;doc.setFillColor.apply(doc,light);doc.roundedRect(x,43,43,25,3,3,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(card[0],x+4,50);doc.setTextColor.apply(doc,dark);doc.setFontSize(13);doc.text(String(card[1]),x+4,61);});
+    cards.forEach(function(card,i){
+      var x=12+i*47,isRescue=i===3;
+      doc.setFillColor.apply(doc,isRescue?[224,246,234]:light);doc.roundedRect(x,43,43,25,3,3,"F");
+      doc.setTextColor.apply(doc,isRescue?[22,103,70]:muted);doc.setFont("helvetica","bold");doc.setFontSize(6.7);doc.text(card[0],x+4,50);
+      doc.setTextColor.apply(doc,isRescue?[17,95,64]:dark);doc.setFontSize(13);doc.text(String(card[1]),x+4,61);
+    });
 
-    /* Zielanzeige mit sachlicher, motivierender Rückmeldung. */
-    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Unser gemeinsamer Kurs",12,79);
-    var goalText="Für g/Portion brauchen wir an denselben Tagen Nassmüll und Essenszahlen.";
-    if(foodLoss!=="")goalText=Number(foodLoss)<=BENCH.target?"Stark: Der FLORESQ-Zielbereich ist erreicht.":Number(foodLoss)<=BENCH.orientation?"Guter Kurs: Wir bleiben gemeinsam dran.":"Wir kennen unseren Wert und können gemeinsam gezielt besser werden.";
-    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(goalText,12,86);
-    doc.setFillColor(226,233,224);doc.roundedRect(12,92,186,7,3,3,"F");
-    if(foodLoss!==""){var progress=Math.max(0,Math.min(1,Number(foodLoss)/BENCH.max));doc.setFillColor.apply(doc,Number(foodLoss)<=BENCH.target?green:Number(foodLoss)<=BENCH.orientation?yellow:blue);if(progress>0)doc.roundedRect(12,92,186*progress,7,3,3,"F");}
-    var targetX=12+186*(BENCH.target/BENCH.max);doc.setDrawColor.apply(doc,dark);doc.setLineWidth(.5);doc.line(targetX,90.5,targetX,101.5);doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("Ziel 60 g",targetX,105,{align:"center"});
+    /* Rettung ist die positive Hauptgeschichte dieses Berichts. */
+    doc.setFillColor(18,98,69);doc.roundedRect(12,74,186,36,4,4,"F");
+    doc.setTextColor(205,244,219);doc.setFont("helvetica","bold");doc.setFontSize(8);
+    doc.text("UNSER FOOD-RESCUE-MOMENT",18,82);
+    doc.setTextColor(255,255,255);doc.setFontSize(26);
+    doc.text(teamNumber(rescue.rescuedKg,2)+" kg",18,96);
+    doc.setFontSize(8.6);doc.setFont("helvetica","bold");
+    doc.text(rescue.count===1?"1 Rettung dokumentiert":rescue.count+" Rettungen dokumentiert",104,91);
+    doc.setFont("helvetica","normal");doc.setFontSize(7);
+    var rescueMessage=rescue.count?"Danke, dass ihr Reste nicht einfach aufgebt!":"Jede mögliche Rettung beginnt mit eurem Blick aufs Essen.";
+    doc.text(doc.splitTextToSize(rescueMessage,86),104,98);
+    doc.setFontSize(6.3);doc.setTextColor(205,244,219);
+    doc.text("Zur Rettung erfasst – Nutzung und QM-Freigabe werden separat geprüft.",18,106);
 
     /* Verteilung nach Ursache. */
     doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Wo entsteht unser Nassmüll?",12,118);
@@ -12087,8 +12099,8 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     if(chartRows.length){var avgY=cy+ch-(average/max*ch);doc.setDrawColor.apply(doc,blue);if(doc.setLineDashPattern)doc.setLineDashPattern([2,1],0);doc.line(cx,avgY,cx+cw,avgY);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(6.5);doc.text("Ø "+teamNumber(average,2)+" kg",cx+cw,avgY-1,{align:"right"});}
 
     /* Positives Fazit und ein gemeinsamer nächster Schritt. */
-    var goodText=foodImproved?Math.abs(foodChange)+" % weniger Food Loss je Portion als im Vormonat. Das ist Teamarbeit!":best?"Stärkster vollständiger Tageswert: "+best.Datum+" mit "+best["Food Loss g/Portion"]+" g je Portion.":chartRows.length+" Erfassungstage dokumentiert. Jede vollständige Erfassung macht uns besser.";
-    var focusText=top&&top.value>0?teamFocus(top.id):"Weiter vollständig erfassen und gemeinsam eine verlässliche Datenbasis aufbauen.";
+    var goodText=rescue.count?teamNumber(rescue.rescuedKg,2)+" kg zur Rettung dokumentiert! Stark, dass ihr Lebensmittel weiterdenkt.":foodImproved?Math.abs(foodChange)+" % weniger Food Loss je Portion als im Vormonat. Das ist Teamarbeit!":best?"Stärkster vollständiger Tageswert: "+best.Datum+" mit "+best["Food Loss g/Portion"]+" g je Portion.":chartRows.length+" Erfassungstage dokumentiert. Jede vollständige Erfassung macht uns besser.";
+    var focusText=rescue.count?"Gemeinsam die Nutzung planen, Hygiene prüfen und den Rettungsweg abschließen.":top&&top.value>0?teamFocus(top.id):"Rettungsoptionen früh prüfen und vollständig dokumentieren.";
     doc.setFillColor(239,247,235);doc.roundedRect(12,239,89,35,3,3,"F");doc.setFillColor(235,244,250);doc.roundedRect(109,239,89,35,3,3,"F");
     doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("DAS LIEF GUT",17,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(goodText,79),17,255);
     doc.setTextColor.apply(doc,blue);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("UNSER NÄCHSTER FOKUS",114,248);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(doc.splitTextToSize(focusText,79),114,255);
@@ -12101,7 +12113,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
        garantiert das bereits aktive A4-Hochformat – auch in älteren Browsern. */
     doc.addPage();doc.setPage(2);doc.setFillColor.apply(doc,dark);doc.rect(0,0,210,35,"F");doc.setFillColor.apply(doc,blue);doc.circle(190,8,19,"F");doc.circle(204,29,12,"F");
     doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(20);doc.text("UNSER FORTSCHRITT",12,14);doc.setFont("helvetica","normal");doc.setFontSize(9.5);
-    var progressMessage=!previousHasData?"Der Vergleich startet, sobald im Vormonat Daten vorliegen.":foodImproved?Math.abs(foodChange)+" % weniger g je Portion als im Vormonat. Stark gemacht!":hasFoodComparison?"Der Vergleich zeigt uns klar, wo wir gemeinsam ansetzen können.":"Für einen fairen Vergleich brauchen wir Essen und Nassmüll am selben Tag.";
+    var progressMessage=rescue.count?teamNumber(rescue.rescuedKg,2)+" kg für Rettung gesichert – danke für euren Einsatz!":!previousHasData?"Der Vergleich startet, sobald im Vormonat Daten vorliegen.":foodImproved?Math.abs(foodChange)+" % weniger g je Portion als im Vormonat. Stark gemacht!":hasFoodComparison?"Der Vergleich zeigt uns klar, wo wir gemeinsam ansetzen können.":"Für einen fairen Vergleich brauchen wir Essen und Nassmüll am selben Tag.";
     doc.text(doc.splitTextToSize(progressMessage,180),12,22);doc.setFontSize(7);doc.text(monthLabel+" im Vergleich zu "+previousLabel,12,31);
 
     function comparisonCard(x,title,previousValue,currentValue,unit,lowerIsBetter,target){
@@ -12117,13 +12129,39 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
     comparisonCard(12,"Food Loss je Portion",previousFoodLoss===""?null:Number(previousFoodLoss),foodLoss===""?null:Number(foodLoss),"g",true,BENCH.target);
     comparisonCard(109,"Ø Nassmüll je Erfassungstag",previousChartRows.length?previousAverage:null,chartRows.length?average:null,"kg",true,null);
 
-    doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Abfallursachen im Monatsvergleich",12,140);doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text("Grau = Vormonat · farbig = aktueller Monat",12,146);
-    cats.forEach(function(c,i){var old=(previousCats.find(function(x){return x.id===c.id;})||{value:0}).value,rowMax=Math.max(1,old,c.value),y=157+i*14,color=catColors[c.id]||gray;doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(c.label,12,y);doc.setFillColor(225,230,226);doc.roundedRect(72,y-6,76,3.5,1.5,1.5,"F");doc.setFillColor(177,185,179);if(old>0)doc.roundedRect(72,y-6,76*(old/rowMax),3.5,1.5,1.5,"F");doc.setFillColor(229,235,226);doc.roundedRect(72,y-1,76,3.5,1.5,1.5,"F");doc.setFillColor.apply(doc,color);if(c.value>0)doc.roundedRect(72,y-1,76*(c.value/rowMax),3.5,1.5,1.5,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.text(teamNumber(old,2)+" → "+teamNumber(c.value,2)+" kg",198,y,{align:"right"});});
-
+    /* Lebensmittelrettung im Mittelpunkt: Was wurde wirklich erfasst? */
+    doc.setFillColor(234,248,239);doc.roundedRect(12,135,186,77,4,4,"F");
+    doc.setTextColor(20,98,66);doc.setFont("helvetica","bold");doc.setFontSize(12);
+    doc.text("WAS WIR ZUR RETTUNG ERFASST HABEN",18,145);
+    doc.setFontSize(19);doc.text(teamNumber(rescue.rescuedKg,2)+" kg",18,157);
+    doc.setFontSize(7.5);doc.text(rescue.count+" dokumentierte Rettung"+(rescue.count===1?"":"en"),75,155);
+    doc.setTextColor.apply(doc,dark);doc.setFontSize(7.2);doc.setFont("helvetica","normal");
+    doc.text("Speisen und Mengen aus der Erfassung:",18,168);
+    var rescueList=rescue.dishes.slice(0,3);
+    if(!rescueList.length){
+      doc.setTextColor.apply(doc,muted);doc.setFontSize(8);
+      doc.text("Noch keine Lebensmittel zur Rettung eingetragen.",18,179);
+    }else{
+      rescueList.forEach(function(item,i){
+        var y=177+i*8.5;
+        var dishLabel=doc.splitTextToSize(String(item.label),112)[0]||"Verwendung noch offen";
+        doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(8);
+        doc.text(dishLabel,18,y);
+        doc.text(teamNumber(item.kg,2)+" kg",188,y,{align:"right"});
+      });
+      if(rescue.dishes.length>3){doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.8);doc.text("+ weitere dokumentierte Speisen",18,204);}
+    }
+    doc.setTextColor(20,98,66);doc.setFont("helvetica","bold");doc.setFontSize(7.3);
+    var monthRescueComparison=rescuePrevious.count||rescuePrevious.wasteKg>0
+      ?"Vormonat: "+teamNumber(rescuePrevious.rescuedKg,2)+" kg · Jetzt: "+teamNumber(rescue.rescuedKg,2)+" kg"
+      :"Unser erster dokumentierter Rettungsstand – darauf bauen wir auf.";
+    doc.text(monthRescueComparison,18,207);
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.4);
+    doc.text("Erfasstes Gewicht, noch keine Bestätigung der hygienischen Freigabe.",18,216);
     var tips=teamTips(top&&top.value>0?top.id:null);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Drei einfache Tipps für unseren nächsten Monat",12,221);
     tips.forEach(function(tip,i){var x=12+i*63;doc.setFillColor.apply(doc,i===0?light:i===1?[237,246,250]:[245,247,238]);doc.roundedRect(x,228,59,43,3,3,"F");doc.setFillColor.apply(doc,i===0?green:i===1?blue:yellow);doc.circle(x+8,237,4,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(String(i+1),x+8,239.5,{align:"center"});doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(doc.splitTextToSize(tip,49),x+5,247);});
 
-    doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("Unsere Team-Challenge:",12,281);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Eine kleine Maßnahme gemeinsam testen und im nächsten Teamreport ihre Wirkung ansehen.",49,281);
+    doc.setTextColor.apply(doc,green);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("Unsere Team-Challenge:",12,281);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Bei jeder Überproduktion Rettung prüfen, sichern und den Weg dokumentieren.",49,281);
     doc.setTextColor.apply(doc,muted);doc.setFontSize(6.5);doc.text("FLORESQ · Teamreport · "+monthLabel+" · Seite 2 von 2",105,293,{align:"center"});
     /* Eindeutiger Dateiname verhindert, dass Tablet/iPhone eine ältere
        einseitige Datei mit demselben Namen erneut öffnen. */
