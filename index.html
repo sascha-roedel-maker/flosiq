@@ -3140,17 +3140,12 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
 <span>Weitere Wiegungen kannst du jederzeit zusätzlich erfassen.</span>
 </div>
 
-<section class="rescue-teaser" id="rescueTeaser" aria-label="Gerettete Lebensmittel" hidden>
-<div class="rescue-kicker"><i></i> FLORESQ RETTUNGEN</div>
-<h3>Gerettet statt entsorgt.</h3>
-<p>Beim Schritt „Überproduktion“ fragt FLORESQ automatisch nach, bevor etwas im Eimer landet.</p>
-<div class="rescue-teaser-actions">
-<button id="rescueLogBtn" class="rescue-log-btn" type="button" aria-label="Gerettete Lebensmittel anzeigen">♻ Rettungsverlauf ansehen</button>
+<!-- Operativ: Werbekarte entfernt; IDs für vorhandene Rettungslogik unsichtbar erhalten. -->
+<div id="rescueTeaser" hidden aria-hidden="true" style="display:none!important">
+  <div id="rescueDaySummary" hidden>
+    <b id="rescueDayKg">0,00 kg</b><span id="rescueDayCount">0 Vorgänge</span>
+  </div>
 </div>
-<div class="rescue-day-summary" id="rescueDaySummary" hidden>
-<span>Heute gerettet</span><b id="rescueDayKg">0,00 kg</b><span id="rescueDayCount">0 Vorgänge</span>
-</div>
-</section>
 
 <details class="op-simple-details" id="opStatusDetails" open>
 <summary>Was ist heute schon erledigt?</summary>
@@ -11515,10 +11510,6 @@ body.view-management #mgmtSpaceNav [data-mgmt-space-btn] > *{pointer-events:none
 </script>
 <!-- ===== /FLORESQ MGMT TABS HARD FIX · 2026-08-26e ===== -->
 
-</body>
-</html>
-
-
 <!-- FLORESQ MANAGEMENT TAGESDATEN 2026-11-15 -->
 <style id="flosiq-management-day-explorer-20261115-style">
 .mde{margin:0 0 18px;padding:18px;border:1px solid #d9e5d3;border-radius:22px;background:#fff;color:#182019;box-shadow:0 14px 34px rgba(35,55,35,.08)}.mde-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.mde-o{font-size:10px;font-weight:950;letter-spacing:1.3px;color:#579b1e}.mde h2{margin:4px 0 0;font-size:21px}.mde-btn,.mde-c button,.mde-f button{border:1px solid #cfe0c5;background:#edf5e8;color:#4f901a;border-radius:999px;font-weight:900;touch-action:manipulation}.mde-btn{padding:9px 13px}.mde-c{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;margin-bottom:11px}.mde-c button,.mde-c input{min-height:48px;border:1px solid #d8e2d5;border-radius:14px;background:#f8faf7;color:#182019;font:inherit;font-weight:850}.mde-c button{font-size:24px;color:#4f901a}.mde-c button:disabled{opacity:.35}.mde-c input{text-align:center;padding:0 10px}.mde-k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.mde-k div,.mde-x div{padding:11px;border:1px solid #e0e8dd;border-radius:14px;background:#f8faf7;min-width:0}.mde-k span,.mde-x span{display:block;color:#77837a;font-size:10px;font-weight:900;text-transform:uppercase}.mde-k b{display:block;margin-top:4px;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mde-x{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.mde-x b{display:block;margin-top:4px;font-size:13px;line-height:1.35}.mde-x small{display:block;margin-top:3px;color:#6b756e}.mde-f{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.mde-f button{flex:0 0 auto;padding:8px 10px;background:#fff;color:#657069;border-color:#d8e2d5;font-size:11px}.mde-f button.on{background:#edf5e8;color:#4f901a;border-color:#8bc53f}.mde-l{display:grid;gap:8px}.mde-e{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px;border:1px solid #e0e8dd;border-radius:15px;background:#fbfcfa}.mde-i{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#edf5e8;font-size:21px}.mde-m{min-width:0}.mde-m b{display:block;font-size:14px}.mde-m small{display:block;margin-top:3px;color:#6b756e;font-size:12px;line-height:1.35;overflow-wrap:anywhere}.mde-a{display:flex;align-items:center;gap:7px}.mde-w{text-align:right}.mde-w b{display:block;color:#4f901a;font-size:17px;white-space:nowrap}.mde-w small{display:block;color:#77837a;font-size:10px}.mde-del{width:38px;height:38px;border:1px solid #efc8c5;border-radius:12px;background:#fff2f1;color:#b42318;font-size:18px;font-weight:900}.mde-empty{padding:22px;border:1px dashed #cfdacb;border-radius:15px;text-align:center;color:#6b756e}.mde-quick{border:1px solid #cfe0c5;background:#edf5e8;color:#4f901a;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:900;white-space:nowrap}body.view-management:not(.mgmt-light) .mde{background:#111914;color:#eef4ee;border-color:#2b3b30}body.view-management:not(.mgmt-light) .mde-k div,body.view-management:not(.mgmt-light) .mde-x div,body.view-management:not(.mgmt-light) .mde-e,body.view-management:not(.mgmt-light) .mde-c button,body.view-management:not(.mgmt-light) .mde-c input{background:#172019;color:#eef4ee;border-color:#2c3b31}@media(max-width:700px){.mde{padding:14px}.mde h2{font-size:18px}.mde-k{grid-template-columns:1fr 1fr}.mde-x{grid-template-columns:1fr}.mde-e{grid-template-columns:38px minmax(0,1fr) auto}.mde-i{width:38px;height:38px}.mde-a{gap:5px}.mde-del{width:36px;height:36px}}
@@ -14356,3 +14347,12 @@ render();
 </script>
 <!-- /FLORESQ RESCUE COCKPIT AND LEGEND V9 -->
 
+<!-- FLORESQ STRUCTURE FIX V10 -->
+<style id="floresq-operational-rescue-teaser-removal-v10">
+body.view-operational #rescueTeaser,
+body.view-operational .rescue-teaser {display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;}
+body.view-management #rescueTeaser{display:none!important;}
+</style>
+<!-- /FLORESQ STRUCTURE FIX V10 -->
+</body>
+</html>
