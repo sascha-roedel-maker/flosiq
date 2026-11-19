@@ -13243,3 +13243,147 @@ body.view-management.mgmt-light .fr-rescue-advice{background:#eaf6fc!important;c
 })();
 </script>
 <!-- /FLORESQ MANAGEMENT LIGHT RESCUE COCKPIT -->
+
+
+<!-- FLORESQ COCKPIT RETTUNGSBILANZ 2026-11-19 -->
+<style id="floresq-cockpit-rettungsbilanz-style">
+.fr-cockpit-balance{margin:5px 0 18px;padding:19px 19px 16px;border:1px solid #dfe8e2;border-radius:22px;background:#fff;box-shadow:0 12px 32px rgba(30,69,44,.06);color:#1e342c}
+.fr-balance-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.fr-balance-head small{display:block;font-size:10px;font-weight:900;letter-spacing:.1em;color:#3a94bb}
+.fr-balance-head h3{margin:4px 0 5px;font-size:clamp(18px,2.8vw,22px);letter-spacing:-.45px;color:#183329}
+.fr-balance-head p{font-size:12px;color:#6c7972;line-height:1.5;margin:0;max-width:580px}
+.fr-balance-range{white-space:nowrap;font-size:11px;font-weight:800;color:#5b7167;background:#f0f7f3;padding:7px 10px;border-radius:10px}
+.fr-balance-chart{padding:13px 13px 9px;border-radius:17px;border:1px solid #e4ebe8;background:#fbfdfc}
+.fr-balance-legend{display:flex;flex-wrap:wrap;gap:8px 18px;color:#597268;font-size:11px;font-weight:800;margin-bottom:10px}
+.fr-balance-legend span{display:inline-flex;align-items:center;gap:7px}
+.fr-balance-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.fr-balance-dot.rescue{background:#238fd0}.fr-balance-dot.disposed{background:#d78a32}
+.fr-balance-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding-bottom:1px}
+.fr-balance-bars{display:grid;grid-template-columns:repeat(var(--balance-cols,7),minmax(0,1fr));gap:8px;min-width:100%;padding:8px 3px 2px}
+.fr-balance-day{min-width:0;display:grid;grid-template-rows:30px 105px 30px;gap:3px;align-items:end;text-align:center}
+.fr-balance-values{font-size:10px;font-variant-numeric:tabular-nums;font-weight:900;display:flex;justify-content:center;align-items:end;gap:5px;white-space:nowrap}
+.fr-balance-values .saved{color:#1679b3}.fr-balance-values .lost{color:#ad6a21}
+.fr-balance-columns{border-bottom:1px solid #d9e3dc;display:flex;align-items:end;justify-content:center;gap:5px;height:105px}
+.fr-balance-bar{display:block;width:min(44%,26px);height:var(--height,0px);min-height:0;border-radius:5px 5px 0 0}
+.fr-balance-bar.saved{background:linear-gradient(180deg,#53b8e4,#1877ac)}.fr-balance-bar.lost{background:linear-gradient(180deg,#edb065,#c17c2a)}
+.fr-balance-date{font-size:10px;font-weight:800;line-height:1.25;color:#63766c;overflow-wrap:anywhere;align-self:start}
+.fr-balance-empty{padding:18px 8px;color:#6e7b73;font-size:12px;text-align:center}
+.fr-balance-bottom{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:13px}
+.fr-balance-breakdown{background:#f8fbf7;border:1px solid #e7ede6;padding:15px;border-radius:16px}
+.fr-balance-breakdown-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:12px}
+.fr-balance-breakdown-head b{font-size:13px}.fr-balance-breakdown-head strong{font-size:17px;font-variant-numeric:tabular-nums;color:#293c31}
+.fr-balance-category{margin-top:10px}.fr-balance-category-top{display:flex;justify-content:space-between;gap:6px;font-size:11px}
+.fr-balance-category-top span{color:#61736a;font-weight:750}.fr-balance-category-top b{font-variant-numeric:tabular-nums;color:#26382e}
+.fr-balance-track{height:6px;border-radius:99px;background:#e4eae5;overflow:hidden;margin-top:5px}
+.fr-balance-fill{height:100%;width:var(--share,0%);background:var(--color,#8bc53f);border-radius:99px}
+.fr-balance-explain{background:#edf7fc;border:1px solid #dceff7;border-radius:16px;padding:15px;color:#345b70}
+.fr-balance-explain b{font-size:13px;color:#204d63}.fr-balance-explain p{font-size:11px;line-height:1.6;margin:8px 0 0}
+.fr-balance-explain .fr-balance-detail{margin-top:12px;padding-top:10px;border-top:1px solid #d0e7f3}
+body.view-management.mgmt-light .fr-cockpit-balance{background:#fff}
+@media(max-width:760px){
+ .fr-cockpit-balance{padding:15px 12px;border-radius:19px}
+ .fr-balance-bottom{grid-template-columns:1fr}
+ .fr-balance-bars{gap:5px}.fr-balance-values{font-size:9px;gap:3px}
+ .fr-balance-day{grid-template-rows:29px 100px 32px}
+ .fr-balance-columns{height:100px}
+ .fr-balance-date{font-size:9px}
+}
+</style>
+
+
+<script id="floresq-cockpit-rettungsbilanz-script">
+(function setupFloresqRettungsbilanz(){
+ "use strict";
+ const el=id=>document.getElementById(id);
+ const pulse=el("frManagementPulse"),hero=el("frRescueHero");
+ if(!pulse&&!hero)return;
+ const chart=document.createElement("section");
+ chart.id="frCockpitBalance";
+ chart.className="fr-cockpit-balance";
+ chart.dataset.mgmtSpace="cockpit";
+ chart.setAttribute("aria-labelledby","frBalanceTitle");
+ chart.innerHTML=
+  '<div class="fr-balance-head"><div><small>TEAMLEISTUNG · FOOD RESCUE</small><h3 id="frBalanceTitle">Rettung und Abfall im Verlauf</h3><p>Was hat das Team zur Wiederverwendung gesichert, und was wurde nach der Ausgabe entsorgt?</p></div><span class="fr-balance-range" id="frBalanceRange">Zeitraum</span></div>'+
+  '<div class="fr-balance-chart"><div class="fr-balance-legend"><span><i class="fr-balance-dot rescue"></i>Zur Wiederverwendung gesichert</span><span><i class="fr-balance-dot disposed"></i>Überproduktion entsorgt</span></div><div class="fr-balance-scroll"><div class="fr-balance-bars" id="frBalanceBars" role="img" aria-label="Rettung und entsorgte Überproduktion je Zeitraum"></div></div></div>'+
+  '<div class="fr-balance-bottom"><div class="fr-balance-breakdown"><div class="fr-balance-breakdown-head"><b>Woraus besteht unser Abfall?</b><strong id="frBalanceTotal">—</strong></div><div id="frBalanceCategories"></div></div>'+
+  '<div class="fr-balance-explain"><b>So liest du die Zahlen</b><p><strong>Abfall pro Essen</strong> bleibt unsere Hauptkennzahl. Es werden alle vier Abfallarten der auswertbaren Mittagsverpflegung berücksichtigt – ohne Rettungsgewicht.</p><p><strong>Rettung</strong> zeigt die zur Wiederverwendung gesicherten Mengen. Das ist eine Teamleistung, aber noch kein Nachweis, wie viel endgültig verzehrt wurde.</p><p class="fr-balance-detail">Mehrfachwiegungen sind möglich. Deshalb werden Rettung und Abfall bewusst <strong>nicht voneinander abgezogen</strong>. Die Abfallarten zeigen alle tatsächlich entsorgten Mengen des gewählten Zeitraums.</p></div></div>';
+ (pulse||hero).insertAdjacentElement("afterend",chart);
+ // Die bekannte Kennzahl bleibt unverändert berechnet; nur die Bezeichnung ist klarer.
+ if(pulse){
+   const perMeal=el("frPulseFoodLoss")?.closest(".fr-pulse-card");
+   if(perMeal){
+     const label=perMeal.querySelector("span");if(label)label.textContent="Abfall pro Essen";
+     pulse.insertBefore(perMeal,pulse.firstElementChild);
+   }
+   const rescued=el("frPulseRescue")?.closest(".fr-pulse-card");
+   if(rescued){const title=rescued.querySelector("span");if(title)title.textContent="Zur Wiederverwendung gesichert";}
+   const waste=el("frPulseWaste")?.closest(".fr-pulse-card");
+   if(waste){const title=waste.querySelector("span");if(title)title.textContent="Abfall gesamt";}
+ }
+ const kg=value=>(Math.max(0,Number(value)||0)).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
+ const n=value=>Math.max(0,Number(value)||0);
+ const dayLabel=iso=>{const p=String(iso).split("-");return p.length===3?p[2]+"."+p[1]:"";};
+ const specs=[
+  {id:"overproduction",label:"Überproduktion",color:"#d78a32"},
+  {id:"prep",label:"Putzverlust",color:"#e0b341"},
+  {id:"plate",label:"Tellerrücklauf",color:"#3e94c6"},
+  {id:"storage",label:"MHD / Lagerverlust",color:"#98a29c"}
+ ];
+ function render(){
+  try{
+   if(typeof state==="undefined"||typeof rangeBounds!=="function"||typeof periodData!=="function")return;
+   const bounds=rangeBounds(Number(state.days)||7);
+   const period=periodData(bounds.start,bounds.end);
+   const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(bounds.start,bounds.end):null;
+   if(!rescue)return;
+   const active=document.querySelector('#mgmtSpaceNav [data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+   chart.classList.toggle("mgmt-space-hidden",active!=="cockpit");
+   chart.setAttribute("aria-hidden",active==="cockpit"?"false":"true");
+   el("frBalanceRange").textContent=dayLabel(bounds.start)+(bounds.start===bounds.end?"":" – "+dayLabel(bounds.end));
+   el("frBalanceTotal").textContent=kg(period.w);
+   const cats=period.cats||{};
+   el("frBalanceCategories").innerHTML=specs.map(c=>{
+    const value=n(cats[c.id]),share=n(period.w)>0?Math.min(100,value/n(period.w)*100):0;
+    return '<div class="fr-balance-category"><div class="fr-balance-category-top"><span>'+c.label+'</span><b>'+kg(value)+'</b></div><div class="fr-balance-track"><div class="fr-balance-fill" style="--share:'+share.toFixed(2)+'%;--color:'+c.color+'"></div></div></div>';
+   }).join("");
+   const days=Number(state.days)||7,byKey=new Map(),byDate=new Map();
+   const start=Date.parse(bounds.start+"T00:00:00Z"),end=Date.parse(bounds.end+"T00:00:00Z");
+   if(!Number.isFinite(start)||!Number.isFinite(end))return;
+   let index=0;
+   for(let t=start;t<=end&&index<375;t+=86400000,index++){
+    const date=new Date(t).toISOString().slice(0,10);
+    const key=days>=365?date.slice(0,7):days>=30?"W"+(Math.floor(index/7)+1):date;
+    let b=byKey.get(key);
+    if(!b){b={key,from:date,to:date,rescued:0,disposed:0};byKey.set(key,b);}
+    b.to=date;byDate.set(date,b);
+   }
+   for(const row of rescue.rescues||[]){const b=byDate.get(row.date);if(b)b.rescued+=n(row.weightKg);}
+   for(const row of rescue.waste||[]){const b=byDate.get(row.date);if(b)b.disposed+=n(row.weight_kg);}
+   const buckets=[...byKey.values()];
+   const top=Math.max(.001,...buckets.map(b=>Math.max(b.rescued,b.disposed)));
+   const target=el("frBalanceBars");target.style.setProperty("--balance-cols",String(Math.max(1,buckets.length)));
+   target.style.minWidth=buckets.length>9?Math.max(580,buckets.length*64)+"px":"100%";
+   target.innerHTML=buckets.map(b=>{
+    const label=days>=365?new Date(b.from+"T12:00:00Z").toLocaleDateString("de-DE",{month:"short",year:"2-digit"}):b.from===b.to?dayLabel(b.from):dayLabel(b.from)+"–"+dayLabel(b.to);
+    const sh=b.rescued>0?Math.max(3,Math.round(b.rescued/top*100)):0;
+    const dh=b.disposed>0?Math.max(3,Math.round(b.disposed/top*100)):0;
+    const sv=n(b.rescued).toLocaleString("de-DE",{maximumFractionDigits:3});
+    const dv=n(b.disposed).toLocaleString("de-DE",{maximumFractionDigits:3});
+    return '<div class="fr-balance-day" title="'+label+': '+kg(b.rescued)+' gesichert, '+kg(b.disposed)+' entsorgt"><div class="fr-balance-values"><span class="saved">'+sv+'</span><span class="lost">'+dv+'</span></div><div class="fr-balance-columns"><i class="fr-balance-bar saved" style="--height:'+sh+'px"></i><i class="fr-balance-bar lost" style="--height:'+dh+'px"></i></div><div class="fr-balance-date">'+label+'</div></div>';
+   }).join("")||'<div class="fr-balance-empty">Für diesen Zeitraum liegen noch keine Daten vor.</div>';
+   target.setAttribute("aria-label","Gesichert: "+kg(rescue.rescuedKg)+", Überproduktion entsorgt: "+kg(rescue.wasteKg)+". Die Balken zeigen getrennte Vorgänge.");
+  }catch(error){console.warn("FLORESQ Cockpit Rettungsbilanz",error);}
+ }
+ if(typeof renderAnalytics==="function"){
+  const previousRenderAnalytics=renderAnalytics;
+  renderAnalytics=function(){const result=previousRenderAnalytics.apply(this,arguments);render();return result;};
+ }
+ const nav=el("mgmtSpaceNav");
+ if(nav)new MutationObserver(render).observe(nav,{attributes:true,subtree:true,attributeFilter:["class"]});
+ window.addEventListener("pageshow",render);
+ window.addEventListener("storage",event=>{if(["flosiq_rescues_v1","flosiq_rescue_decisions_v1"].includes(event.key))render();});
+ render();
+})();
+</script>
+<!-- /FLORESQ COCKPIT RETTUNGSBILANZ -->
+
