@@ -13937,6 +13937,13 @@ root.innerHTML=[
 '<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
 ].join("");
 top.insertAdjacentElement("afterend",root);
+const side=root.querySelector(".fq-hero-side");
+if(side){
+ const daily=document.createElement("div");
+ daily.id="fqDailyAvgTile";daily.className="fq-hero-tile fq-daily-average";
+ daily.innerHTML='<span>Ø ABFALL PRO WIEGETAG</span><strong id="fqDailyAvg">—</strong><small id="fqDailyAvgBasis">Nur Tage mit dokumentierten Wiegungen</small>';
+ side.appendChild(daily);
+}
 const basis=id("fqMealBasis");
 if(basis){
  const goalLine=document.createElement("div");goalLine.id="fqGoalGap";goalLine.className="fq-goal-chip";
@@ -14116,6 +14123,9 @@ function render(){
    ?f(p.mealsUsed,0)+" Essen · "+p.completeDays+" auswertbare Tage"+(p.excludedDays>0?" · "+p.excludedDays+" offen":"")
    :"Keine vollständig auswertbaren Essenstage";
   id("fqWasteSum").textContent=kg(p.w);
+  const trackedDays=new Set((p.es||[]).filter(row=>row&&["overproduction","plate","prep","storage"].includes(row.category)&&/^\d{4}-\d{2}-\d{2}$/.test(String(row.date||""))).map(row=>row.date)).size;
+  id("fqDailyAvg").textContent=trackedDays?kg(p.w/trackedDays):"—";
+  id("fqDailyAvgBasis").textContent=trackedDays?kg(p.w)+" ÷ "+trackedDays+" Wiegetag"+(trackedDays===1?"":"e"):"Noch keine Wiegetage im Zeitraum";
   id("fqRescueSum").textContent=kg(rescue.rescuedKg);
   id("fqRescueNote").textContent=n(rescue.count)+" erfasste Rettungen · keine Verzehrbestätigung";
   const gap=id("fqGoalGap");
@@ -14251,6 +14261,13 @@ panel.innerHTML=[
 '<div class="frc-panel frc-insight"><div class="frc-eyebrow">DEIN WICHTIGSTER HINWEIS</div><h3 id="frcInsightTitle">Rettungsbilanz</h3><p id="frcInsightText"></p><details><summary>Was bedeuten die Zahlen?</summary><p><b>Gesichert</b> heißt zur Wiederverwendung aufbewahrt und kann Mehrfacherfassungen enthalten. <b>Entsorgt</b> ist tatsächlich weggeworfene Überproduktion. Die Werte werden nicht voneinander abgezogen und ergeben keine endgültige Rettungsquote. Hygienische Freigaben sind separat zu prüfen.</p></details></div>'
 ].join("");
 old.insertAdjacentElement("beforebegin",panel);
+const rescueTile=panel.querySelector(".frc-mini");
+if(rescueTile){
+ const daily=document.createElement("div");
+ daily.className="frc-metric frc-daily-average";
+ daily.innerHTML='<span>Ø ÜBERPRODUKTION PRO WIEGETAG</span><strong id="frcDailyWaste">—</strong><small id="frcDailyBasis">Nur dokumentierte Wiegetage</small>';
+ rescueTile.appendChild(daily);
+}
 const n=v=>Math.max(0,Number(v)||0),f=(v,d=2)=>n(v).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d}),kg=v=>f(v)+" kg";
 const short=date=>{const a=String(date).split("-");return a.length===3?a[2]+"."+a[1]:"";};
 const curSpace=()=>nav?.querySelector('[data-mgmt-space-btn].active')?.dataset.mgmtSpaceBtn||"cockpit";
@@ -14286,6 +14303,9 @@ function render(){
   $("frcSaved").textContent=kg(r.rescuedKg);
   $("frcDisposed").textContent=kg(r.wasteKg);
   $("frcCount").textContent=String(r.count||0);
+  const wasteDays=new Set((state.entries||[]).filter(row=>row&&row.date>=b.start&&row.date<=b.end&&["overproduction","plate","prep","storage"].includes(row.category)).map(row=>row.date)).size;
+  $("frcDailyWaste").textContent=wasteDays?kg(r.wasteKg/wasteDays):"—";
+  $("frcDailyBasis").textContent=wasteDays?kg(r.wasteKg)+" ÷ "+wasteDays+" Wiegetag"+(wasteDays===1?"":"e"):"Noch keine Wiegetage im Zeitraum";
   $("frcHeroText").textContent=r.count?kg(r.rescuedKg)+" zur Wiederverwendung gesichert · "+kg(r.wasteKg)+" Überproduktion entsorgt. Unterschiedliche Vorgänge, keine Nettorettungsquote.":"Noch keine Rettungen gebucht · "+kg(r.wasteKg)+" Überproduktion entsorgt.";
   const {rows,byDate}=getBuckets(b.start,b.end,days);
   for(const item of r.rescues||[]){const day=byDate.get(item.date);if(day){day.rescued+=n(item.weightKg);day.count++;}}
@@ -14354,5 +14374,33 @@ body.view-operational .rescue-teaser {display:none!important;visibility:hidden!i
 body.view-management #rescueTeaser{display:none!important;}
 </style>
 <!-- /FLORESQ STRUCTURE FIX V10 -->
+<!-- FLORESQ Ø WIEGETAG COCKPIT V11 -->
+<style id="floresq-daily-average-v11">
+body.view-management #analytics #fqExecutive .fq-hero-side{grid-template-rows:repeat(3,minmax(0,1fr))!important}
+body.view-management #analytics #fqExecutive .fq-daily-average{
+ background:rgba(186,242,128,.08);
+ border-color:rgba(190,245,153,.22);
+}
+body.view-management #analytics #fqExecutive .fq-daily-average strong{color:#b9f18b}
+body.view-management #analytics #fqExecutive .fq-daily-average small{
+ font-size:10px;line-height:1.35;overflow-wrap:anywhere
+}
+body.view-management #analytics #frRescueCockpit .frc-mini{grid-template-rows:repeat(3,minmax(0,1fr))!important}
+body.view-management #analytics #frRescueCockpit .frc-daily-average{
+ background:rgba(117,186,169,.12);border-color:rgba(188,228,206,.24)
+}
+body.view-management #analytics #frRescueCockpit .frc-daily-average strong{color:#c1f39b}
+body.view-management #analytics #frRescueCockpit .frc-daily-average small{display:block;font-size:9px;color:#b9d1c8;line-height:1.4;overflow-wrap:anywhere}
+@media(max-width:760px){
+ body.view-management #analytics #fqExecutive .fq-hero-side{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:auto auto!important
+ }
+ body.view-management #analytics #fqExecutive .fq-daily-average{grid-column:1/-1!important}
+ body.view-management #analytics #frRescueCockpit .frc-mini{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:auto auto!important}
+ body.view-management #analytics #frRescueCockpit .frc-daily-average{grid-column:1/-1!important}
+}
+</style>
+<!-- /FLORESQ Ø WIEGETAG COCKPIT V11 -->
 </body>
 </html>
