@@ -13684,7 +13684,7 @@ body.view-management #analytics .fq-spark-wrap{min-width:0}
 .fq-spark-wrap .fq-spark{margin:0}
 @media(min-width:761px){
   .fq-spark-wrap{grid-column:1/-1}
-  .fq-spark-wrap .fq-spark{height:38px}
+  .fq-spark-wrap .fq-spark{height:82px!important;min-height:82px!important}
 }
 @media(max-width:760px){
   body.view-management #analytics .fq-hero{padding:17px 17px 18px!important}
@@ -13700,11 +13700,58 @@ body.view-management #analytics .fq-spark-wrap{min-width:0}
   body.view-management #analytics .fq-hero-tile strong{font-size:clamp(20px,5vw,25px)!important;margin:5px 0 3px!important;letter-spacing:-.3px!important;white-space:nowrap}
   body.view-management #analytics .fq-hero-tile small{font-size:9px!important}
   body.view-management #analytics .fq-spark-wrap{grid-column:1/-1}
-  body.view-management #analytics .fq-spark-wrap .fq-spark{height:40px!important}
+  body.view-management #analytics .fq-spark-wrap .fq-spark{height:82px!important;min-height:82px!important}
   body.view-management #analytics .fq-panels{margin-top:10px!important}
   body.view-management #analytics .fq-panel{padding:16px!important}
   .fq-management-shortcut{margin-bottom:9px}
   .fq-management-shortcut button{min-height:38px}
+}
+
+
+/* Balkenhöhen dürfen niemals in die Beschriftung hineinragen. */
+body.view-management #analytics .fq-spark-wrap{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  grid-column:1/-1!important;
+  min-width:0!important;
+  padding-top:16px!important;
+}
+body.view-management #analytics .fq-spark-wrap .fq-spark-title{
+  display:block!important;
+  position:static!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  height:auto!important;
+  min-height:18px!important;
+  line-height:1.5!important;
+  color:#afcbbd!important;
+  white-space:normal!important;
+  transform:none!important;
+  z-index:auto!important;
+}
+body.view-management #analytics .fq-spark-wrap .fq-spark{
+  display:flex!important;
+  position:relative!important;
+  width:100%!important;
+  height:82px!important;
+  min-height:82px!important;
+  max-height:none!important;
+  flex:0 0 82px!important;
+  overflow:hidden!important;
+  padding:6px 3px 0!important;
+  margin:0!important;
+  align-items:flex-end!important;
+  border-bottom:1px solid #47655a!important;
+}
+body.view-management #analytics .fq-spark-wrap .fq-spark i{
+  display:block!important;
+  max-height:68px!important;
+  min-height:0!important;
+  align-self:flex-end!important;
+  flex-shrink:1!important;
+  transform:none!important;
 }
 
 </style>
