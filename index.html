@@ -13754,6 +13754,80 @@ body.view-management #analytics .fq-spark-wrap .fq-spark i{
   transform:none!important;
 }
 
+
+/* v7: Verlauf als eigenständiges Panel. Keine Überschneidung mit Kennzahlen mehr. */
+body.view-management #analytics #fqExecutive .fq-trend-panel{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:auto 90px!important;
+ row-gap:12px!important;
+ align-content:start!important;
+ position:relative!important;
+ isolation:isolate!important;
+ margin:12px 0 0!important;
+ padding:15px 19px 16px!important;
+ border:1px solid #e0ebe3!important;
+ border-radius:18px!important;
+ background:#fff!important;
+ box-shadow:0 5px 19px rgba(23,57,39,.045)!important;
+ min-width:0!important;
+ overflow:hidden!important;
+}
+body.view-management #analytics #fqExecutive .fq-trend-panel>.fq-spark-title{
+ position:static!important;
+ display:block!important;
+ width:100%!important;
+ height:auto!important;
+ min-height:20px!important;
+ line-height:20px!important;
+ font-size:11px!important;
+ font-weight:900!important;
+ color:#597466!important;
+ letter-spacing:.07em!important;
+ margin:0!important;
+ padding:0!important;
+ transform:none!important;
+ white-space:normal!important;
+}
+body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark{
+ position:relative!important;
+ display:flex!important;
+ width:100%!important;
+ height:90px!important;
+ min-height:90px!important;
+ max-height:90px!important;
+ flex:none!important;
+ gap:5px!important;
+ align-items:flex-end!important;
+ margin:0!important;
+ padding:12px 2px 0!important;
+ border-bottom:1px solid #d5e3d8!important;
+ overflow:hidden!important;
+}
+body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark>i{
+ position:relative!important;
+ display:block!important;
+ align-self:flex-end!important;
+ flex:1 1 0!important;
+ min-width:0!important;
+ width:auto!important;
+ max-width:32px!important;
+ max-height:65px!important;
+ min-height:0!important;
+ transform:none!important;
+}
+@media(max-width:760px){
+ body.view-management #analytics #fqExecutive .fq-trend-panel{
+  grid-template-rows:auto 76px!important;
+  row-gap:11px!important;
+  padding:14px 17px 16px!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark{
+  height:76px!important;min-height:76px!important;max-height:76px!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark>i{max-height:55px!important}
+}
+
 </style>
 
 
@@ -13791,11 +13865,16 @@ shortcut.innerHTML='<span>MANAGEMENT · AUSWERTUNG</span><button type="button" i
 nav?.insertAdjacentElement("afterend",shortcut);
 id("fqInlineCapture")?.addEventListener("click",()=>id("quickAddBtn")?.click());
 // Die Mini-Trendgrafik folgt den beiden wichtigsten Nebenzahlen.
-const heroGrid=root.querySelector(".fq-hero-grid");
+const hero=root.querySelector(".fq-hero");
 const sparkTitle=root.querySelector(".fq-spark-title"),sparkBars=id("fqSpark");
-if(heroGrid&&sparkTitle&&sparkBars){
- const holder=document.createElement("div");holder.className="fq-spark-wrap";
- holder.appendChild(sparkTitle);holder.appendChild(sparkBars);heroGrid.appendChild(holder);
+if(hero&&sparkTitle&&sparkBars){
+ const panel=document.createElement("section");
+ panel.className="fq-trend-panel";
+ panel.setAttribute("aria-label","Abfall pro Essen im Zeitverlauf");
+ sparkTitle.textContent="VERLAUF · ABFALL PRO ESSEN";
+ panel.appendChild(sparkTitle);
+ panel.appendChild(sparkBars);
+ hero.insertAdjacentElement("afterend",panel);
 }
 // Kurzformel sichtbar, exakter Rechenweg nur auf Wunsch.
 const hint=id("fqCostHint");
