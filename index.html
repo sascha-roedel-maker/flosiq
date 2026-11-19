@@ -3579,7 +3579,9 @@ body.view-management #capture .servicebtn{justify-content:flex-start}
   <div><span>Rettung erfasst</span><b id="frAnalysisRescued">—</b></div>
   <div><span>Überproduktion entsorgt</span><b id="frAnalysisDisposed">—</b></div>
   <div><span>Food Loss / Portion</span><b id="frAnalysisFoodLoss">—</b></div>
+  <div><span>Rettung / 100 Essen</span><b id="frAnalysisPer100Meals">—</b></div>
  </div>
+ <div class="fr-performance-trend" id="frRescuePerformanceTrend">Ein Trend wird angezeigt, sobald vergleichbare Zeiträume vorliegen.</div>
  <div class="fr-trend-legend"><span><i class="fr-swatch rescue"></i> Zur Rettung erfasst</span><span><i class="fr-swatch waste"></i> Überproduktion entsorgt</span></div>
  <div class="fr-trend-grid" id="frRescueBars" role="img" aria-label="Gewichtsvergleich nach Zeitraum"></div>
  <p class="fr-rescue-advice" id="frRescueAdvice">Keine Rettungsdaten vorhanden.</p>
@@ -12630,10 +12632,11 @@ body.view-management #analytics .rescue-analysis-kpi b{font-size:23px!important}
 .fr-panel-title span{display:block;color:#1682bc;font-size:10px;font-weight:900;letter-spacing:1px}
 .fr-panel-title h3{margin:4px 0 0;font-size:21px;letter-spacing:-.5px}
 .fr-panel-title small{color:var(--muted);font-size:11px;align-self:center}
-.fr-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0 19px}
+.fr-context-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:16px 0 19px}
 .fr-context-grid>div{padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line);min-width:0}
 .fr-context-grid span{font-size:10px;color:var(--muted);font-weight:750;display:block}
 .fr-context-grid b{font-size:20px;font-weight:900;margin-top:6px;display:block;font-variant-numeric:tabular-nums}
+.fr-performance-trend{font-size:12px;line-height:1.45;color:var(--muted);margin:0 0 14px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .fr-trend-legend{display:flex;gap:15px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-weight:800}
 .fr-trend-legend>span{display:flex;align-items:center;gap:6px}
 .fr-swatch{display:inline-block;width:10px;height:10px;border-radius:3px}
@@ -12665,7 +12668,7 @@ body.view-management:not(.mgmt-light) .fr-context-grid>div{background:#152019}
  .fr-rescue-aside button{grid-column:1/-1;margin-top:4px}
  body.view-management #analytics .rescue-analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
  .fr-rescue-timeline{padding:15px 12px}
- .fr-context-grid{gap:6px}.fr-context-grid>div{padding:10px 7px}
+ .fr-context-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.fr-context-grid>div{padding:10px 7px}
  .fr-context-grid span{font-size:9px}.fr-context-grid b{font-size:15px}
  .fr-period-values{font-size:8px}
  .fr-period-label{font-size:9px}
@@ -12710,6 +12713,25 @@ function rescueSummary(start,end){
  };
 }
 window.FLORESQ_RESCUE_SUMMARY=rescueSummary;
+/* Berichtstaugliche Rettungskennzahlen – bewusst keine fingierte Erfolgs- oder QM-Quote. */
+function rescueReport(start,end){
+ const data=rescueSummary(start,end);
+ const meals=(typeof state!=="undefined"&&Array.isArray(state.meals)?state.meals:[])
+  .filter(row=>row&&inPeriod(row.date,start,end))
+  .reduce((sum,row)=>sum+safeWeight(row.meals),0);
+ const dishes=new Map();
+ for(const rescue of data.rescues){
+  const raw=String(rescue.dish||"").trim();
+  const label=!raw||/^(Verwendung noch offen|Nicht näher bezeichnetes Gericht|Unbekannt)$/i.test(raw)?"Verwendung noch offen":raw;
+  const key=label.toLocaleLowerCase("de-DE");
+  const entry=dishes.get(key)||{label,kg:0,count:0};
+  entry.kg+=safeWeight(rescue.weightKg);entry.count++;
+  dishes.set(key,entry);
+ }
+ return {...data,meals,kgPer100Meals:meals>0?data.rescuedKg*100/meals:null,
+  dishes:[...dishes.values()].sort((a,b)=>b.kg-a.kg||a.label.localeCompare(b.label,"de"))};
+}
+window.FLORESQ_RESCUE_REPORT=rescueReport;
 function isoUTC(time){return new Date(time).toISOString().slice(0,10);}
 function utcDate(iso){const [y,m,d]=String(iso).split("-").map(Number);return Date.UTC(y,m-1,d);}
 function shortDate(iso){const p=String(iso).split("-");return p.length===3?p[2]+"."+p[1]:iso;}
@@ -12733,7 +12755,8 @@ function periodBuckets(start,end,days){
 }
 function renderFocus(){
  if(typeof state==="undefined"||typeof rangeBounds!=="function"||!$id("frRescueHero"))return;
- const b=rangeBounds(state.days), data=rescueSummary(b.start,b.end);
+ const b=rangeBounds(state.days), data=rescueReport(b.start,b.end);
+ const prevBounds=rangeBounds(state.days,1), previous=rescueReport(prevBounds.start,prevBounds.end);
  const rvalue=$id("frRescueHeroKg"),wvalue=$id("frRescueHeroWaste");
  if(rvalue)rvalue.textContent=unitKg(data.rescuedKg);
  if(wvalue)wvalue.textContent=unitKg(data.wasteKg);
@@ -12746,6 +12769,17 @@ function renderFocus(){
  let foodLoss=null;
  try{foodLoss=typeof periodData==="function"?periodData(b.start,b.end).k:null;}catch(_){}
  const k=$id("frAnalysisFoodLoss");if(k)k.textContent=foodLoss==null?"—":foodLoss+" g";
+ const rel=$id("frAnalysisPer100Meals");
+ if(rel)rel.textContent=data.kgPer100Meals==null?"—":localeKg(data.kgPer100Meals)+" kg";
+ const trend=$id("frRescuePerformanceTrend");
+ if(trend){
+  if(data.kgPer100Meals==null)trend.textContent="Für eine vergleichbare Rettungsleistung fehlen noch Essenszahlen im Zeitraum.";
+  else if(previous.kgPer100Meals==null)trend.textContent="Rettungsleistung: "+localeKg(data.kgPer100Meals)+" kg je 100 Essen. Für einen Vergleich fehlen noch Vormonats- bzw. Vorperiodendaten.";
+  else{
+   const change=data.kgPer100Meals-previous.kgPer100Meals;
+   trend.textContent="Rettung je 100 Essen: "+(change>0?"+":"")+localeKg(change)+" kg gegenüber dem vorherigen Zeitraum ("+localeKg(previous.kgPer100Meals)+" kg). Kein Branchen-Benchmark und kein QM-Nachweis.";
+  }
+ }
  const dateLabel=$id("frRescueRange");
  if(dateLabel)dateLabel.textContent=shortDate(b.start)+(b.start===b.end?"":" – "+shortDate(b.end));
  /* Die Reihe erfasst dokumentierte Mengen und setzt sie nicht mit QM-Freigaben gleich. */
