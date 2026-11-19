@@ -12266,7 +12266,7 @@ dialog{border-radius:26px}.modal{padding:23px}.modal h3{font-size:22px;letter-sp
       :"Unser erster dokumentierter Rettungsstand – darauf bauen wir auf.";
     doc.text(monthRescueComparison,18,207);
     doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(6.4);
-    doc.text("Erfasstes Gewicht, noch keine Bestätigung der hygienischen Freigabe.",18,216);
+    doc.text("Rettungsdaten dieses Geräts; Gewicht ist keine hygienische Freigabe.",18,216);
     var tips=teamTips(top&&top.value>0?top.id:null);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("Drei einfache Tipps für unseren nächsten Monat",12,221);
     tips.forEach(function(tip,i){var x=12+i*63;doc.setFillColor.apply(doc,i===0?light:i===1?[237,246,250]:[245,247,238]);doc.roundedRect(x,228,59,43,3,3,"F");doc.setFillColor.apply(doc,i===0?green:i===1?blue:yellow);doc.circle(x+8,237,4,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(String(i+1),x+8,239.5,{align:"center"});doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(doc.splitTextToSize(tip,49),x+5,247);});
 
@@ -12924,7 +12924,7 @@ function renderFocus(){
   else if(previous.kgPer100Meals==null)trend.textContent="Rettungsleistung: "+localeKg(data.kgPer100Meals)+" kg je 100 Essen. Für einen Vergleich fehlen noch Vormonats- bzw. Vorperiodendaten.";
   else{
    const change=data.kgPer100Meals-previous.kgPer100Meals;
-   trend.textContent="Rettung je 100 Essen: "+(change>0?"+":"")+localeKg(change)+" kg gegenüber dem vorherigen Zeitraum ("+localeKg(previous.kgPer100Meals)+" kg). Kein Branchen-Benchmark und kein QM-Nachweis.";
+   trend.textContent="Rettung je 100 Essen: "+(change>0?"+":change<0?"−":"")+localeKg(Math.abs(change))+" kg gegenüber dem vorherigen Zeitraum ("+localeKg(previous.kgPer100Meals)+" kg). Kein Branchen-Benchmark und kein QM-Nachweis.";
   }
  }
  const dateLabel=$id("frRescueRange");
