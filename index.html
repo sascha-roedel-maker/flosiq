@@ -14017,13 +14017,6 @@ function displaySpark(bounds,days){
   if(entry.date>=bounds.start&&entry.date<=bounds.end)
    waste.set(entry.date,(waste.get(entry.date)||0)+n(entry.weight_kg));
  }
- function week(d){
-  const t=new Date(d+"T12:00:00Z");
-  t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));
-  const yr=t.getUTCFullYear(),first=new Date(Date.UTC(yr,0,1));
-  const num=Math.ceil((((t-first)/86400000)+1)/7);
-  return{key:yr+"-W"+num,label:"KW "+String(num).padStart(2,"0")};
- }
  const grouped=new Map();
  const first=Date.parse(bounds.start+"T00:00:00Z"),last=Date.parse(bounds.end+"T00:00:00Z");
  let i=0;
@@ -14032,7 +14025,7 @@ function displaySpark(bounds,days){
   const d=new Date(date+"T12:00:00Z"),isoMonth=date.slice(0,7);
   let key,label;
   if(days===365){key=isoMonth;label=d.toLocaleDateString("de-DE",{month:"short"});}
-  else if(days===30){const w=week(date);key=w.key;label=w.label;}
+  else if(days===30){key=date;label=d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});}
   else{key=date;label=days===1?d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit"});}
   const row=grouped.get(key)||{key,label,meals:0,waste:0,days:0};
   if(validMeals.has(date)&&waste.has(date)){
@@ -14065,10 +14058,19 @@ function displaySpark(bounds,days){
   const diff=Math.round(lastPresent.g-prior.g);
   trend=diff<0?" · zuletzt "+Math.abs(diff)+" g besser":diff>0?" · zuletzt "+diff+" g schlechter":" · zuletzt unverändert";
  }
- headline.textContent=hasData.length+" von "+points.length+" Zeitabschnitten auswertbar"+trend;
+ headline.textContent=hasData.length+" von "+points.length+(days===30?" Tagen":days===365?" Monaten":" Zeitabschnitten")+" auswertbar"+trend;
+ let guide=pane.querySelector(".fq-scroll-guide");
+ if(!guide){guide=document.createElement("div");guide.className="fq-scroll-guide";chart.insertAdjacentElement("beforebegin",guide);}
+ guide.hidden=days!==30&&days!==365;
+ guide.textContent=days===30?"Einzelne Tage · seitlich wischen für den ganzen Monat ↔":"Monate · seitlich wischen ↔";
+ chart.style.setProperty("--fq-column-width",days===30?"76px":days===365?"78px":"74px");
  chart.style.setProperty("--fq-cols",String(Math.max(1,points.length)));
  chart.style.setProperty("--fq-goal-bottom",targetY.toFixed(1)+"px");
- chart.innerHTML='<div class="fq-target-line" aria-hidden="true"></div>'+points.map(p=>{
+ const periodKey=days+"|"+bounds.start+"|"+bounds.end;
+ const periodChanged=chart.dataset.fqPeriod!==periodKey;
+ chart.dataset.fqPeriod=periodKey;
+ const priorScroll=chart.scrollLeft;
+ chart.innerHTML='<div class="fq-chart-track"><div class="fq-target-line" aria-hidden="true"></div>'+points.map(p=>{
   const known=p.g!==null,bar=known?Math.max(2,scale(p.g)):0;
   const cls=known?(p.g<=50?"top":p.g<=75?"good":p.g<=108?"middle":"high"):"missing";
   const value=known?Math.round(p.g).toLocaleString("de-DE")+" g":"—";
@@ -14076,7 +14078,11 @@ function displaySpark(bounds,days){
    '<span class="fq-week-value">'+value+'</span>'+
    '<div class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</div>'+
    '<span class="fq-week-label">'+p.label+'</span></div>';
- }).join("");
+ }).join("")+'</div>';
+ if(periodChanged&&(days===30||days===365)){
+  const recent=points.reduce((last,p,index)=>p.g!==null?index:last,0);
+  chart.scrollLeft=Math.max(0,recent*(days===30?84:86)-chart.clientWidth*0.62);
+ }else chart.scrollLeft=priorScroll;
  chart.setAttribute("aria-label","Abfall pro Essen: "+points.map(p=>p.label+" "+(p.g===null?"keine Daten":Math.round(p.g)+" Gramm")).join("; ")+". Ziel 75 Gramm.");
  note.innerHTML='<b>75 g</b> · FLORESQ-Ziel aus UAW-Ergebnissen nach Verbesserungen (2020). <b>108 g</b> · damaliger Ø vor Maßnahmen. <b>≤ 50 g</b> · ambitioniertes Spitzenniveau. <span>Vergleich nur bei gleichem Messumfang.</span>';
 }
@@ -14478,5 +14484,67 @@ body.view-management #analytics #frRescueCockpit .frc-daily-rescue strong{color:
 }
 </style>
 <!-- /FLORESQ DAILY RESCUE KPI V12 -->
+
+<!-- FLORESQ IPHONE HEADROOM + DAILY CHART V13 -->
+<style id="floresq-daily-chart-v13">
+body.view-management #analytics #fqExecutive .fq-trend-panel>#fqSpark{
+ display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+ overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;
+ overscroll-behavior-x:contain;touch-action:pan-x pan-y;
+ padding:6px 0 10px!important;margin:0!important;border:0!important;
+}
+body.view-management #analytics #fqExecutive #fqSpark>.fq-chart-track{
+ display:grid!important;position:relative!important;
+ grid-template-columns:repeat(var(--fq-cols,7),minmax(var(--fq-column-width,74px),1fr))!important;
+ gap:8px!important;align-items:stretch!important;
+ width:max-content!important;min-width:100%!important;padding:6px 2px!important;
+}
+body.view-management #analytics #fqExecutive #fqSpark .fq-week-cell{min-width:0!important;grid-template-rows:24px 110px 31px!important}
+body.view-management #analytics #fqExecutive #fqSpark .fq-week-value{font-size:11px!important;white-space:nowrap!important}
+body.view-management #analytics #fqExecutive #fqSpark .fq-week-label{font-size:10px!important;white-space:nowrap!important;overflow-wrap:normal!important}
+body.view-management #analytics #fqExecutive #fqSpark .fq-target-line{
+ left:2px!important;right:2px!important;bottom:calc(6px + 31px + 9px + var(--fq-goal-bottom,65px))!important;
+}
+body.view-management #analytics #fqExecutive .fq-scroll-guide{
+ background:#f1f8f3;padding:7px 10px;border-radius:10px;
+ color:#598271;font-size:10px;line-height:1.45;font-weight:850;
+}
+body.view-management #analytics #fqExecutive .fq-scroll-guide[hidden]{display:none!important}
+@media(display-mode:standalone){
+ body.view-management .shell{padding-top:calc(20px + env(safe-area-inset-top,0px))!important}
+ body.view-management::before{
+  content:"";position:fixed;top:0;left:0;right:0;z-index:2147480000;
+  height:calc(env(safe-area-inset-top,0px) + 6px);background:#f4f8f3;
+  pointer-events:none;
+ }
+}
+@media(max-width:760px){
+ body.view-management #analytics #fqExecutive .fq-hero-grid{
+  grid-template-columns:minmax(0,1fr)!important;gap:16px!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-hero-grid>div:first-child{min-width:0!important}
+ body.view-management #analytics #fqExecutive .fq-hero-side{
+  width:100%!important;min-width:0!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-hero-side .fq-hero-tile{
+  min-width:0!important;padding:13px!important;overflow-wrap:anywhere;
+ }
+ body.view-management #analytics #fqExecutive .fq-hero-side .fq-hero-tile strong{
+  font-size:clamp(18px,4.65vw,26px)!important;white-space:nowrap!important;letter-spacing:-.45px!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-hero-side .fq-hero-tile span{
+  font-size:10px!important;line-height:1.4!important;
+ }
+ body.view-management #analytics #fqExecutive .fq-trend{
+  display:inline-block!important;white-space:normal!important;max-width:100%!important;
+ }
+}
+@media(max-width:350px){
+ body.view-management #analytics #fqExecutive .fq-hero-side .fq-hero-tile strong{font-size:16px!important}
+ body.view-management #analytics #fqExecutive .fq-hero-side .fq-hero-tile{padding:10px!important}
+}
+</style>
+<!-- /FLORESQ IPHONE HEADROOM + DAILY CHART V13 -->
 </body>
 </html>
