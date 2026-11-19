@@ -10464,7 +10464,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-18-tablet-modern-v1";
+window.FLOSIQ_BUILD="2026-11-19-management-light-rescue-v2";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -13006,3 +13006,233 @@ try{renderFocus();}catch(error){console.warn("FLORESQ Rettung initialisieren",er
 })();
 </script>
 <!-- /FLORESQ MANAGEMENT FOCUS -->
+
+<!-- FLORESQ MANAGEMENT LIGHT RESCUE COCKPIT · 2026-11-19 -->
+<style id="floresq-management-light-rescue-v2">
+/* Heller, ruhiger Management-Rahmen. Die operative Ansicht bleibt unverändert. */
+body.view-management.mgmt-light{
+  --bg:#f7faf6;--card:#ffffff;--text:#172019;--muted:#738078;
+  --line:#e2e9df;--soft:#f0f6ec;--nav:rgba(255,255,255,.97);
+  background:
+    radial-gradient(circle at 8% -8%,rgba(139,197,63,.10),transparent 30%),
+    radial-gradient(circle at 95% 8%,rgba(50,145,193,.08),transparent 25%),
+    #f7faf6!important;
+}
+body.view-management.mgmt-light header{
+  background:rgba(255,255,255,.92)!important;border:1px solid #e7ece4!important;
+  box-shadow:0 12px 34px rgba(44,68,46,.07)!important;backdrop-filter:blur(18px);
+}
+body.view-management.mgmt-light #analyticsStickyPeriod{
+  background:rgba(255,255,255,.94)!important;border:1px solid #e3ebe0!important;
+  box-shadow:0 10px 28px rgba(44,68,46,.06)!important;
+}
+body.view-management.mgmt-light #mgmtSpaceNav{
+  background:rgba(255,255,255,.88)!important;border:1px solid #e4ebe1!important;
+  box-shadow:0 10px 26px rgba(44,68,46,.055)!important;
+}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn]{color:#758178!important}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn].active{
+  background:#f0f7eb!important;color:#4c8f1a!important;
+  box-shadow:inset 0 0 0 1px #d8e8ce,0 5px 14px rgba(64,108,47,.07)!important;
+}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn="analysis"].active{
+  background:#eaf6fc!important;color:#1477aa!important;box-shadow:inset 0 0 0 1px #cfe8f4,0 5px 14px rgba(25,111,158,.07)!important;
+}
+body.view-management.mgmt-light .mgmt-space-intro{
+  background:transparent!important;border:0!important;box-shadow:none!important;padding:8px 5px 10px!important;
+}
+body.view-management.mgmt-light .mgmt-space-intro span{color:#6da530!important}
+body.view-management.mgmt-light .mgmt-space-intro b{color:#1b281e!important;font-size:21px!important}
+
+/* Rettung steht im Cockpit zuerst. */
+body.view-management.mgmt-light .fr-rescue-hero{
+  grid-template-columns:minmax(0,1.55fr) minmax(210px,.75fr);
+  background:
+    radial-gradient(circle at 82% 12%,rgba(65,166,220,.18),transparent 28%),
+    linear-gradient(135deg,#ffffff 0%,#f0f9fd 56%,#e8f6fb 100%)!important;
+  color:#183040!important;border:1px solid #d4eaf3!important;
+  box-shadow:0 18px 42px rgba(44,104,133,.10)!important;padding:25px 26px!important;
+}
+body.view-management.mgmt-light .fr-rescue-kicker{color:#1380b8!important}
+body.view-management.mgmt-light .fr-rescue-main h2{color:#183040!important;font-size:25px!important}
+body.view-management.mgmt-light .fr-rescue-number{color:#157fb5!important}
+body.view-management.mgmt-light .fr-rescue-main p{color:#607681!important}
+body.view-management.mgmt-light .fr-rescue-aside{border-left-color:#d3e8f1!important}
+body.view-management.mgmt-light .fr-rescue-aside>span{color:#6c7d84!important}
+body.view-management.mgmt-light .fr-rescue-aside strong{color:#24343b!important}
+body.view-management.mgmt-light .fr-rescue-aside button{
+  background:#157fb5!important;color:#fff!important;box-shadow:0 9px 20px rgba(21,127,181,.18)!important;
+}
+
+/* Die vier Zahlen, die eine GL zuerst braucht. */
+.fr-management-pulse{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.fr-pulse-card{
+  min-width:0;padding:15px 15px 14px;border:1px solid #e1e9de;border-radius:18px;background:#fff;
+  box-shadow:0 8px 22px rgba(45,68,47,.055);position:relative;overflow:hidden;
+}
+.fr-pulse-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#8bc53f}
+.fr-pulse-card.rescue:before{background:#2493c9}.fr-pulse-card.loss:before{background:#dd8a35}
+.fr-pulse-card.quality:before{background:#7fb63c}
+.fr-pulse-card span{display:block;font-size:9px;font-weight:950;letter-spacing:.08em;color:#77827a;text-transform:uppercase}
+.fr-pulse-card b{display:block;margin-top:7px;font-size:clamp(22px,3vw,31px);line-height:1;color:#1c2820;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fr-pulse-card.rescue b{color:#167dac}.fr-pulse-card.loss b{color:#b76f27}
+.fr-pulse-card small{display:block;margin-top:7px;color:#7b867f;font-size:10px;line-height:1.35}
+
+/* Doppelte Werte aus der alten Startseite werden reduziert, wichtige Zusatzwerte bleiben sichtbar. */
+body.view-management #analytics #mgmtMiniGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+body.view-management #analytics #mgmtMiniGrid [data-mgmt-module="wasteKpi"],
+body.view-management #analytics #mgmtMiniGrid [data-mgmt-module="qualityKpi"]{display:none!important}
+body.view-management #analytics .mgmt-kpi-main{display:none!important}
+body.view-management #analytics .mgmt-kpi-basis{display:none!important}
+body.view-management.mgmt-light #analytics #mgmtMiniGrid .mgmt-mini{
+  background:#fff!important;border-color:#e2e9df!important;box-shadow:0 8px 20px rgba(45,68,47,.045)!important;
+}
+body.view-management.mgmt-light #mealVerifyCard{
+  background:#fff!important;border:1px solid #dfe8dc!important;box-shadow:0 9px 24px rgba(45,68,47,.055)!important;
+}
+body.view-management.mgmt-light #mealVerifyCard .verify{background:#79bf32!important;box-shadow:0 8px 18px rgba(80,143,32,.16)!important}
+body.view-management.mgmt-light #glValueSetupCard{box-shadow:0 8px 22px rgba(90,69,24,.055)!important}
+
+/* Rettungsauswertung: klare Karten auf weißem Grund. */
+body.view-management.mgmt-light .rescue-analysis-card,
+body.view-management.mgmt-light .fr-rescue-timeline{
+  background:#fff!important;border:1px solid #e1e9de!important;box-shadow:0 10px 28px rgba(45,68,47,.055)!important;
+}
+body.view-management.mgmt-light .rescue-analysis-kpi{background:#f8fbf7!important;border-color:#e2e9df!important}
+body.view-management.mgmt-light .fr-context-grid>div{background:#f8fbf7!important;border-color:#e2e9df!important}
+body.view-management.mgmt-light .fr-performance-trend{background:#f8fbf7!important;border-color:#e2e9df!important}
+body.view-management.mgmt-light .fr-rescue-advice{background:#eaf6fc!important;color:#2f6179!important}
+
+@media (max-width:760px){
+  .fr-management-pulse{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .fr-pulse-card{padding:13px 12px}.fr-pulse-card b{font-size:23px}
+  body.view-management.mgmt-light .fr-rescue-hero{grid-template-columns:1fr!important;padding:20px 18px!important}
+  body.view-management.mgmt-light .fr-rescue-aside{border-left:0!important;border-top:1px solid #d3e8f1!important}
+}
+@media (min-width:761px) and (max-width:1366px){
+  .fr-management-pulse{gap:12px}.fr-pulse-card{min-height:96px;padding:17px}
+}
+</style>
+
+<script id="floresq-management-light-rescue-v2-script">
+(function setupFloresqManagementLightRescueV2(){
+  "use strict";
+  const byId=id=>document.getElementById(id);
+  const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
+  const kg=value=>safeNumber(value).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
+  const shortRange=b=>{
+    const format=iso=>typeof compactDate==="function"?compactDate(iso):iso;
+    return b.start===b.end?format(b.start):format(b.start)+" – "+format(b.end);
+  };
+
+  /* Auf neuen und bestehenden Geräten ist die hellere Managementansicht der Standard. */
+  try{
+    if(typeof state!=="undefined")state.managementTheme="light";
+    localStorage.setItem("flosiq_management_theme","light");
+    if(typeof applyManagementTheme==="function")applyManagementTheme();
+  }catch(_){ }
+
+  const nav=byId("mgmtSpaceNav");
+  const analysisButton=nav?.querySelector('[data-mgmt-space-btn="analysis"] b');
+  if(analysisButton)analysisButton.textContent="Rettung";
+
+  const hero=byId("frRescueHero");
+  if(hero&&!byId("frManagementPulse")){
+    hero.insertAdjacentHTML("afterend",`
+      <section class="fr-management-pulse" id="frManagementPulse" data-mgmt-space="cockpit" aria-label="Wichtigste Managementkennzahlen">
+        <article class="fr-pulse-card rescue"><span>Zur Rettung erfasst</span><b id="frPulseRescue">—</b><small id="frPulseRescueNote">Dokumentierte Rettungsmenge</small></article>
+        <article class="fr-pulse-card loss"><span>Nassmüll gesamt</span><b id="frPulseWaste">—</b><small id="frPulseWasteNote">Gewählter Zeitraum</small></article>
+        <article class="fr-pulse-card"><span>Food Loss / Portion</span><b id="frPulseFoodLoss">—</b><small id="frPulseMeals">Noch keine Essensbasis</small></article>
+        <article class="fr-pulse-card quality"><span>Datenqualität</span><b id="frPulseQuality">—</b><small id="frPulseQualityNote">Vollständig auswertbare Tage</small></article>
+      </section>`);
+  }
+
+  /* Einrichtung bleibt erreichbar, steht aber nicht mehr vor der Rettungsbilanz. */
+  const setup=byId("glValueSetupCard"),mini=byId("mgmtMiniGrid");
+  if(setup&&mini&&setup.previousElementSibling!==mini)mini.insertAdjacentElement("afterend",setup);
+
+  function activeBounds(){
+    if(typeof rangeBounds!=="function"||typeof state==="undefined")return null;
+    return rangeBounds(Number(state.days)||7);
+  }
+  function activeMetrics(){
+    const bounds=activeBounds();
+    if(!bounds)return null;
+    const period=typeof periodData==="function"?periodData(bounds.start,bounds.end):null;
+    const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"
+      ?window.FLORESQ_RESCUE_REPORT(bounds.start,bounds.end)
+      :{rescuedKg:0,count:0,meals:0};
+    return{bounds,period,rescue};
+  }
+  function renderPulse(){
+    const data=activeMetrics();if(!data||!byId("frManagementPulse"))return;
+    const p=data.period||{},r=data.rescue||{};
+    const mealTotal=(Array.isArray(p.ms)?p.ms:[]).reduce((sum,row)=>sum+Math.max(0,safeNumber(row.meals)),0);
+    const quality=p.mealDays?Math.round(safeNumber(p.completeDays)/safeNumber(p.mealDays)*100):null;
+    byId("frPulseRescue").textContent=kg(r.rescuedKg);
+    byId("frPulseRescueNote").textContent=safeNumber(r.count)+(safeNumber(r.count)===1?" Rettung dokumentiert":" Rettungen dokumentiert");
+    byId("frPulseWaste").textContent=kg(p.w);
+    byId("frPulseWasteNote").textContent=shortRange(data.bounds);
+    byId("frPulseFoodLoss").textContent=p.k==null?"—":Math.round(p.k).toLocaleString("de-DE")+" g";
+    byId("frPulseMeals").textContent=mealTotal>0?mealTotal.toLocaleString("de-DE")+" Essen im Zeitraum":"Noch keine Essensbasis";
+    byId("frPulseQuality").textContent=quality==null?"—":quality+" %";
+    byId("frPulseQualityNote").textContent=safeNumber(p.completeDays)+" von "+safeNumber(p.mealDays)+" Essenstagen vollständig";
+  }
+
+  function selectedManagementMealDate(){
+    const bounds=activeBounds();
+    if(typeof state!=="undefined"&&Number(state.days)===1&&bounds)return bounds.end;
+    return typeof state!=="undefined"&&state.viewDate?state.viewDate:(typeof today==="function"?today():new Date().toISOString().slice(0,10));
+  }
+  function renderMealQualityForSelectedPeriod(){
+    if(typeof ensureMealManagerCard==="function")ensureMealManagerCard();
+    const card=byId("mealVerifyCard");if(!card||typeof state==="undefined")return;
+    card.hidden=state.appView!=="management";
+    const bounds=activeBounds();if(!bounds)return;
+    if(Number(state.days)===1){
+      const date=bounds.end,row=typeof mealRecord==="function"?mealRecord(date):null;
+      const status=typeof mealStatusText==="function"?mealStatusText(row):{cls:"pending",title:"Essenszahl noch offen",detail:"Du kannst sie eintragen oder später ergänzen."};
+      byId("mealVerifyTitle").textContent="Essenszahl · "+(typeof compactDate==="function"?compactDate(date):date);
+      byId("mealVerifyValue").textContent=row&&row.status!=="pending"?safeNumber(row.meals).toLocaleString("de-DE"):"—";
+      byId("mealVerifyText").innerHTML='<span class="meal-status-inline '+status.cls+'">'+status.title+'</span><br>'+status.detail;
+      byId("mealVerifyBtn").textContent=row&&["verified","billed"].includes(row.status)?"Bestätigung prüfen":"Prüfen & bestätigen";
+      byId("mealVerifyBtn").onclick=()=>{
+        const old=state.viewDate;state.viewDate=date;
+        try{if(typeof openMealsDialog==="function")openMealsDialog();}finally{state.viewDate=old;}
+      };
+      return;
+    }
+    const p=typeof periodData==="function"?periodData(bounds.start,bounds.end):{ms:[],mealDays:0,completeDays:0};
+    const total=(p.ms||[]).reduce((sum,row)=>sum+Math.max(0,safeNumber(row.meals)),0);
+    byId("mealVerifyTitle").textContent="Essenszahlen · "+shortRange(bounds);
+    byId("mealVerifyValue").textContent=total>0?total.toLocaleString("de-DE"):"—";
+    byId("mealVerifyText").innerHTML='<span class="meal-status-inline '+(p.mealDays?"verified":"pending")+'">'+(p.mealDays?p.mealDays+" Tage mit Essenszahl":"Noch keine Essenszahlen")+'</span><br>'+safeNumber(p.completeDays)+" Tage sind vollständig für g/Portion auswertbar.";
+    byId("mealVerifyBtn").textContent="Tagesansicht öffnen";
+    byId("mealVerifyBtn").onclick=()=>{
+      const dayButton=document.querySelector('#daysSeg [data-days="1"]');
+      if(dayButton)dayButton.click();
+    };
+  }
+
+  function refreshManagementLight(){
+    try{
+      const pulse=byId("frManagementPulse");
+      const active=nav?.querySelector('[data-mgmt-space-btn].active')?.getAttribute("data-mgmt-space-btn")||"cockpit";
+      if(pulse){pulse.classList.toggle("mgmt-space-hidden",active!=="cockpit");pulse.setAttribute("aria-hidden",active==="cockpit"?"false":"true");}
+      renderPulse();renderMealQualityForSelectedPeriod();
+    }catch(error){console.warn("FLORESQ Management Light",error);}
+  }
+  if(typeof renderAnalytics==="function"){
+    const previousRenderAnalytics=renderAnalytics;
+    renderAnalytics=function(){const result=previousRenderAnalytics.apply(this,arguments);refreshManagementLight();return result;};
+  }
+  const observer=nav?new MutationObserver(refreshManagementLight):null;
+  if(observer)observer.observe(nav,{subtree:true,attributes:true,attributeFilter:["class"]});
+  window.addEventListener("pageshow",refreshManagementLight);
+  window.addEventListener("storage",event=>{
+    if(["flosiq_rescues_v1","flosiq_rescue_decisions_v1","flosiq_analysis_days","flosiq_analysis_offset"].includes(event.key))refreshManagementLight();
+  });
+  refreshManagementLight();
+})();
+</script>
+<!-- /FLORESQ MANAGEMENT LIGHT RESCUE COCKPIT -->
