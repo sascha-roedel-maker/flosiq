@@ -11673,6 +11673,12 @@ exportPdf=function(month){
   var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"}),summary=monthSummary(month),bounds=monthBounds(month);
   var chartRows=all.filter(function(r){return r["Nassmüll gesamt kg"]!=="";}),chartTotal=chartRows.reduce(function(sum,r){return sum+Number(r["Nassmüll gesamt kg"]||0);},0),averageDaily=chartRows.length?chartTotal/chartRows.length:0;
   var monthLabel=asDate(bounds.start).toLocaleDateString("de-DE",{month:"long",year:"numeric"}),green=[103,170,45],dark=[28,49,31],muted=[103,112,105];
+  var rescue=window.FLORESQ_RESCUE_REPORT(bounds.start,bounds.end);
+  var rescuePrevDate=asDate(bounds.start);rescuePrevDate.setMonth(rescuePrevDate.getMonth()-1);
+  var rescuePrevMonth=rescuePrevDate.getFullYear()+"-"+String(rescuePrevDate.getMonth()+1).padStart(2,"0");
+  var rescuePrevBounds=monthBounds(rescuePrevMonth),previousRescue=window.FLORESQ_RESCUE_REPORT(rescuePrevBounds.start,rescuePrevBounds.end);
+  var rescueRate=rescue.kgPer100Meals==null?null:rescue.kgPer100Meals;
+  var prevRescueRate=previousRescue.kgPer100Meals==null?null:previousRescue.kgPer100Meals;
   doc.setFillColor.apply(doc,green);doc.rect(0,0,297,28,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(21);doc.text("FLORESQ Managementbericht",12,13);doc.setFontSize(10);doc.setFont("helvetica","normal");doc.text(monthLabel+" · Smart Food Loss Management",12,21);
   var cards=[
     ["Nassmüll gesamt",fmtKg(summary["Nassmüll gesamt kg"])+" kg"],
@@ -11704,7 +11710,91 @@ exportPdf=function(month){
   }
   var entries=(state.entries||[]).filter(function(x){return x.date>=bounds.start&&x.date<=bounds.end;}),catTotal=entries.reduce(function(s,x){return s+Number(x.weight_kg||0);},0);
   CATS.forEach(function(c,i){var v=entries.filter(function(x){return x.category===c.id;}).reduce(function(s,x){return s+Number(x.weight_kg||0);},0),share=catTotal>0?v/catTotal:0,y=75+i*14;doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");doc.text(c.label,205,y);doc.setFillColor(233,237,231);doc.roundedRect(205,y+3,65,5,2,2,"F");doc.setFillColor.apply(doc,c.id==="plate"?[66,130,183]:c.id==="prep"?[226,174,55]:c.id==="overproduction"?[224,126,43]:[145,145,145]);if(share>0)doc.roundedRect(205,y+3,65*share,5,2,2,"F");doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.text(fmtKg(v)+" kg · "+Math.round(share*100)+" %",273,y+7,{align:"right"});});
-  doc.setTextColor.apply(doc,dark);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text("Kurzbewertung",12,143);doc.setFontSize(9);doc.setFont("helvetica","normal");var pd=periodData(bounds.start,bounds.end),top=CATS.slice().sort(function(a,b){return pd.cats[b.id]-pd.cats[a.id];})[0];var note=pd.k==null?"Für eine belastbare Kennzahl müssen Essen und Nassmüll am selben Tag erfasst sein.":"Der Food Loss liegt bei "+pd.k+" g je Portion. Größte Abfallursache: "+top.label+" mit "+fmtKg(pd.cats[top.id])+" kg.";doc.text(doc.splitTextToSize(note,270),12,150);
+  /* Management-Entscheidungshilfe: klarer Rettungsstatus direkt auf Seite 1. */
+  doc.setFillColor(231,245,236);doc.roundedRect(12,139,273,54,3,3,"F");
+  doc.setTextColor(24,92,59);doc.setFont("helvetica","bold");doc.setFontSize(11);
+  doc.text("FOOD RESCUE | UNSERE RETTUNGSLEISTUNG",18,150);
+  doc.setFontSize(22);doc.text(fmtKg(rescue.rescuedKg)+" kg",18,164);
+  doc.setFontSize(7.2);doc.text("zur Rettung dokumentiert",18,171);
+  doc.setTextColor.apply(doc,dark);doc.setFontSize(8);doc.setFont("helvetica","bold");
+  doc.text("Rettungen: "+rescue.count,111,155);
+  doc.text("Überproduktion entsorgt: "+fmtKg(rescue.wasteKg)+" kg",111,164);
+  doc.text("Rettung je 100 Essen: "+(rescueRate==null?"—":fmtKg(rescueRate)+" kg"),111,173);
+  doc.setFont("helvetica","normal");doc.setFontSize(7);
+  var rescueDifference=prevRescueRate==null||rescueRate==null
+    ?"Vergleich je 100 Essen: noch keine ausreichenden Vorperiodendaten."
+    :"Veränderung je 100 Essen zum Vormonat: "+(rescueRate-prevRescueRate>0?"+":"")+fmtKg(rescueRate-prevRescueRate)+" kg.";
+  doc.text(rescueDifference,111,182);
+  doc.setTextColor(71,104,80);doc.setFontSize(6.7);
+  doc.text("Gespeicherte Rettung ist keine bestätigte Nutzung oder QM-Freigabe.",18,189);
+
+  /* Eigenständige Rettungsbilanz: für Führungskräfte sofort nachvollziehbar. */
+  doc.addPage("a4","landscape");
+  doc.setFillColor(21,88,63);doc.rect(0,0,297,22,"F");
+  doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(16);
+  doc.text("FOOD RESCUE | MANAGEMENT-ANALYSE",12,14);
+  doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text(monthLabel,283,14,{align:"right"});
+  var rescueCards=[
+    ["ZUR RETTUNG ERFASST",fmtKg(rescue.rescuedKg)+" kg"],
+    ["DOKUMENTIERTE FÄLLE",String(rescue.count)],
+    ["ÜBERPROD. ENTSORGT",fmtKg(rescue.wasteKg)+" kg"],
+    ["RETTUNG / 100 ESSEN",rescueRate==null?"—":fmtKg(rescueRate)+" kg"],
+    ["RETTUNG GEPRÜFT",String(rescue.checked)+" Klicks"]
+  ];
+  rescueCards.forEach(function(c,i){
+    var x=12+i*55;doc.setFillColor(237,247,239);doc.roundedRect(x,29,51,23,3,3,"F");
+    doc.setTextColor(72,106,81);doc.setFont("helvetica","bold");doc.setFontSize(6.4);
+    doc.text(c[0],x+3,36);
+    doc.setTextColor(23,84,59);doc.setFontSize(14);doc.text(c[1],x+3,46);
+  });
+  doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(10);
+  doc.text("Rettungsentwicklung gegenüber dem Vormonat",12,63);
+  doc.setFont("helvetica","normal");doc.setFontSize(8);
+  var rescueComparison=prevRescueRate==null||rescueRate==null
+    ?"Je 100 Essen noch kein belastbarer Vergleich möglich."
+    :"Vorher: "+fmtKg(prevRescueRate)+" kg / 100 Essen   |   Jetzt: "+fmtKg(rescueRate)+" kg / 100 Essen";
+  doc.text(rescueComparison,12,69);
+  doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");doc.setFontSize(10);
+  doc.text("Verlauf: zur Rettung erfasst (blau) und Überproduktion entsorgt (orange)",12,81);
+  var rescueWeeks=[0,1,2,3,4].map(function(i){return{from:1+i*7,to:Math.min(all.length,7+i*7),rescued:0,waste:0};}).filter(function(w){return w.from<=all.length;});
+  all.forEach(function(r){
+    var day=Number(String(r.Datum||"").slice(0,2)),i=Math.floor((day-1)/7),g=rescueWeeks[i];
+    if(!g)return;
+    g.rescued+=Number(r["Rettung erfasst kg"]||0);g.waste+=Number(r["Überproduktion kg"]||0);
+  });
+  var rescueChartMax=Math.max(1,...rescueWeeks.map(function(w){return Math.max(w.rescued,w.waste);}));
+  var baseY=139,scale=49,xStart=30,deltaX=52;
+  doc.setDrawColor(215,224,218);doc.line(18,baseY,281,baseY);
+  rescueWeeks.forEach(function(w,i){
+    var x=xStart+i*deltaX,rh=w.rescued/rescueChartMax*scale,wh=w.waste/rescueChartMax*scale;
+    doc.setFillColor(46,145,207);if(rh>0)doc.roundedRect(x,baseY-rh,14,rh,1,1,"F");
+    doc.setFillColor(218,144,53);if(wh>0)doc.roundedRect(x+17,baseY-wh,14,wh,1,1,"F");
+    doc.setFontSize(7);doc.setFont("helvetica","bold");doc.setTextColor(26,108,168);
+    doc.text(fmtKg(w.rescued),x+7,Math.max(90,baseY-rh-2),{align:"center"});
+    doc.setTextColor(162,103,32);doc.text(fmtKg(w.waste),x+24,Math.max(90,baseY-wh-2),{align:"center"});
+    doc.setTextColor.apply(doc,muted);doc.setFont("helvetica","normal");doc.setFontSize(7);
+    doc.text(w.from+".–"+w.to+".",x+15.5,146,{align:"center"});
+  });
+  doc.setFontSize(8);doc.setTextColor.apply(doc,dark);doc.setFont("helvetica","bold");
+  doc.text("Was wurde zur Rettung dokumentiert?",12,156);
+  var rescuedDishes=rescue.dishes.slice(0,3);
+  if(rescuedDishes.length){
+    rescuedDishes.forEach(function(item,i){
+      var y=165+i*9;
+      doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor.apply(doc,dark);
+      doc.text((doc.splitTextToSize(item.label,212)[0]||"Verwendung noch offen"),16,y);
+      doc.setFont("helvetica","bold");doc.text(fmtKg(item.kg)+" kg",278,y,{align:"right"});
+    });
+    if(rescue.dishes.length>3){doc.setFontSize(7);doc.setTextColor.apply(doc,muted);doc.text("Weitere dokumentierte Speisen: "+(rescue.dishes.length-3),16,193);}
+  }else{
+    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor.apply(doc,muted);
+    doc.text("Im gewählten Zeitraum wurden noch keine Rettungseinträge erfasst.",16,171);
+  }
+  doc.setTextColor(89,110,96);doc.setFont("helvetica","normal");doc.setFontSize(7);
+  doc.text("Bewertung: Mehr Rettungsgewicht ist ein dokumentierter Einsatz – keine bestätigte Verwertung oder Lebensmittel-Freigabe.",12,201);
+  doc.text("Rettungsdaten basieren auf den derzeit auf diesem Gerät verfügbaren Protokollen. Keine standortübergreifende Prüfung.",12,205);
+
+  /* Tageswerte samt Rettungsmenge folgen auf der dritten Seite. */
   doc.addPage("a4","landscape");doc.setFillColor.apply(doc,green);doc.rect(0,0,297,18,"F");doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Tageswerte · "+monthLabel,12,12);
   var reportRows=all.filter(function(r){return r.Essen!==""||r["Nassmüll gesamt kg"]!==""||r["Rettung erfasst kg"]!=="";});
   var body=reportRows.map(function(r){return[r.Datum,r.Essen,r["Nassmüll gesamt kg"],r["Tellerrücklauf kg"],r["Putzverlust kg"],r["Überproduktion kg"],r["Rettung erfasst kg"],r["Lager / abgelaufen kg"],r["Food Loss g/Portion"],r.Datenqualität,r["Geschätzter Warenwert €"]];});
