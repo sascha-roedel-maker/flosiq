@@ -13653,6 +13653,60 @@ body.view-management.mgmt-light .analysis-period-nav-copy b{font-size:12px!impor
 #analyticsStickyPeriod #daysSeg{margin-top:0!important;order:0!important}
 #analyticsStickyPeriod .analysis-period-nav{order:1!important;margin-top:5px!important}
 }
+
+
+/* v5 – sichere mobile Ansicht: feste Navigation überdeckt das Management-Cockpit nicht mehr */
+body.view-management:has(#analytics.page.active) > .nav{display:none!important}
+body.view-management:has(#analytics.page.active){padding-bottom:calc(24px + env(safe-area-inset-bottom))!important}
+body.view-management #analytics{scroll-padding-bottom:32px}
+body.view-management #analytics #fqExecutive{scroll-margin-bottom:22px}
+.fq-management-shortcut{display:flex;justify-content:space-between;align-items:center;gap:9px;margin:0 2px 13px}
+.fq-management-shortcut span{font-size:10px;color:#78887b;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+.fq-management-shortcut button{border:1px solid #c9dfbb;background:#eaf5e3;color:#326e27;min-height:40px;border-radius:11px;padding:8px 14px;font-size:12px;font-weight:900}
+.fq-management-shortcut button:active{transform:scale(.98)}
+.fq-cost-method-v5{margin:10px 0 13px;font-size:11px;color:#576d5d;line-height:1.5}
+.fq-cost-method-v5 .fq-formula-lead{margin:0;padding:10px 12px;background:#e6f1e2;border:1px solid #d3e6ce;border-radius:11px;color:#426349;text-align:left}
+.fq-cost-method-v5 details{margin-top:6px;border-radius:10px}
+.fq-cost-method-v5 summary{font-size:11px;font-weight:900;color:#246b3a;cursor:pointer;padding:9px 2px;touch-action:manipulation}
+.fq-cost-method-v5 details[open] summary{margin-bottom:3px}
+.fq-cost-rows{padding:10px 12px;background:#fff;border:1px solid #dce8d7;border-radius:11px}
+.fq-cost-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;border-bottom:1px solid #edf0ea;padding:7px 0;align-items:start;font-size:11px}
+.fq-cost-row:last-of-type{border:0}
+.fq-cost-row b{font-variant-numeric:tabular-nums;font-size:12px;color:#254c32;white-space:nowrap}
+.fq-cost-row small{display:block;color:#78897a;margin-top:3px;line-height:1.35}
+.fq-cost-bottom-note{font-size:10px;color:#738377;margin-top:8px;line-height:1.5}
+.fq-cta{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.fq-cta button{min-width:0!important;font-size:11px!important;padding:10px 8px!important;white-space:normal!important;line-height:1.25!important}
+.fq-cta button[hidden]{display:none!important}
+body.view-management #analytics .fq-hero-grid{align-items:start}
+body.view-management #analytics .fq-spark-wrap{min-width:0}
+.fq-spark-wrap .fq-spark-title{margin:0 0 5px}
+.fq-spark-wrap .fq-spark{margin:0}
+@media(min-width:761px){
+  .fq-spark-wrap{grid-column:1/-1}
+  .fq-spark-wrap .fq-spark{height:38px}
+}
+@media(max-width:760px){
+  body.view-management #analytics .fq-hero{padding:17px 17px 18px!important}
+  body.view-management #analytics .fq-hero-header h2{font-size:20px!important;line-height:1.15!important;margin-top:4px!important}
+  body.view-management #analytics .fq-hero-header .fq-range{display:none!important}
+  body.view-management #analytics .fq-hero-grid{margin-top:14px!important;gap:12px!important}
+  body.view-management #analytics .fq-metric b{font-size:clamp(60px,15vw,78px)!important}
+  body.view-management #analytics .fq-metric{margin:3px 0!important}
+  body.view-management #analytics .fq-trend{margin:7px 0 5px!important;padding:7px 9px!important}
+  body.view-management #analytics .fq-hero-side{gap:8px!important}
+  body.view-management #analytics .fq-hero-tile{padding:12px!important;border-radius:13px!important}
+  body.view-management #analytics .fq-hero-tile span{font-size:9px!important;line-height:1.35!important}
+  body.view-management #analytics .fq-hero-tile strong{font-size:clamp(20px,5vw,25px)!important;margin:5px 0 3px!important;letter-spacing:-.3px!important;white-space:nowrap}
+  body.view-management #analytics .fq-hero-tile small{font-size:9px!important}
+  body.view-management #analytics .fq-spark-wrap{grid-column:1/-1}
+  body.view-management #analytics .fq-spark-wrap .fq-spark{height:40px!important}
+  body.view-management #analytics .fq-panels{margin-top:10px!important}
+  body.view-management #analytics .fq-panel{padding:16px!important}
+  .fq-management-shortcut{margin-bottom:9px}
+  .fq-management-shortcut button{min-height:38px}
+}
+
 </style>
 
 
@@ -13683,6 +13737,27 @@ root.innerHTML=[
 '<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
 ].join("");
 top.insertAdjacentElement("afterend",root);
+// Die feste Management-Leiste wird durch einen kleinen Button in der normalen Seitenfolge ersetzt.
+const shortcut=document.createElement("div");
+shortcut.className="fq-management-shortcut";
+shortcut.innerHTML='<span>MANAGEMENT · AUSWERTUNG</span><button type="button" id="fqInlineCapture">＋ Erfassen</button>';
+nav?.insertAdjacentElement("afterend",shortcut);
+id("fqInlineCapture")?.addEventListener("click",()=>id("quickAddBtn")?.click());
+// Die Mini-Trendgrafik folgt den beiden wichtigsten Nebenzahlen.
+const heroGrid=root.querySelector(".fq-hero-grid");
+const sparkTitle=root.querySelector(".fq-spark-title"),sparkBars=id("fqSpark");
+if(heroGrid&&sparkTitle&&sparkBars){
+ const holder=document.createElement("div");holder.className="fq-spark-wrap";
+ holder.appendChild(sparkTitle);holder.appendChild(sparkBars);heroGrid.appendChild(holder);
+}
+// Kurzformel sichtbar, exakter Rechenweg nur auf Wunsch.
+const hint=id("fqCostHint");
+if(hint){
+ const method=document.createElement("div");
+ method.className="fq-cost-method-v5";
+ method.innerHTML='<p class="fq-formula-lead">So berechnet: <b>Abfallgewicht × hinterlegter Warenwert je kg</b> – getrennt nach Abfallart. Lager ggf. mit tatsächlichem Warenwert.</p><details id="fqCostDetails"><summary>Rechenweg anzeigen</summary><div id="fqCostRows" class="fq-cost-rows"></div></details>';
+ hint.insertAdjacentElement("afterend",method);
+}
 const cats=[
  {id:"overproduction",label:"Überproduktion",color:"#e99544",tip:"Prüfe Produktionsmenge und Nachfrage."},
  {id:"plate",label:"Tellerrücklauf",color:"#56a5d6",tip:"Prüfe Portionsgrößen und Rückläufe."},
@@ -13730,6 +13805,34 @@ function displaySpark(bounds,days){
  }).join("");
  id("fqSpark").setAttribute("aria-label","Verlauf des Abfalls je Essen in "+values.length+" Zeitabschnitten; fehlende Angaben werden nicht als null bewertet.");
 }
+function renderCostDetails(entries,summary){
+ const target=id("fqCostRows"),panel=id("fqCostDetails");
+ if(!target||!panel)return;
+ const groups=[
+  {label:"Speisen (Überproduktion + Teller)",ids:["overproduction","plate"],factor:n(state.costPerKg),kg:0,value:0,valued:0,exact:0},
+  {label:"Putzverlust",ids:["prep"],factor:n(state.prepCostPerKg),kg:0,value:0,valued:0,exact:0},
+  {label:"MHD / Lager",ids:["storage"],factor:n(state.storageCostPerKg),kg:0,value:0,valued:0,exact:0}
+ ];
+ for(const item of entries){
+  const group=groups.find(g=>g.ids.includes(item.category));
+  if(!group)continue;
+  group.kg+=n(item.weight_kg);
+  const part=typeof valuationForEntry==="function"?valuationForEntry(item):null;
+  if(part&&part.valued){group.value+=Number(part.value)||0;group.valued+=n(item.weight_kg);if(part.exact)group.exact++;}
+ }
+ const eur=v=>n(v).toLocaleString("de-DE",{style:"currency",currency:"EUR",minimumFractionDigits:2,maximumFractionDigits:2});
+ target.innerHTML=groups.map(group=>{
+  let basis;
+  if(group.kg<=0)basis="Keine Einträge in dieser Kategorie";
+  else if(group.exact>0){
+   basis="Lager: "+f(group.kg,2)+" kg · "+group.exact+" exakte Warenwert"+(group.exact===1?"angabe":"angaben")+(group.valued<group.kg?" · teilweise ohne Faktor":"");
+  }else if(group.factor>0)basis=f(group.kg,2)+" kg × "+eur(group.factor)+"/kg";
+  else basis=f(group.kg,2)+" kg · Faktor nicht hinterlegt";
+  return '<div class="fq-cost-row"><div>'+group.label+'<small>'+basis+'</small></div><b>'+ (group.valued>0?eur(group.value):"—")+'</b></div>';
+ }).join("")+
+ '<div class="fq-cost-bottom-note">'+(summary&&n(summary.coverage)<100?"Nur "+summary.coverage+" % des Abfallgewichts sind bewertet.":"Die Summe ist ein geschätzter Warenwert, kein Verkaufspreis.")+' Exakte Lagerwerte ersetzen dort den Pauschalfaktor.</div>';
+ panel.hidden=!(summary&&n(summary.valuedKg)>0);
+}
 function render(){
  try{
   synchronize();
@@ -13775,6 +13878,7 @@ function render(){
    id("fqCostHint").textContent=set?"Keine bewertbaren Abfälle":"Warenwertmodell noch nicht eingerichtet";
    id("fqCostButton").hidden=!!set;
   }
+  renderCostDetails(p.es||[],value);
  }catch(error){console.warn("FLORESQ Executive Dashboard",error);}
 }
 if(typeof renderAnalytics==="function"){
