@@ -6835,6 +6835,25 @@ wsEntries["!cols"]=[{wch:12},{wch:10},{wch:22},{wch:24},{wch:14},{wch:40}];
 XLSX.utils.book_append_sheet(wb,wsEntries,"Einzeleinträge");
 }
 
+/* Rettungen sind eigene Vorgänge und keine negative Abfallmenge. */
+const bounds=monthBounds(month), rescue=window.FLORESQ_RESCUE_REPORT?.(bounds.start,bounds.end);
+if(rescue&&rescue.rescues&&rescue.rescues.length){
+  const rescueRows=rescue.rescues.map(function(row){
+    const raw=String(row.dish||"").trim();
+    const dish=!raw||/^(Verwendung noch offen|Nicht näher bezeichnetes Gericht|Unbekannt)$/i.test(raw)?"Verwendung noch offen":raw;
+    return{
+      Datum:deDate(row.date),
+      Lebensmittel:dish,
+      "Zur Rettung erfasst kg":Number(Number(row.weightKg||0).toFixed(3)),
+      "Dokumentiert am":row.createdAt||"",
+      "QM-Status":"Nicht durch FLORESQ als freigegeben bestätigt"
+    };
+  });
+  const sheet=XLSX.utils.json_to_sheet(rescueRows);
+  sheet["!cols"]=[{wch:14},{wch:40},{wch:25},{wch:25},{wch:47}];
+  XLSX.utils.book_append_sheet(wb,sheet,"Food Rescue");
+}
+
 XLSX.writeFile(wb,`FLORESQ_${month}.xlsx`);
 }
 
