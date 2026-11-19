@@ -13561,3 +13561,231 @@ body.view-management #analytics .fr-management-pulse .fr-pulse-card:first-child 
 </script>
 <!-- /FLORESQ MANAGEMENT INTUITIVE LOGIK V3 -->
 
+
+
+<!-- FLORESQ EXECUTIVE COCKPIT V4 -->
+<style id="floresq-executive-v4-css">
+body.view-management #analytics #frManagementPulse,
+body.view-management #analytics #frCockpitBalance,
+body.view-management #analytics #frManagementInsights,
+body.view-management #analytics #mgmtMiniGrid,
+body.view-management #analytics .mgmt-chart-section[data-mgmt-space="cockpit"],
+body.view-management #analytics .mgmt-kpi-basis,
+body.view-management #analytics .mgmt-kpi-main{display:none!important}
+body.view-management[data-floresq-space="cockpit"] #mgmtSpaceIntro{display:none!important}
+body.view-management #analytics #fqExecutive{margin:8px 0 22px}
+body.view-management #analytics #fqExecutive.mgmt-space-hidden{display:none!important}
+.fq-hero{background:linear-gradient(125deg,#152d27,#0c2223 60%,#17403e);border:1px solid #284b40;color:#fff;border-radius:25px;padding:clamp(18px,3vw,30px);box-shadow:0 20px 45px rgba(12,40,32,.19);position:relative;overflow:hidden}
+.fq-hero:before{content:"";width:370px;height:370px;position:absolute;right:-145px;top:-190px;background:radial-gradient(circle,rgba(121,240,176,.18),transparent 67%);pointer-events:none}
+.fq-hero-header{display:flex;align-items:start;justify-content:space-between;gap:12px;position:relative}
+.fq-overline{font-size:10px;letter-spacing:.13em;font-weight:900;color:#a7cab6}
+.fq-hero-header h2{color:#fff;font-size:clamp(21px,3.4vw,30px);font-weight:950;letter-spacing:-.8px;margin:5px 0 0}
+.fq-range{font-size:11px;color:#e0efe6;font-weight:850;white-space:nowrap;border:1px solid #426356;border-radius:10px;padding:8px 10px}
+.fq-hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(220px,1fr);gap:18px;margin-top:22px;position:relative}
+.fq-label{display:block;font-size:11px;letter-spacing:.1em;font-weight:900;color:#c3d6cc}
+.fq-metric{display:flex;align-items:baseline;gap:9px;margin:5px 0}
+.fq-metric b{font-size:clamp(64px,10vw,105px);font-weight:950;line-height:.98;letter-spacing:-5px;font-variant-numeric:tabular-nums;color:#bdf879;white-space:nowrap}
+.fq-metric span{font-size:25px;color:#ddf1d8;font-weight:900}
+.fq-trend{display:inline-flex;border-radius:9px;background:#28473e;padding:8px 12px;color:#e2ece6;font-weight:850;font-size:12px;margin:11px 0 7px}
+.fq-trend.good{background:#305940;color:#c7fb9f}.fq-trend.bad{background:#634031;color:#ffd0a5}
+.fq-basis{font-size:11px;color:#9dbab0;line-height:1.45;min-height:17px}
+.fq-spark-title{font-size:10px;color:#9bbab0;letter-spacing:.07em;font-weight:800;margin-top:15px}
+.fq-spark{height:64px;display:flex;gap:4px;align-items:flex-end;border-bottom:1px solid #47655a;padding:8px 3px 0;margin-top:3px}
+.fq-spark i{flex:1;max-width:35px;min-width:0;background:linear-gradient(#bcf77d,#4fba98);height:var(--bar-height,4px);border-radius:4px 4px 0 0}
+.fq-spark i.empty{background:#37554c;height:3px}
+.fq-hero-side{display:grid;grid-template-rows:1fr 1fr;gap:10px}
+.fq-hero-tile{border-radius:18px;padding:16px 18px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.1);min-width:0}
+.fq-hero-tile span{display:block;color:#b8d0c6;font-weight:850;font-size:10px;letter-spacing:.09em}
+.fq-hero-tile strong{display:block;font-size:clamp(25px,4vw,37px);color:#fff;font-weight:930;letter-spacing:-1px;margin:7px 0 4px;font-variant-numeric:tabular-nums}
+.fq-hero-tile small{font-size:10px;color:#adc4ba;line-height:1.4;display:block}
+.fq-hero-tile.rescue{background:rgba(37,145,207,.13);border-color:rgba(76,175,229,.25)}.fq-hero-tile.rescue strong{color:#86d5ff}
+.fq-panels{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(235px,.88fr);gap:12px;margin-top:13px}
+.fq-panel{background:#fff;color:#1b3127;border:1px solid #e2eae3;border-radius:21px;padding:19px 20px;box-shadow:0 8px 25px rgba(30,64,38,.045)}
+.fq-panel small.kicker{display:block;font-size:10px;letter-spacing:.1em;font-weight:950;color:#748f7c}
+.fq-panel h3{font-size:clamp(18px,2.7vw,22px);line-height:1.3;letter-spacing:-.4px;margin:5px 0 15px;font-weight:950}
+.fq-stack{display:flex;height:16px;border-radius:999px;overflow:hidden;background:#e8efeb;gap:2px}
+.fq-stack i{width:var(--share,0%);background:var(--paint,#ccc);display:block}
+.fq-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px;margin-top:16px}
+.fq-legend-item{display:grid;grid-template-columns:10px minmax(0,1fr);gap:1px 7px;min-width:0}
+.fq-legend-item i{grid-row:span 2;background:var(--paint,#aaa);width:9px;height:9px;border-radius:3px;margin-top:3px}
+.fq-legend-item span{color:#728379;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fq-legend-item b{color:#294135;font-size:13px;font-weight:950;font-variant-numeric:tabular-nums;grid-column:2}
+.fq-panel.focus{background:linear-gradient(145deg,#f0f8ed,#fbfdf8)}
+.fq-panel.focus p{font-size:12px;color:#5e735f;line-height:1.55;margin:0 0 13px}
+.fq-value-row{border-top:1px solid #dce9d7;padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.fq-value-row span{font-size:11px;font-weight:800;color:#677c6c}
+.fq-value-row b{font-size:20px;color:#245f37;font-weight:950;white-space:nowrap}
+.fq-value-hint{font-size:10px;color:#7e8e80;margin:3px 0 0;text-align:right}
+.fq-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.fq-cta button{border:1px solid #d5e4d5;background:#fff;color:#25533a;border-radius:12px;padding:10px 13px;min-height:43px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.fq-cta button.primary{background:#dff4c7!important;color:#224c2a!important;border-color:#c8e6a8!important;box-shadow:none!important}
+.fq-smallprint{font-size:10px;line-height:1.5;color:#7a897f;margin:11px 4px 0}
+body.view-management #analytics .fr-rescue-hero[data-mgmt-space="analysis"]{margin:9px 0 14px!important}
+body.view-management #analytics .fr-rescue-hero[data-mgmt-space="analysis"] button{display:none!important}
+body.view-management #analytics .fr-rescue-timeline .fr-context-grid{display:none!important}
+body.view-management.mgmt-light #analyticsStickyPeriod{padding:8px 10px!important;margin-bottom:10px!important;border-radius:15px!important}
+body.view-management.mgmt-light #mgmtSpaceNav{margin-bottom:10px!important;border-radius:15px!important}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn].active,
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn="analysis"].active{background:#173b2d!important;color:#fff!important;box-shadow:0 5px 13px rgba(20,56,37,.16)!important}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn].active b{color:#fff!important}
+body.view-management.mgmt-light #mgmtSpaceNav [data-mgmt-space-btn].active span{color:#c1f3a2!important}
+body.view-management.mgmt-light .analysis-period-nav{margin-top:6px!important}
+body.view-management.mgmt-light .analysis-period-nav button{min-height:40px!important;box-shadow:none!important}
+body.view-management.mgmt-light .analysis-period-nav-copy{padding:5px 8px!important}
+body.view-management.mgmt-light .analysis-period-nav-copy span{font-size:8px!important}
+body.view-management.mgmt-light .analysis-period-nav-copy b{font-size:12px!important}
+@media(max-width:760px){
+.fq-hero{padding:19px 18px;border-radius:20px}
+.fq-hero-grid{grid-template-columns:1fr;gap:15px;margin-top:17px}
+.fq-metric b{font-size:clamp(60px,15vw,90px);letter-spacing:-3px}
+.fq-hero-side{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:8px}
+.fq-hero-tile{padding:13px 12px}.fq-hero-tile span{font-size:9px}.fq-hero-tile strong{font-size:23px}
+.fq-spark{height:44px}.fq-spark-title{margin-top:8px}
+.fq-range{font-size:9px;padding:6px}
+.fq-panels{grid-template-columns:1fr;gap:10px}
+.fq-panel{padding:17px;border-radius:18px}
+#analyticsStickyPeriod .analysis-period-nav{grid-template-columns:40px minmax(0,1fr) 40px!important;gap:5px!important}
+#analyticsStickyPeriod .analysis-period-nav button{min-width:0!important;padding:4px!important}
+#analyticsStickyPeriod .analysis-period-nav button .period-arrow{font-size:22px!important}
+#analyticsStickyPeriod #analysisPeriodPrevText,#analyticsStickyPeriod #analysisPeriodNextText{display:none!important}
+#analyticsStickyPeriod .analysis-period-nav-copy span,#analyticsStickyPeriod .analytics-sticky-copy{display:none!important}
+#analyticsStickyPeriod .analysis-period-nav-copy b{font-size:11px!important;white-space:normal!important}
+#analyticsStickyPeriod #daysSeg{margin-top:0!important;order:0!important}
+#analyticsStickyPeriod .analysis-period-nav{order:1!important;margin-top:5px!important}
+}
+</style>
+
+
+<script id="floresq-executive-v4-script">
+(function(){
+"use strict";
+const id=name=>document.getElementById(name);
+const top=id("mgmtSpaceIntro"),nav=id("mgmtSpaceNav");
+if(!top||id("fqExecutive"))return;
+const rescueHero=id("frRescueHero");
+if(rescueHero){
+ rescueHero.dataset.mgmtSpace="analysis";
+ const title=id("frRescueHeroTitle");if(title)title.textContent="Zur Wiederverwendung gesichert";
+ const text=id("frRescueHeroDesc");if(text)text.textContent="Erfasste Rettungsvorgänge · kein Nachweis für vollständig verzehrte Mengen.";
+ const timeline=id("frRescueTimeline");if(timeline)timeline.insertAdjacentElement("beforebegin",rescueHero);
+}
+const costSetup=id("glValueSetupCard");if(costSetup)costSetup.dataset.mgmtSpace="help";
+const mealCard=id("mealVerifyCard");if(mealCard)mealCard.dataset.mgmtSpace="reports";
+const dayExplorer=id("mgmtDayExplorer");if(dayExplorer)dayExplorer.dataset.mgmtSpace="reports";
+const root=document.createElement("section");
+root.id="fqExecutive";root.dataset.mgmtSpace="cockpit";root.setAttribute("aria-label","Management-Cockpit");
+root.innerHTML=[
+'<div class="fq-hero"><div class="fq-hero-header"><div><div class="fq-overline">● FLORESQ · MANAGEMENT</div><h2>Deine Zahlen. Dein Betrieb.</h2></div><div class="fq-range" id="fqRange">—</div></div>',
+'<div class="fq-hero-grid"><div><div class="fq-label">ABFALL PRO ESSEN</div><div class="fq-metric"><b id="fqMealWaste">—</b><span>g</span></div><div class="fq-trend" id="fqTrend">Wird ausgewertet</div><div class="fq-basis" id="fqMealBasis">Essenszahlen und Abfälle</div><div class="fq-spark-title">VERLAUF · ABFALL PRO ESSEN</div><div class="fq-spark" id="fqSpark" role="img" aria-label="Entwicklung der Abfallmenge je Essen"></div></div>',
+'<div class="fq-hero-side"><div class="fq-hero-tile"><span>ABFALL GESAMT</span><strong id="fqWasteSum">—</strong><small>vier erfasste Abfallarten</small></div><div class="fq-hero-tile rescue"><span>ZUR WIEDERVERWENDUNG GESICHERT</span><strong id="fqRescueSum">—</strong><small id="fqRescueNote">Rettung dokumentiert</small></div></div></div></div>',
+'<div class="fq-panels"><div class="fq-panel"><small class="kicker">ABFALLURSACHEN</small><h3>Wo entsteht dein Abfall?</h3><div id="fqWasteStack" class="fq-stack" role="img" aria-label="Verteilung der Abfallarten"></div><div class="fq-legend" id="fqLegend"></div></div>',
+'<div class="fq-panel focus"><small class="kicker">DEIN GRÖSSTER HEBEL</small><h3 id="fqFocusTitle">Die Zahlen werden geprüft</h3><p id="fqFocusText">Die größte Abfallursache wird automatisch angezeigt.</p><div class="fq-value-row"><span>Geschätzter Warenwertverlust</span><b id="fqCost">—</b></div><div class="fq-value-hint" id="fqCostHint">Wenn ein Warenwertmodell hinterlegt ist</div><div class="fq-cta"><button id="fqRescueButton" class="primary" type="button">Rettung ansehen →</button><button id="fqReportsButton" type="button">Tagesdaten</button><button id="fqCostButton" type="button" hidden>Warenwert einrichten</button></div></div></div>',
+'<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
+].join("");
+top.insertAdjacentElement("afterend",root);
+const cats=[
+ {id:"overproduction",label:"Überproduktion",color:"#e99544",tip:"Prüfe Produktionsmenge und Nachfrage."},
+ {id:"plate",label:"Tellerrücklauf",color:"#56a5d6",tip:"Prüfe Portionsgrößen und Rückläufe."},
+ {id:"prep",label:"Putzverlust",color:"#e3bf59",tip:"Prüfe die Ausbeute bei der Vorbereitung."},
+ {id:"storage",label:"MHD / Lager",color:"#98aea0",tip:"Prüfe Bestellmengen, Rotation und Haltbarkeit."}
+];
+const n=x=>Math.max(0,Number(x)||0);
+const f=(x,dec=1)=>Number(x).toLocaleString("de-DE",{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const kg=x=>f(n(x),2)+" kg";
+const current=()=>nav?.querySelector('[data-mgmt-space-btn].active')?.dataset.mgmtSpaceBtn||"cockpit";
+function synchronize(){
+ const space=current();document.body.dataset.floresqSpace=space;
+ for(const block of [root,rescueHero,costSetup,mealCard,dayExplorer]){
+  if(!block)continue;
+  const show=block.dataset.mgmtSpace===space;
+  block.classList.toggle("mgmt-space-hidden",!show);
+  block.setAttribute("aria-hidden",show?"false":"true");
+ }
+}
+function navigate(space,event){
+ if(typeof window.FLOSIQ_OPEN_MGMT_SPACE==="function")window.FLOSIQ_OPEN_MGMT_SPACE(event,space);
+ else if(typeof setMgmtSpace==="function")setMgmtSpace(space,{scroll:false});
+ synchronize();id("analyticsStickyPeriod")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+id("fqRescueButton").addEventListener("click",e=>navigate("analysis",e));
+id("fqReportsButton").addEventListener("click",e=>navigate("reports",e));
+id("fqCostButton").addEventListener("click",()=>{if(typeof openValueCalculator==="function")openValueCalculator();else id("glValueSetupBtn")?.click();});
+function displaySpark(bounds,days){
+ const mealByDay=new Map(),wasteByDay=new Map();
+ for(const m of state.meals||[])if(m.date>=bounds.start&&m.date<=bounds.end&&n(m.meals)>0)mealByDay.set(m.date,(mealByDay.get(m.date)||0)+n(m.meals));
+ for(const e of state.entries||[])if(e.date>=bounds.start&&e.date<=bounds.end)wasteByDay.set(e.date,(wasteByDay.get(e.date)||0)+n(e.weight_kg));
+ const weeks=new Map();let num=0;const start=Date.parse(bounds.start+"T00:00:00Z"),end=Date.parse(bounds.end+"T00:00:00Z");
+ for(let t=start;t<=end&&num<375;t+=86400000,num++){
+  const date=new Date(t).toISOString().slice(0,10);
+  const key=days===365?date.slice(0,7):days===30?"W"+Math.floor(num/7):date;
+  const group=weeks.get(key)||{key,meals:0,waste:0};
+  if(mealByDay.has(date)&&wasteByDay.has(date)){group.meals+=mealByDay.get(date);group.waste+=wasteByDay.get(date);}
+  weeks.set(key,group);
+ }
+ const values=[...weeks.values()].map(g=>({key:g.key,gram:g.meals>0?g.waste*1000/g.meals:null}));
+ const max=Math.max(1,...values.map(x=>x.gram??0));
+ id("fqSpark").innerHTML=values.map(x=>{
+  const height=x.gram==null?3:Math.max(4,Math.round(x.gram/max*54));
+  return '<i class="'+(x.gram==null?"empty":"")+'" style="--bar-height:'+height+'px" title="'+x.key+": "+(x.gram==null?"kein Wert":f(x.gram,0)+" g")+'"></i>';
+ }).join("");
+ id("fqSpark").setAttribute("aria-label","Verlauf des Abfalls je Essen in "+values.length+" Zeitabschnitten; fehlende Angaben werden nicht als null bewertet.");
+}
+function render(){
+ try{
+  synchronize();
+  if(typeof state==="undefined"||typeof periodData!=="function"||typeof rangeBounds!=="function")return;
+  const days=Number(state.days)||7,b=rangeBounds(days),p=periodData(b.start,b.end),q=periodData(rangeBounds(days,1).start,rangeBounds(days,1).end);
+  const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(b.start,b.end):{rescuedKg:0,count:0};
+  const short=iso=>{const seg=String(iso).split("-");return seg.length===3?seg[2]+"."+seg[1]:iso;};
+  id("fqRange").textContent=days===365?String(b.start).slice(0,4):b.start===b.end?short(b.start):short(b.start)+" – "+short(b.end);
+  id("fqMealWaste").textContent=p.k==null?"—":f(p.k,0);
+  const trend=id("fqTrend");trend.classList.remove("good","bad");
+  if(p.k==null)trend.textContent="Essenszahl oder Abfall fehlt";
+  else if(q.k==null)trend.textContent="Vorperiode noch nicht vergleichbar";
+  else if(p.k<q.k){trend.classList.add("good");trend.textContent="↓ "+f(q.k-p.k,0)+" g weniger als zuvor";}
+  else if(p.k>q.k){trend.classList.add("bad");trend.textContent="↑ "+f(p.k-q.k,0)+" g mehr als zuvor";}
+  else trend.textContent="→ unverändert zur Vorperiode";
+  id("fqMealBasis").textContent=p.mealsUsed>0
+   ?f(p.mealsUsed,0)+" Essen · "+p.completeDays+" auswertbare Tage"+(p.excludedDays>0?" · "+p.excludedDays+" offen":"")
+   :"Keine vollständig auswertbaren Essenstage";
+  id("fqWasteSum").textContent=kg(p.w);
+  id("fqRescueSum").textContent=kg(rescue.rescuedKg);
+  id("fqRescueNote").textContent=n(rescue.count)+" erfasste Rettungen · keine Verzehrbestätigung";
+  displaySpark(b,days);
+  const total=n(p.w),values=cats.map(c=>({...c,weight:n(p.cats?.[c.id])}));
+  id("fqWasteStack").innerHTML=values.map(c=>'<i style="--paint:'+c.color+';--share:'+(total?100*c.weight/total:0).toFixed(3)+'%" title="'+c.label+": "+kg(c.weight)+'"></i>').join("");
+  id("fqLegend").innerHTML=values.map(c=>'<div class="fq-legend-item"><i style="--paint:'+c.color+'"></i><span>'+c.label+'</span><b>'+kg(c.weight)+'</b></div>').join("");
+  const biggest=[...values].sort((a,b)=>b.weight-a.weight)[0];
+  if(total>0&&biggest.weight>0){
+   id("fqFocusTitle").textContent=biggest.label+" · "+Math.round(biggest.weight/total*100)+" %";
+   id("fqFocusText").textContent=kg(biggest.weight)+" von "+kg(total)+" Gesamtabfall. "+biggest.tip;
+  }else{
+   id("fqFocusTitle").textContent="Noch keine Abfalldaten";
+   id("fqFocusText").textContent="Nach der ersten Wiegung erscheint hier die größte Abfallart.";
+  }
+  let value=null;
+  try{if(typeof valuationForEntries==="function")value=valuationForEntries(p.es||[]);}catch(_){}
+  if(value&&n(value.valuedKg)>0){
+   id("fqCost").textContent=n(value.value).toLocaleString("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
+   id("fqCostHint").textContent=n(value.coverage)<100?"Teilbewertung · "+value.coverage+" % der Menge":"Geschätzter Warenwert der erfassten Abfälle";
+   id("fqCostButton").hidden=true;
+  }else{
+   const set=typeof valueCalculatorIsConfigured==="function"?valueCalculatorIsConfigured():false;
+   id("fqCost").textContent="—";
+   id("fqCostHint").textContent=set?"Keine bewertbaren Abfälle":"Warenwertmodell noch nicht eingerichtet";
+   id("fqCostButton").hidden=!!set;
+  }
+ }catch(error){console.warn("FLORESQ Executive Dashboard",error);}
+}
+if(typeof renderAnalytics==="function"){
+ const before=renderAnalytics;
+ renderAnalytics=function(){const result=before.apply(this,arguments);render();return result;};
+}
+if(nav)new MutationObserver(synchronize).observe(nav,{subtree:true,attributes:true,attributeFilter:["class"]});
+window.addEventListener("pageshow",render);
+window.addEventListener("storage",e=>{if(["flosiq_rescues_v1","flosiq_analysis_days","flosiq_analysis_offset"].includes(e.key))render();});
+render();
+})();
+</script>
+<!-- /FLORESQ EXECUTIVE COCKPIT V4 -->
+
