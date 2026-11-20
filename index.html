@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-rescue-inline-v11";
+window.FLOSIQ_BUILD="2026-11-20-equal-bars-v12";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -14168,7 +14168,8 @@ function displaySpark(bounds,days){
  if(!guide){guide=document.createElement("div");guide.className="fq-scroll-guide";chart.insertAdjacentElement("beforebegin",guide);}
  guide.hidden=days!==30&&days!==365;
  guide.textContent=days===30?"Einzelne Tage · seitlich wischen für den ganzen Monat ↔":"Monate · seitlich wischen ↔";
- chart.style.setProperty("--fq-column-width",days===30?"76px":days===365?"78px":"74px");
+ const columnWidth=rescueMax>0?126:days===30?76:days===365?78:74;
+ chart.style.setProperty("--fq-column-width",columnWidth+"px");
  chart.style.setProperty("--fq-cols",String(Math.max(1,points.length)));
  chart.style.setProperty("--fq-goal-bottom",targetY.toFixed(1)+"px");
  const periodKey=days+"|"+bounds.start+"|"+bounds.end;
@@ -14191,7 +14192,9 @@ function displaySpark(bounds,days){
  }).join("")+'</div>';
  if(periodChanged&&(days===30||days===365)){
   const recent=points.reduce((last,p,index)=>p.g!==null||p.rescued>0?index:last,0);
-  chart.scrollLeft=Math.max(0,recent*(days===30?84:86)-chart.clientWidth*0.62);
+  const cell=chart.querySelector('button[data-fq-point="'+recent+'"]');
+  const left=cell?.offsetLeft??recent*(columnWidth+8);
+  chart.scrollLeft=Math.max(0,left-chart.clientWidth*0.62);
  }else chart.scrollLeft=priorScroll;
  if(selectedIndex!=null){
   const selected=chart.querySelector('button[data-fq-point="'+selectedIndex+'"]');
@@ -14750,11 +14753,12 @@ body.view-operational .nav{
 .fq-tip-rescue .fq-detail-dot{--fq-dot:#0d77ad}
 #fqSpark .fq-spark-waste-slot,.fq-spark-rescue-slot{display:flex;align-items:flex-end;justify-content:center;min-width:0}
 #fqSpark .fq-spark-waste-slot{flex:0 1 56px;width:min(100%,56px)}
-body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-plot{gap:4px!important;padding-inline:4px}
-.fq-spark-rescue-slot{flex:0 0 13px}
-.fq-spark-rescue-bar{display:block;width:100%;border-radius:4px 4px 0 0;background:#3996c3;opacity:.84}
+body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-plot{gap:6px!important;padding-inline:4px}
+#fqSpark.fq-has-rescue :is(.fq-spark-waste-slot,.fq-spark-rescue-slot){flex:0 1 56px;width:56px}
+body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-bar{flex:0 0 100%!important;width:100%!important;max-width:none!important}
+.fq-spark-rescue-bar{display:block;width:100%;border-radius:6px 6px 0 0;background:#287fae}
 .fq-spark-rescue-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 7px;margin:0 0 9px;font-size:11px;color:#566f66}
-.fq-spark-rescue-legend i{width:8px;height:8px;border-radius:2px;background:#3996c3}
+.fq-spark-rescue-legend i{width:8px;height:8px;border-radius:2px;background:#287fae}
 .fq-spark-rescue-legend b{color:#18648b}
 </style>
 </body>
