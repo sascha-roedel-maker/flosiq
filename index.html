@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-integrated-rescue-v9";
+window.FLOSIQ_BUILD="2026-11-20-rescue-trend-v10";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -14065,8 +14065,7 @@ function openSparkTip(button){
  const total=hasKpi?point.waste:point.allWaste;
  const meals=hasKpi?point.meals:point.allMeals;
  const fmtWeight=x=>x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
- const rescue=window.FLORESQ_RESCUE_SUMMARY?.(point.start,point.end);
- const rescueWeight=rescue&&Number.isFinite(rescue.rescuedKg)?fmtWeight(rescue.rescuedKg):"—";
+ const rescueWeight=point.rescued===null?"—":fmtWeight(point.rescued);
  const rows=cats.map(c=>'<li><span class="fq-detail-dot" style="--fq-dot:'+c.color+'" aria-hidden="true"></span><span>'+c.label+'</span><b>'+
   (values.has(c.id)?fmtWeight(values.get(c.id)):"—")+'</b></li>').join("");
  id("fqSparkDetailsMeals").textContent=meals!==null?meals.toLocaleString("de-DE")+" Essen":"Essenszahl fehlt";
@@ -14085,6 +14084,11 @@ sparkChart.addEventListener("click",e=>{
  else openSparkTip(button);
 });
 function displaySpark(bounds,days){
+ const rescue=window.FLORESQ_RESCUE_SUMMARY?.(bounds.start,bounds.end);
+ const rescueByDay=new Map();
+ for(const row of rescue?.rescues||[]){
+  rescueByDay.set(row.date,(rescueByDay.get(row.date)||0)+n(row.weightKg));
+ }
  const validMeals=new Map(),recordedMeals=new Map(),waste=new Map(),wasteCats=new Map();
  for(const m of state.meals||[]){
   if(m.date<bounds.start||m.date>bounds.end)continue;
@@ -14109,8 +14113,9 @@ function displaySpark(bounds,days){
   if(days===365){key=isoMonth;label=d.toLocaleDateString("de-DE",{month:"short"});}
   else if(days===30){key=date;label=d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});}
   else{key=date;label=days===1?d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit"});}
-  const row=grouped.get(key)||{key,label,start:date,end:date,meals:0,waste:0,days:0,allWaste:0,allMeals:null,allCats:new Map(),kpiCats:new Map()};
+  const row=grouped.get(key)||{key,label,start:date,end:date,meals:0,waste:0,days:0,allWaste:0,allMeals:null,allCats:new Map(),kpiCats:new Map(),rescued:rescue?0:null};
   row.end=date;
+  if(rescue)row.rescued+=rescueByDay.get(date)||0;
   const dayCats=wasteCats.get(date);
   const addCats=target=>dayCats?.forEach((value,cat)=>target.set(cat,(target.get(cat)||0)+value));
   row.allWaste+=waste.get(date)||0;
@@ -14138,6 +14143,16 @@ function displaySpark(bounds,days){
   note=document.createElement("div");note.className="fq-weekchart-note";
   chart.insertAdjacentElement("afterend",note);
  }
+ const rescueMax=Math.max(0,...points.map(p=>p.rescued||0));
+ let rescueLegend=pane.querySelector(".fq-spark-rescue-legend");
+ if(!rescueLegend){
+  rescueLegend=document.createElement("div");rescueLegend.className="fq-spark-rescue-legend";
+  chart.insertAdjacentElement("afterend",rescueLegend);
+ }
+ const formatRescue=x=>x.toLocaleString("de-DE",{maximumFractionDigits:3})+" kg";
+ rescueLegend.innerHTML='<i aria-hidden="true"></i><b>Rettung (kg)</b><span>'+
+  (rescueMax>0?'Eigene Skala: 0 bis '+formatRescue(rescueMax)+' · Details antippen':rescue?'Keine Rettung erfasst':'Rettungsdaten nicht verfügbar')+'</span>';
+ chart.classList.toggle("fq-has-rescue",rescueMax>0);
  const goal=75,hasData=points.filter(x=>x.g!==null);
  const chartTop=Math.max(110,goal+15,...hasData.map(x=>x.g));
  const height=110,scale=x=>Math.min(height,Math.max(0,x/chartTop*height));
@@ -14166,20 +14181,23 @@ function displaySpark(bounds,days){
   const known=p.g!==null,bar=known?Math.max(2,scale(p.g)):0;
   const cls=known?(p.g<=50?"top":p.g<=75?"good":p.g<=108?"middle":"high"):"missing";
   const value=known?Math.round(p.g).toLocaleString("de-DE")+" g":"—";
-  return '<button type="button" class="fq-week-cell '+cls+'" data-fq-point="'+index+'" aria-controls="fqSparkDetails" aria-expanded="false" aria-label="'+p.label+": "+(known?value+" pro Essen":"kein Vergleichswert")+', Details öffnen">'+
+  return '<button type="button" class="fq-week-cell '+cls+'" data-fq-point="'+index+'" aria-controls="fqSparkDetails" aria-expanded="false" aria-label="'+p.label+": "+(known?value+" pro Essen":"kein Vergleichswert")+(p.rescued>0?", Rettung "+formatRescue(p.rescued):"")+', Details öffnen">'+
    '<span class="fq-week-value">'+value+'</span>'+
    '<span class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</span>'+
-   '<span class="fq-week-label">'+p.label+'</span></button>';
+   '<span class="fq-week-label">'+p.label+'</span>'+
+   (rescueMax>0?'<span class="fq-spark-rescue-track" aria-hidden="true">'+
+    (p.rescued>0?'<i style="height:'+Math.max(3,p.rescued/rescueMax*25).toFixed(1)+'px"></i>':'')+'</span>':'')+
+   '</button>';
  }).join("")+'</div>';
  if(periodChanged&&(days===30||days===365)){
-  const recent=points.reduce((last,p,index)=>p.g!==null?index:last,0);
+  const recent=points.reduce((last,p,index)=>p.g!==null||p.rescued>0?index:last,0);
   chart.scrollLeft=Math.max(0,recent*(days===30?84:86)-chart.clientWidth*0.62);
  }else chart.scrollLeft=priorScroll;
  if(selectedIndex!=null){
   const selected=chart.querySelector('button[data-fq-point="'+selectedIndex+'"]');
   if(selected)openSparkTip(selected);
  }
- chart.setAttribute("aria-label","Abfall pro Essen. Für Details einen Balken antippen. Ziel 75 Gramm.");
+ chart.setAttribute("aria-label","Abfall pro Essen. Rettung in Kilogramm auf eigener Skala. Für Details einen Balken antippen. Abfallziel 75 Gramm.");
  note.innerHTML='<b>75 g</b> · FLORESQ-Ziel aus UAW-Ergebnissen nach Verbesserungen (2020). <b>108 g</b> · damaliger Ø vor Maßnahmen. <b>≤ 50 g</b> · ambitioniertes Spitzenniveau. <span>Vergleich nur bei gleichem Messumfang.</span>';
 }
 function renderCostDetails(entries,summary){
@@ -14730,6 +14748,15 @@ body.view-operational .nav{
 .fq-detail-dot{width:7px;height:7px;border-radius:50%;background:var(--fq-dot)}
 .fq-tip-rescue{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:5px;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid #dbeaf3;color:#155a80}
 .fq-tip-rescue .fq-detail-dot{--fq-dot:#0d77ad}
+body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-cell{grid-template-rows:24px 110px 31px 28px!important}
+body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-target-line{
+ bottom:calc(6px + 31px + 9px + 28px + 9px + var(--fq-goal-bottom,65px))!important;
+}
+.fq-spark-rescue-track{display:flex;height:28px;align-items:flex-end;justify-content:center;border-bottom:1px solid #9dc6dc55;background:#7ebfe40e}
+.fq-spark-rescue-track i{display:block;width:12px;border-radius:3px 3px 0 0;background:#3996c3}
+.fq-spark-rescue-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 7px;margin:0 0 9px;font-size:11px;color:#566f66}
+.fq-spark-rescue-legend i{width:8px;height:8px;border-radius:2px;background:#3996c3}
+.fq-spark-rescue-legend b{color:#18648b}
 </style>
 </body>
 </html>
