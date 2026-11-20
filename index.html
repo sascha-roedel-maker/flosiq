@@ -13917,21 +13917,71 @@ body.view-management #analytics #fqExecutive .fq-weekchart-note span{display:blo
 </style>
 
 
-<style id="fq-surplus-v14">
-#fqExecutive .fq-surplus{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px;padding:22px;margin:8px 0 14px;border-radius:22px;border:1px solid #dce8dd;background:linear-gradient(120deg,#fff,#eff7f1);color:#1e3c2c}
-.fq-surplus .eyebrow{font-size:10px;letter-spacing:.11em;font-weight:900;color:#5f7c6c}
-.fq-surplus h3{margin:5px 0;font-size:22px}
-.fq-surplus .number{font-size:clamp(38px,6vw,58px);line-height:1.1;letter-spacing:-2px;font-weight:950;color:#205a42}
-.fq-surplus .trend{font-size:12px;line-height:1.45;font-weight:800;color:#63806a;margin-top:9px}
-.fq-surplus .trend.good{color:#1d8043}.fq-surplus .trend.bad{color:#af642c}
-.fq-surplus .split{display:flex;gap:2px;height:18px;overflow:hidden;border-radius:99px;background:#e7eee8}
-.fq-surplus .split i{width:var(--w,0%);display:block}
-.fq-surplus .split i.blue{background:#2696ce}.fq-surplus .split i.orange{background:#e19b4d}
-.fq-surplus .parts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
-.fq-surplus .parts span{display:block;font-size:11px;line-height:1.4;color:#577563}
-.fq-surplus .parts b{display:block;font-size:18px;font-weight:900;margin-top:4px;white-space:nowrap}
-.fq-surplus .note{color:#728579;font-size:10px;line-height:1.5;margin-top:10px}
-@media(max-width:760px){#fqExecutive .fq-surplus{grid-template-columns:1fr;padding:18px;gap:15px}.fq-surplus .parts b{font-size:16px}}
+<style id="fq-surplus-v15">
+/* Produktionsüberschuss ist ein integrierter Bestandteil des grünen Executive-Cockpits. */
+body.view-management #analytics #fqExecutive .fq-hero>.fq-surplus{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,1.05fr);
+  gap:20px;align-items:center;position:relative;z-index:1;
+  margin:22px 0 0;padding:19px 0 0;border:0;border-top:1px solid rgba(183,222,198,.25);
+  border-radius:0;background:none;box-shadow:none;color:#e7f6ea;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .eyebrow{
+  color:#9ed7b9;font-size:10px;font-weight:900;letter-spacing:.10em;line-height:1.4;
+}
+body.view-management #analytics #fqExecutive .fq-surplus h3{
+  color:#f5fff7;font-size:clamp(16px,2.2vw,19px);font-weight:900;letter-spacing:-.3px;
+  margin:5px 0 4px;line-height:1.25;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .number{
+  color:#c4fa9b;font-size:clamp(32px,4.2vw,43px);font-weight:950;line-height:1.1;
+  letter-spacing:-1.25px;font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .trend{
+  color:#bcd4c7;font-size:11px;line-height:1.5;font-weight:800;margin-top:6px;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .trend.good{color:#b6f58e}
+body.view-management #analytics #fqExecutive .fq-surplus .trend.bad{color:#ffc58f}
+body.view-management #analytics #fqExecutive .fq-surplus .split{
+  display:flex;gap:3px;height:13px;overflow:hidden;border-radius:999px;background:#466658;
+  box-shadow:inset 0 1px 2px #071b1440;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .split i{
+  width:var(--w,0%);min-width:0;height:100%;display:block;transition:width .25s ease;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .split i.blue{
+  background:linear-gradient(90deg,#70c7ee,#258dc5);
+}
+body.view-management #analytics #fqExecutive .fq-surplus .split i.orange{
+  background:linear-gradient(90deg,#f3bd79,#db9046);
+}
+body.view-management #analytics #fqExecutive .fq-surplus .parts{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:11px;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .parts span{
+  display:flex;align-items:baseline;gap:5px;font-size:10px;color:#b2d0c0;
+  line-height:1.45;font-weight:750;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .parts b{
+  display:block;font-size:clamp(15px,2.2vw,19px);color:#f4fff7;
+  font-variant-numeric:tabular-nums;font-weight:950;white-space:nowrap;margin-top:4px;
+}
+body.view-management #analytics #fqExecutive .fq-surplus .parts>div:first-child b{color:#8ad7ff}
+body.view-management #analytics #fqExecutive .fq-surplus .parts>div:nth-child(2) b{color:#ffd09b}
+body.view-management #analytics #fqExecutive .fq-surplus .note{
+  color:#9db9ab;font-size:10px;line-height:1.45;margin:9px 0 0;
+}
+@media(max-width:760px){
+  body.view-management #analytics #fqExecutive .fq-hero>.fq-surplus{
+    grid-template-columns:1fr;gap:12px;margin-top:17px;padding-top:16px;
+  }
+  body.view-management #analytics #fqExecutive .fq-surplus .number{font-size:36px}
+  body.view-management #analytics #fqExecutive .fq-surplus .parts{gap:8px}
+  body.view-management #analytics #fqExecutive .fq-surplus .parts span{font-size:10px}
+  body.view-management #analytics #fqExecutive .fq-surplus .parts b{font-size:17px}
+}
+@media(max-width:360px){
+  body.view-management #analytics #fqExecutive .fq-surplus .parts b{font-size:15px}
+}
 </style>
 <script id="floresq-executive-v4-script">
 (function(){
@@ -13952,10 +14002,11 @@ const dayExplorer=id("mgmtDayExplorer");if(dayExplorer)dayExplorer.dataset.mgmtS
 const root=document.createElement("section");
 root.id="fqExecutive";root.dataset.mgmtSpace="cockpit";root.setAttribute("aria-label","Management-Cockpit");
 root.innerHTML=[
-'<section class="fq-surplus"><div><div class="eyebrow">PRODUKTIONSPLANUNG · GEWÄHLTER ZEITRAUM</div><h3>Produktionsüberschuss</h3><div class="number" id="fqSurplusKg">—</div><div class="trend" id="fqSurplusTrend">Wird ausgewertet</div></div><div><div class="split" id="fqSurplusSplit" role="img"><i class="blue" id="fqSurplusBlue"></i><i class="orange" id="fqSurplusOrange"></i></div><div class="parts"><div><span>🔵 Zur Rettung erfasst</span><b id="fqSurplusRescue">—</b></div><div><span>🟠 Überproduktion entsorgt</span><b id="fqSurplusDisposed">—</b></div></div><p class="note">Zur Rettung erfasst bedeutet nicht automatisch später verzehrt.</p></div></section>',
 '<div class="fq-hero"><div class="fq-hero-header"><div><div class="fq-overline">● FLORESQ · MANAGEMENT</div><h2>Deine Zahlen. Dein Betrieb.</h2></div><div class="fq-range" id="fqRange">—</div></div>',
 '<div class="fq-hero-grid"><div><div class="fq-label">ABFALL PRO ESSEN</div><div class="fq-metric"><b id="fqMealWaste">—</b><span>g</span></div><div class="fq-trend" id="fqTrend">Wird ausgewertet</div><div class="fq-basis" id="fqMealBasis">Essenszahlen und Abfälle</div><div class="fq-spark-title">VERLAUF · ABFALL PRO ESSEN</div><div class="fq-spark" id="fqSpark" role="img" aria-label="Entwicklung der Abfallmenge je Essen"></div></div>',
-'<div class="fq-hero-side"><div class="fq-hero-tile"><span>ABFALL GESAMT</span><strong id="fqWasteSum">—</strong><small>vier erfasste Abfallarten</small></div><div class="fq-hero-tile rescue"><span>ZUR WIEDERVERWENDUNG GESICHERT</span><strong id="fqRescueSum">—</strong><small id="fqRescueNote">Rettung dokumentiert</small></div></div></div></div>',
+'<div class="fq-hero-side"><div class="fq-hero-tile"><span>ABFALL GESAMT</span><strong id="fqWasteSum">—</strong><small>vier erfasste Abfallarten</small></div><div class="fq-hero-tile rescue"><span>ZUR WIEDERVERWENDUNG GESICHERT</span><strong id="fqRescueSum">—</strong><small id="fqRescueNote">Rettung dokumentiert</small></div></div></div>',
+'<section class="fq-surplus" aria-label="Erfasster Produktionsüberschuss"><div><div class="eyebrow">PRODUKTIONSPLANUNG · GEWÄHLTER ZEITRAUM</div><h3>Produktionsüberschuss</h3><div class="number" id="fqSurplusKg">—</div><div class="trend" id="fqSurplusTrend">Wird ausgewertet</div></div><div><div class="split" id="fqSurplusSplit" role="img"><i class="blue" id="fqSurplusBlue"></i><i class="orange" id="fqSurplusOrange"></i></div><div class="parts"><div><span>Zur Rettung erfasst</span><b id="fqSurplusRescue">—</b></div><div><span>Überproduktion entsorgt</span><b id="fqSurplusDisposed">—</b></div></div><p class="note">Zur Rettung erfasst bedeutet nicht automatisch später verzehrt.</p></div></section>',
+'</div>',
 '<div class="fq-panels"><div class="fq-panel"><small class="kicker">ABFALLURSACHEN</small><h3>Wo entsteht dein Abfall?</h3><div id="fqWasteStack" class="fq-stack" role="img" aria-label="Verteilung der Abfallarten"></div><div class="fq-legend" id="fqLegend"></div><p class="fq-overproduction-average" id="fqAvgOverproduction"></p></div>',
 '<div class="fq-panel focus"><small class="kicker">DEIN GRÖSSTER HEBEL</small><h3 id="fqFocusTitle">Die Zahlen werden geprüft</h3><p id="fqFocusText">Die größte Abfallursache wird automatisch angezeigt.</p><div class="fq-value-row"><span>Geschätzter Warenwertverlust</span><b id="fqCost">—</b></div><div class="fq-value-hint" id="fqCostHint">Wenn ein Warenwertmodell hinterlegt ist</div><div class="fq-cta"><button id="fqRescueButton" class="primary" type="button" aria-controls="fqTrendPanel">Rettung im Detail →</button><button id="fqReportsButton" type="button">Tagesdaten</button><button id="fqCostButton" type="button" hidden>Warenwert einrichten</button></div></div></div>',
 '<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
