@@ -8972,10 +8972,10 @@ text:"Warenwertmodell, Food-Loss-Logik und verständliche Erklärungen."
 };
 
 let mgmtSpace=localStorage.getItem(MGMT_SPACE_KEY)||"cockpit";
-if(!MGMT_SPACE_META[mgmtSpace])mgmtSpace="cockpit";
+if(mgmtSpace==="analysis"||!MGMT_SPACE_META[mgmtSpace])mgmtSpace="cockpit";
 
 function setMgmtSpace(space,{scroll=true}={}){
-if(!MGMT_SPACE_META[space])space="cockpit";
+if(space==="analysis"||!MGMT_SPACE_META[space])space="cockpit";
 mgmtSpace=space;
 localStorage.setItem(MGMT_SPACE_KEY,space);
 
@@ -9002,7 +9002,7 @@ window.scrollTo({top:y,behavior:"smooth"});
 }
 
 document.querySelectorAll("[data-mgmt-space-btn]").forEach(btn=>{
-btn.addEventListener("click",()=>setMgmtSpace(btn.dataset.mgmtSpaceBtn));
+if(btn.dataset.mgmtSpaceBtn!=="analysis")btn.addEventListener("click",()=>setMgmtSpace(btn.dataset.mgmtSpaceBtn));
 });
 
 $("mgmtHelpValueBtn")?.addEventListener("click",()=>openValueCalculator());
@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-chart-rescue-v8";
+window.FLOSIQ_BUILD="2026-11-20-integrated-rescue-v9";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -11465,7 +11465,8 @@ body.view-management #mgmtSpaceNav [data-mgmt-space-btn] > *{pointer-events:none
   let lastTouch=0;
 
   window.FLOSIQ_OPEN_MGMT_SPACE=function(ev,space){
-    if(!META[space])space='cockpit';
+    const jumpToRescue=space==='analysis';
+    if(jumpToRescue||!META[space])space='cockpit';
     const now=Date.now();
     /* touchend löst auf iOS anschließend häufig noch click aus – Doppelausführung vermeiden. */
     if(ev?.type==='click' && now-lastTouch<700){ev.preventDefault?.();return false;}
@@ -11497,13 +11498,18 @@ body.view-management #mgmtSpaceNav [data-mgmt-space-btn] > *{pointer-events:none
 
     /* Modul-Einstellungen danach anwenden, sofern vorhanden. */
     try{if(typeof applyMgmtModules==='function')applyMgmtModules();}catch(_e){}
+    if(jumpToRescue)requestAnimationFrame(()=>{
+      const section=document.getElementById('frRescueCockpit');
+      section?.querySelector('h2')?.focus({preventScroll:true});
+      section?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    });
     return false;
   };
 
   /* Auch programmatische Pointer-Ereignisse direkt auf die vier Buttons binden. */
   document.querySelectorAll('#mgmtSpaceNav [data-mgmt-space-btn]').forEach(btn=>{
     btn.addEventListener('pointerup',ev=>{
-      if(ev.pointerType==='touch')return; /* iOS nutzt oben touchend */
+      if(ev.pointerType==='touch'||btn.dataset.mgmtSpaceBtn==='analysis')return;
       window.FLOSIQ_OPEN_MGMT_SPACE(ev,btn.dataset.mgmtSpaceBtn);
     });
   });
@@ -14005,7 +14011,7 @@ function navigate(space,event){
  else if(typeof setMgmtSpace==="function")setMgmtSpace(space,{scroll:false});
  synchronize();id("analyticsStickyPeriod")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
-id("fqRescueButton").addEventListener("click",e=>navigate("analysis",e));
+id("fqRescueButton").addEventListener("click",e=>window.FLOSIQ_OPEN_MGMT_SPACE(e,"analysis"));
 id("fqReportsButton").addEventListener("click",e=>navigate("reports",e));
 id("fqCostButton").addEventListener("click",()=>{if(typeof openValueCalculator==="function")openValueCalculator();else id("glValueSetupBtn")?.click();});
 const sparkTip=document.createElement("aside");
@@ -14284,9 +14290,8 @@ render();
 
 <!-- FLORESQ RESCUE COCKPIT AND LEGEND V9 -->
 <style id="floresq-rescue-cockpit-v9-style">
-body.view-management #analytics [data-mgmt-space="analysis"]:not(#frRescueCockpit){display:none!important}
-body.view-management #analytics #frRescueCockpit.mgmt-space-hidden{display:none!important}
-body.view-management #analytics #frRescueCockpit{display:block;margin:8px 0 24px}
+body.view-management #analytics [data-mgmt-space="analysis"]{display:none!important}
+body.view-management #analytics #frRescueCockpit{display:block;margin:24px 0;scroll-margin-top:clamp(120px,24vh,200px)}
 .frc-hero{background:linear-gradient(120deg,#123832,#0d252a 70%,#174c50);color:#fff;padding:22px;border-radius:23px;box-shadow:0 12px 30px #133f3720}
 .frc-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .frc-kicker{color:#b2ddd4;font-size:10px;letter-spacing:.12em;font-weight:950}
@@ -14355,18 +14360,20 @@ body.view-management #analytics #frRescueCockpit{display:block;margin:8px 0 24px
 <script id="floresq-rescue-cockpit-v9-script">
 (function(){
 "use strict";
-const $=id=>document.getElementById(id),old=$("frRescueTimeline"),nav=$("mgmtSpaceNav");
-if(!old||$("frRescueCockpit"))return;
-const panel=document.createElement("section");panel.id="frRescueCockpit";panel.dataset.mgmtSpace="analysis";panel.setAttribute("aria-label","Food Rescue Cockpit");
+const $=id=>document.getElementById(id),dashboard=$("fqExecutive");
+if(!dashboard||$("frRescueCockpit"))return;
+const panel=document.createElement("section");panel.id="frRescueCockpit";panel.setAttribute("aria-labelledby","frcDashboardTitle");
+const rescueShortcut=document.querySelector('[data-mgmt-space-btn="analysis"]');
+rescueShortcut?.setAttribute("aria-controls","frRescueCockpit");
 panel.innerHTML=[
-'<div class="frc-hero"><div class="frc-head"><span class="frc-kicker">♻ FOOD RESCUE · MANAGEMENT</span><span class="frc-date" id="frcRange">—</span></div><h2>Rettung auf einen Blick.</h2><div class="frc-metrics">',
+'<div class="frc-hero"><div class="frc-head"><span class="frc-kicker">♻ FOOD RESCUE · MANAGEMENT</span><span class="frc-date" id="frcRange">—</span></div><h2 id="frcDashboardTitle" tabindex="-1">Lebensmittelrettung</h2><div class="frc-metrics">',
 '<div class="frc-metric blue"><span>ZUR WIEDERVERWENDUNG GESICHERT</span><strong id="frcSaved">—</strong><small>Nicht automatisch endgültig verzehrt</small></div>',
 '<div class="frc-mini"><div class="frc-metric orange"><span>ÜBERPRODUKTION ENTSORGT</span><strong id="frcDisposed">—</strong></div><div class="frc-metric"><span>RETTUNGEN ERFASST</span><strong id="frcCount">—</strong></div></div></div><p class="frc-takeaway" id="frcHeroText"></p></div>',
 '<div class="frc-panel"><div class="frc-eyebrow">MENGENVERLAUF</div><h3>Gesichert oder entsorgt?</h3><div class="frc-legend"><span><i class="frc-dot blue"></i>Gesichert</span><span><i class="frc-dot orange"></i>Überproduktion entsorgt</span></div><div class="frc-caption">Werte in kg, jeweils über dem Balken · größere Balken zusätzlich senkrecht beschriftet</div>',
 '<div class="frc-scroll"><div class="frc-chart" id="frcChart" role="img" aria-label="Rettungs- und Entsorgungsgewichte"></div></div><div class="frc-chart-hint" id="frcChartHint"></div></div>',
 '<div class="frc-panel frc-insight"><div class="frc-eyebrow">DEIN WICHTIGSTER HINWEIS</div><h3 id="frcInsightTitle">Rettungsbilanz</h3><p id="frcInsightText"></p><details><summary>Was bedeuten die Zahlen?</summary><p><b>Gesichert</b> heißt zur Wiederverwendung aufbewahrt und kann Mehrfacherfassungen enthalten. <b>Entsorgt</b> ist tatsächlich weggeworfene Überproduktion. Die Werte werden nicht voneinander abgezogen und ergeben keine endgültige Rettungsquote. Hygienische Freigaben sind separat zu prüfen.</p></details></div>'
 ].join("");
-old.insertAdjacentElement("beforebegin",panel);
+dashboard.appendChild(panel);
 const rescueTile=panel.querySelector(".frc-mini");
 if(rescueTile){
  const daily=document.createElement("div");
@@ -14380,8 +14387,6 @@ if(rescueTile){
 }
 const n=v=>Math.max(0,Number(v)||0),f=(v,d=2)=>n(v).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d}),kg=v=>f(v)+" kg";
 const short=date=>{const a=String(date).split("-");return a.length===3?a[2]+"."+a[1]:"";};
-const curSpace=()=>nav?.querySelector('[data-mgmt-space-btn].active')?.dataset.mgmtSpaceBtn||"cockpit";
-function sync(){const active=curSpace()==="analysis";panel.classList.toggle("mgmt-space-hidden",!active);panel.setAttribute("aria-hidden",active?"false":"true");}
 function isoWeek(date){
  const d=new Date(date+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));
  const year=d.getUTCFullYear();const num=Math.ceil((((d-new Date(Date.UTC(year,0,1)))/86400000)+1)/7);
@@ -14405,7 +14410,6 @@ function getBuckets(start,end,days){
 }
 function render(){
  try{
-  sync();
   if(typeof state==="undefined"||typeof rangeBounds!=="function")return;
   const days=Number(state.days)||7,b=rangeBounds(days),r=window.FLORESQ_RESCUE_REPORT?.(b.start,b.end);
   if(!r)return;
@@ -14475,7 +14479,6 @@ if(typeof renderAnalytics==="function"){
  const previous=renderAnalytics;
  renderAnalytics=function(){const result=previous.apply(this,arguments);render();return result;};
 }
-if(nav)new MutationObserver(sync).observe(nav,{subtree:true,attributes:true,attributeFilter:["class"]});
 window.addEventListener("pageshow",render);
 window.addEventListener("storage",event=>{if(["flosiq_rescues_v1","flosiq_analysis_days","flosiq_analysis_offset"].includes(event.key))render();});
 render();
