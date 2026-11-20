@@ -13917,6 +13917,22 @@ body.view-management #analytics #fqExecutive .fq-weekchart-note span{display:blo
 </style>
 
 
+<style id="fq-surplus-v14">
+#fqExecutive .fq-surplus{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px;padding:22px;margin:8px 0 14px;border-radius:22px;border:1px solid #dce8dd;background:linear-gradient(120deg,#fff,#eff7f1);color:#1e3c2c}
+.fq-surplus .eyebrow{font-size:10px;letter-spacing:.11em;font-weight:900;color:#5f7c6c}
+.fq-surplus h3{margin:5px 0;font-size:22px}
+.fq-surplus .number{font-size:clamp(38px,6vw,58px);line-height:1.1;letter-spacing:-2px;font-weight:950;color:#205a42}
+.fq-surplus .trend{font-size:12px;line-height:1.45;font-weight:800;color:#63806a;margin-top:9px}
+.fq-surplus .trend.good{color:#1d8043}.fq-surplus .trend.bad{color:#af642c}
+.fq-surplus .split{display:flex;gap:2px;height:18px;overflow:hidden;border-radius:99px;background:#e7eee8}
+.fq-surplus .split i{width:var(--w,0%);display:block}
+.fq-surplus .split i.blue{background:#2696ce}.fq-surplus .split i.orange{background:#e19b4d}
+.fq-surplus .parts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+.fq-surplus .parts span{display:block;font-size:11px;line-height:1.4;color:#577563}
+.fq-surplus .parts b{display:block;font-size:18px;font-weight:900;margin-top:4px;white-space:nowrap}
+.fq-surplus .note{color:#728579;font-size:10px;line-height:1.5;margin-top:10px}
+@media(max-width:760px){#fqExecutive .fq-surplus{grid-template-columns:1fr;padding:18px;gap:15px}.fq-surplus .parts b{font-size:16px}}
+</style>
 <script id="floresq-executive-v4-script">
 (function(){
 "use strict";
@@ -13936,11 +13952,12 @@ const dayExplorer=id("mgmtDayExplorer");if(dayExplorer)dayExplorer.dataset.mgmtS
 const root=document.createElement("section");
 root.id="fqExecutive";root.dataset.mgmtSpace="cockpit";root.setAttribute("aria-label","Management-Cockpit");
 root.innerHTML=[
+'<section class="fq-surplus"><div><div class="eyebrow">PRODUKTIONSPLANUNG · GEWÄHLTER ZEITRAUM</div><h3>Produktionsüberschuss</h3><div class="number" id="fqSurplusKg">—</div><div class="trend" id="fqSurplusTrend">Wird ausgewertet</div></div><div><div class="split" id="fqSurplusSplit" role="img"><i class="blue" id="fqSurplusBlue"></i><i class="orange" id="fqSurplusOrange"></i></div><div class="parts"><div><span>🔵 Zur Rettung erfasst</span><b id="fqSurplusRescue">—</b></div><div><span>🟠 Überproduktion entsorgt</span><b id="fqSurplusDisposed">—</b></div></div><p class="note">Zur Rettung erfasst bedeutet nicht automatisch später verzehrt.</p></div></section>',
 '<div class="fq-hero"><div class="fq-hero-header"><div><div class="fq-overline">● FLORESQ · MANAGEMENT</div><h2>Deine Zahlen. Dein Betrieb.</h2></div><div class="fq-range" id="fqRange">—</div></div>',
 '<div class="fq-hero-grid"><div><div class="fq-label">ABFALL PRO ESSEN</div><div class="fq-metric"><b id="fqMealWaste">—</b><span>g</span></div><div class="fq-trend" id="fqTrend">Wird ausgewertet</div><div class="fq-basis" id="fqMealBasis">Essenszahlen und Abfälle</div><div class="fq-spark-title">VERLAUF · ABFALL PRO ESSEN</div><div class="fq-spark" id="fqSpark" role="img" aria-label="Entwicklung der Abfallmenge je Essen"></div></div>',
 '<div class="fq-hero-side"><div class="fq-hero-tile"><span>ABFALL GESAMT</span><strong id="fqWasteSum">—</strong><small>vier erfasste Abfallarten</small></div><div class="fq-hero-tile rescue"><span>ZUR WIEDERVERWENDUNG GESICHERT</span><strong id="fqRescueSum">—</strong><small id="fqRescueNote">Rettung dokumentiert</small></div></div></div></div>',
 '<div class="fq-panels"><div class="fq-panel"><small class="kicker">ABFALLURSACHEN</small><h3>Wo entsteht dein Abfall?</h3><div id="fqWasteStack" class="fq-stack" role="img" aria-label="Verteilung der Abfallarten"></div><div class="fq-legend" id="fqLegend"></div><p class="fq-overproduction-average" id="fqAvgOverproduction"></p></div>',
-'<div class="fq-panel focus"><small class="kicker">DEIN GRÖSSTER HEBEL</small><h3 id="fqFocusTitle">Die Zahlen werden geprüft</h3><p id="fqFocusText">Die größte Abfallursache wird automatisch angezeigt.</p><div class="fq-value-row"><span>Geschätzter Warenwertverlust</span><b id="fqCost">—</b></div><div class="fq-value-hint" id="fqCostHint">Wenn ein Warenwertmodell hinterlegt ist</div><div class="fq-cta"><button id="fqRescueButton" class="primary" type="button" aria-controls="fqTrendPanel">Rettung im Verlauf →</button><button id="fqReportsButton" type="button">Tagesdaten</button><button id="fqCostButton" type="button" hidden>Warenwert einrichten</button></div></div></div>',
+'<div class="fq-panel focus"><small class="kicker">DEIN GRÖSSTER HEBEL</small><h3 id="fqFocusTitle">Die Zahlen werden geprüft</h3><p id="fqFocusText">Die größte Abfallursache wird automatisch angezeigt.</p><div class="fq-value-row"><span>Geschätzter Warenwertverlust</span><b id="fqCost">—</b></div><div class="fq-value-hint" id="fqCostHint">Wenn ein Warenwertmodell hinterlegt ist</div><div class="fq-cta"><button id="fqRescueButton" class="primary" type="button" aria-controls="fqTrendPanel">Rettung im Detail →</button><button id="fqReportsButton" type="button">Tagesdaten</button><button id="fqCostButton" type="button" hidden>Warenwert einrichten</button></div></div></div>',
 '<p class="fq-smallprint">Abfall pro Essen enthält alle vier tatsächlich entsorgten Abfallarten an auswertbaren Tagen. „Gesichert“ bedeutet nicht automatisch endgültig verzehrt – Mehrfacherfassungen sind möglich.</p>'
 ].join("");
 top.insertAdjacentElement("afterend",root);
@@ -13974,10 +13991,10 @@ if(hero&&sparkTitle&&sparkBars){
  const panel=document.createElement("section");
  panel.className="fq-trend-panel";
  panel.id="fqTrendPanel";
- panel.setAttribute("aria-label","Abfall pro Essen und Lebensmittelrettung im Zeitverlauf");
+ panel.setAttribute("aria-label","Abfall pro Essen im Zeitverlauf");
  nav?.querySelector('[data-mgmt-space-btn="analysis"]')?.setAttribute("aria-controls",panel.id);
  sparkTitle.tabIndex=-1;
- sparkTitle.textContent="VERLAUF · ABFALL PRO ESSEN UND RETTUNG";
+ sparkTitle.textContent="VERLAUF · ABFALL PRO ESSEN";
  panel.appendChild(sparkTitle);
  panel.appendChild(sparkBars);
  hero.insertAdjacentElement("afterend",panel);
@@ -14146,16 +14163,10 @@ function displaySpark(bounds,days){
   note=document.createElement("div");note.className="fq-weekchart-note";
   chart.insertAdjacentElement("afterend",note);
  }
- const rescueMax=Math.max(0,...points.map(p=>p.rescued||0));
- let rescueLegend=pane.querySelector(".fq-spark-rescue-legend");
- if(!rescueLegend){
-  rescueLegend=document.createElement("div");rescueLegend.className="fq-spark-rescue-legend";
-  chart.insertAdjacentElement("afterend",rescueLegend);
- }
+ // Rettungswerte bleiben im Tages-Infofenster, nicht als zweite Einheit im Chart.
  const formatRescue=x=>x.toLocaleString("de-DE",{maximumFractionDigits:3})+" kg";
- rescueLegend.innerHTML='<i aria-hidden="true"></i><b>Rettung (kg)</b><span>'+
-  (rescueMax>0?'Eigene Skala: 0 bis '+formatRescue(rescueMax)+' · Gestrichelte Ziellinie gilt für Abfall':rescue?'Keine Rettung erfasst':'Rettungsdaten nicht verfügbar')+'</span>';
- chart.classList.toggle("fq-has-rescue",rescueMax>0);
+ pane.querySelector(".fq-spark-rescue-legend")?.remove();
+ chart.classList.remove("fq-has-rescue");
  const goal=75,hasData=points.filter(x=>x.g!==null);
  const chartTop=Math.max(110,goal+15,...hasData.map(x=>x.g));
  const height=110,scale=x=>Math.min(height,Math.max(0,x/chartTop*height));
@@ -14171,7 +14182,7 @@ function displaySpark(bounds,days){
  if(!guide){guide=document.createElement("div");guide.className="fq-scroll-guide";chart.insertAdjacentElement("beforebegin",guide);}
  guide.hidden=days!==30&&days!==365;
  guide.textContent=days===30?"Einzelne Tage · seitlich wischen für den ganzen Monat ↔":"Monate · seitlich wischen ↔";
- const columnWidth=rescueMax>0?126:days===30?76:days===365?78:74;
+ const columnWidth=days===30?76:days===365?78:74;
  chart.style.setProperty("--fq-column-width",columnWidth+"px");
  chart.style.setProperty("--fq-cols",String(Math.max(1,points.length)));
  chart.style.setProperty("--fq-goal-bottom",targetY.toFixed(1)+"px");
@@ -14189,8 +14200,6 @@ function displaySpark(bounds,days){
    '<span class="fq-week-value">'+value+'</span>'+
    '<span class="fq-week-plot" aria-hidden="true"><span class="fq-spark-waste-slot">'+
     (known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</span>'+
-    (rescueMax>0?'<span class="fq-spark-rescue-slot">'+
-     (p.rescued>0?'<span class="fq-spark-rescue-bar" style="height:'+Math.max(3,p.rescued/rescueMax*height).toFixed(1)+'px"></span>':'')+'</span>':'')+
    '</span><span class="fq-week-label">'+p.label+'</span></button>';
  }).join("")+'</div>';
  if(periodChanged&&(days===30||days===365)){
@@ -14203,7 +14212,7 @@ function displaySpark(bounds,days){
   const selected=chart.querySelector('button[data-fq-point="'+selectedIndex+'"]');
   if(selected)openSparkTip(selected);
  }
- chart.setAttribute("aria-label","Abfall pro Essen. Rettung in Kilogramm auf eigener Skala. Für Details einen Balken antippen. Abfallziel 75 Gramm.");
+ chart.setAttribute("aria-label","Abfall pro Essen in Gramm. Rettungsmenge und Tagesdetails werden beim Antippen eines Balkens angezeigt.");
  note.innerHTML='<b>75 g</b> · FLORESQ-Ziel aus UAW-Ergebnissen nach Verbesserungen (2020). <b>108 g</b> · damaliger Ø vor Maßnahmen. <b>≤ 50 g</b> · ambitioniertes Spitzenniveau. <span>Vergleich nur bei gleichem Messumfang.</span>';
 }
 function renderCostDetails(entries,summary){
@@ -14239,7 +14248,25 @@ function render(){
   synchronize();
   if(typeof state==="undefined"||typeof periodData!=="function"||typeof rangeBounds!=="function")return;
   const days=Number(state.days)||7,b=rangeBounds(days),p=periodData(b.start,b.end),q=periodData(rangeBounds(days,1).start,rangeBounds(days,1).end);
-  const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(b.start,b.end):{rescuedKg:0,count:0};
+  const rescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(b.start,b.end):{rescuedKg:0,count:0,meals:0};
+  const prevBounds=rangeBounds(days,1),priorRescue=typeof window.FLORESQ_RESCUE_REPORT==="function"?window.FLORESQ_RESCUE_REPORT(prevBounds.start,prevBounds.end):{rescuedKg:0,count:0,meals:0};
+  const rescued=n(rescue.rescuedKg),disposed=n(p.cats?.overproduction),surplus=rescued+disposed;
+  const previousSurplus=n(priorRescue.rescuedKg)+n(q.cats?.overproduction);
+  const measured=n(rescue.count)>0||(p.es||[]).some(x=>x.category==="overproduction");
+  const previousMeasured=n(priorRescue.count)>0||(q.es||[]).some(x=>x.category==="overproduction");
+  const grams=n(rescue.meals)>0?surplus*1000/n(rescue.meals):null,oldGrams=n(priorRescue.meals)>0?previousSurplus*1000/n(priorRescue.meals):null;
+  id("fqSurplusKg").textContent=measured?kg(surplus):"—";
+  id("fqSurplusRescue").textContent=kg(rescued);id("fqSurplusDisposed").textContent=kg(disposed);
+  id("fqSurplusBlue").style.setProperty("--w",measured&&surplus>0?(rescued/surplus*100).toFixed(2)+"%":"0%");
+  id("fqSurplusOrange").style.setProperty("--w",measured&&surplus>0?(disposed/surplus*100).toFixed(2)+"%":"0%");
+  id("fqSurplusSplit").setAttribute("aria-label","Rettung "+kg(rescued)+", entsorgt "+kg(disposed));
+  const surplusTrend=id("fqSurplusTrend");surplusTrend.classList.remove("good","bad");
+  if(!measured)surplusTrend.textContent="Noch keine Überschussmengen erfasst";
+  else if(grams===null)surplusTrend.textContent="Essenszahlen für den Vergleich fehlen";
+  else if(!previousMeasured||oldGrams===null)surplusTrend.textContent=f(grams,0)+" g je Essen · Vorperiode noch nicht vergleichbar";
+  else if(Math.abs(grams-oldGrams)<.5)surplusTrend.textContent=f(grams,0)+" g je Essen · etwa unverändert";
+  else if(grams<oldGrams){surplusTrend.classList.add("good");surplusTrend.textContent=f(grams,0)+" g je Essen · ↓ "+f(oldGrams-grams,0)+" g weniger";}
+  else{surplusTrend.classList.add("bad");surplusTrend.textContent=f(grams,0)+" g je Essen · ↑ "+f(grams-oldGrams,0)+" g mehr";}
   const short=iso=>{const seg=String(iso).split("-");return seg.length===3?seg[2]+"."+seg[1]:iso;};
   id("fqRange").textContent=days===365?String(b.start).slice(0,4):b.start===b.end?short(b.start):short(b.start)+" – "+short(b.end);
   id("fqMealWaste").textContent=p.k==null?"—":f(p.k,0);
