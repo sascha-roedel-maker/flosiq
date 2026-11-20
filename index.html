@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-rescue-trend-v10";
+window.FLOSIQ_BUILD="2026-11-20-rescue-inline-v11";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -14032,7 +14032,7 @@ function placeSparkTip(){
  if(!sparkSelection||sparkTip.hidden)return;
  if(!sparkSelection.isConnected){closeSparkTip();return;}
  const cell=sparkSelection.getBoundingClientRect(),chart=sparkChart.getBoundingClientRect();
- const bar=(sparkSelection.querySelector(".fq-week-bar")||sparkSelection.querySelector(".fq-week-no-data")).getBoundingClientRect();
+ const bar=(sparkSelection.querySelector(".fq-week-bar,.fq-spark-rescue-bar")||sparkSelection.querySelector(".fq-week-no-data")).getBoundingClientRect();
  const width=document.documentElement.clientWidth,height=document.documentElement.clientHeight;
  if(cell.right<=Math.max(0,chart.left)||cell.left>=Math.min(width,chart.right)||cell.bottom<=0||cell.top>=height){
   closeSparkTip();return;
@@ -14151,7 +14151,7 @@ function displaySpark(bounds,days){
  }
  const formatRescue=x=>x.toLocaleString("de-DE",{maximumFractionDigits:3})+" kg";
  rescueLegend.innerHTML='<i aria-hidden="true"></i><b>Rettung (kg)</b><span>'+
-  (rescueMax>0?'Eigene Skala: 0 bis '+formatRescue(rescueMax)+' · Details antippen':rescue?'Keine Rettung erfasst':'Rettungsdaten nicht verfügbar')+'</span>';
+  (rescueMax>0?'Eigene Skala: 0 bis '+formatRescue(rescueMax)+' · Gestrichelte Ziellinie gilt für Abfall':rescue?'Keine Rettung erfasst':'Rettungsdaten nicht verfügbar')+'</span>';
  chart.classList.toggle("fq-has-rescue",rescueMax>0);
  const goal=75,hasData=points.filter(x=>x.g!==null);
  const chartTop=Math.max(110,goal+15,...hasData.map(x=>x.g));
@@ -14183,11 +14183,11 @@ function displaySpark(bounds,days){
   const value=known?Math.round(p.g).toLocaleString("de-DE")+" g":"—";
   return '<button type="button" class="fq-week-cell '+cls+'" data-fq-point="'+index+'" aria-controls="fqSparkDetails" aria-expanded="false" aria-label="'+p.label+": "+(known?value+" pro Essen":"kein Vergleichswert")+(p.rescued>0?", Rettung "+formatRescue(p.rescued):"")+', Details öffnen">'+
    '<span class="fq-week-value">'+value+'</span>'+
-   '<span class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</span>'+
-   '<span class="fq-week-label">'+p.label+'</span>'+
-   (rescueMax>0?'<span class="fq-spark-rescue-track" aria-hidden="true">'+
-    (p.rescued>0?'<i style="height:'+Math.max(3,p.rescued/rescueMax*25).toFixed(1)+'px"></i>':'')+'</span>':'')+
-   '</button>';
+   '<span class="fq-week-plot" aria-hidden="true"><span class="fq-spark-waste-slot">'+
+    (known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</span>'+
+    (rescueMax>0?'<span class="fq-spark-rescue-slot">'+
+     (p.rescued>0?'<i class="fq-spark-rescue-bar" style="height:'+Math.max(3,p.rescued/rescueMax*height).toFixed(1)+'px"></i>':'')+'</span>':'')+
+   '</span><span class="fq-week-label">'+p.label+'</span></button>';
  }).join("")+'</div>';
  if(periodChanged&&(days===30||days===365)){
   const recent=points.reduce((last,p,index)=>p.g!==null||p.rescued>0?index:last,0);
@@ -14748,12 +14748,11 @@ body.view-operational .nav{
 .fq-detail-dot{width:7px;height:7px;border-radius:50%;background:var(--fq-dot)}
 .fq-tip-rescue{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:5px;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid #dbeaf3;color:#155a80}
 .fq-tip-rescue .fq-detail-dot{--fq-dot:#0d77ad}
-body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-cell{grid-template-rows:24px 110px 31px 28px!important}
-body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-target-line{
- bottom:calc(6px + 31px + 9px + 28px + 9px + var(--fq-goal-bottom,65px))!important;
-}
-.fq-spark-rescue-track{display:flex;height:28px;align-items:flex-end;justify-content:center;border-bottom:1px solid #9dc6dc55;background:#7ebfe40e}
-.fq-spark-rescue-track i{display:block;width:12px;border-radius:3px 3px 0 0;background:#3996c3}
+#fqSpark .fq-spark-waste-slot,.fq-spark-rescue-slot{display:flex;align-items:flex-end;justify-content:center;min-width:0}
+#fqSpark .fq-spark-waste-slot{flex:0 1 56px;width:min(100%,56px)}
+body.view-management #analytics #fqExecutive #fqSpark.fq-has-rescue .fq-week-plot{gap:4px!important;padding-inline:4px}
+.fq-spark-rescue-slot{flex:0 0 13px}
+.fq-spark-rescue-bar{display:block;width:100%;border-radius:4px 4px 0 0;background:#3996c3;opacity:.84}
 .fq-spark-rescue-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 7px;margin:0 0 9px;font-size:11px;color:#566f66}
 .fq-spark-rescue-legend i{width:8px;height:8px;border-radius:2px;background:#3996c3}
 .fq-spark-rescue-legend b{color:#18648b}
