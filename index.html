@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-tablet-light-v5";
+window.FLOSIQ_BUILD="2026-11-20-chart-details-v6";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -14008,15 +14008,54 @@ function navigate(space,event){
 id("fqRescueButton").addEventListener("click",e=>navigate("analysis",e));
 id("fqReportsButton").addEventListener("click",e=>navigate("reports",e));
 id("fqCostButton").addEventListener("click",()=>{if(typeof openValueCalculator==="function")openValueCalculator();else id("glValueSetupBtn")?.click();});
+const sparkDialog=document.createElement("dialog");
+sparkDialog.id="fqSparkDetails";
+sparkDialog.setAttribute("aria-labelledby","fqSparkDetailsTitle");
+sparkDialog.innerHTML='<div class="fq-detail-card"><header><div><span>BALKENDETAILS</span><h3 id="fqSparkDetailsTitle"></h3></div><button type="button" aria-label="Details schließen" autofocus>×</button></header><div id="fqSparkDetailsData"></div></div>';
+document.body.appendChild(sparkDialog);
+sparkDialog.querySelector("button").addEventListener("click",()=>sparkDialog.close());
+sparkDialog.addEventListener("click",e=>{if(e.target===sparkDialog)sparkDialog.close();});
+let sparkPoints=[];
+const sparkChart=id("fqSpark");
+sparkChart.setAttribute("role","group");
+sparkChart.addEventListener("click",e=>{
+ const button=e.target.closest("button[data-fq-point]");
+ const point=button&&sparkPoints[Number(button.dataset.fqPoint)];
+ if(!point)return;
+ const dateFormat=new Intl.DateTimeFormat("de-DE",{
+  ...(point.key.length===7?{month:"long",year:"numeric"}:{day:"2-digit",month:"2-digit",year:"numeric"}),timeZone:"UTC"
+ });
+ const date=point.key.length===7?point.key+"-01":point.key;
+ id("fqSparkDetailsTitle").textContent=dateFormat.format(new Date(date+"T12:00:00Z"));
+ const hasKpi=point.g!==null;
+ const values=hasKpi?point.kpiCats:point.allCats;
+ const total=hasKpi?point.waste:point.allWaste;
+ const meals=hasKpi?point.meals:point.allMeals;
+ const fmtWeight=x=>x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
+ const rows=cats.map(c=>'<li><span class="fq-detail-dot" style="--fq-dot:'+c.color+'" aria-hidden="true"></span><span>'+c.label+'</span><b>'+
+  (values.has(c.id)?fmtWeight(values.get(c.id)):"—")+'</b></li>').join("");
+ id("fqSparkDetailsData").innerHTML='<div class="fq-detail-summary"><strong>'+(hasKpi?Math.round(point.g).toLocaleString("de-DE")+" g pro Essen":"Kein g/Portion-Wert")+
+  '</strong><span>'+(meals!==null?meals.toLocaleString("de-DE")+" Essen":"Essenszahl fehlt")+
+  '</span></div><ul>'+rows+'</ul><div class="fq-detail-total"><span>Abfall gesamt</span><b>'+
+  (hasKpi||values.size?fmtWeight(total):"—")+'</b></div><p>'+
+  (hasKpi&&point.key.length===7?"Nur Tage mit Essenszahl und Wiegung fließen in diesen Balken ein.":!hasKpi?"Erfasste Werte für den Zeitraum, soweit vorhanden.":"Die Werte ergeben zusammen den angezeigten Balken.")+
+  ' Ein Strich bedeutet: kein Eintrag.</p>';
+ if(!sparkDialog.open)sparkDialog.showModal();
+});
 function displaySpark(bounds,days){
- const validMeals=new Map(),waste=new Map();
+ const validMeals=new Map(),recordedMeals=new Map(),waste=new Map(),wasteCats=new Map();
  for(const m of state.meals||[]){
-  if(m.date>=bounds.start&&m.date<=bounds.end&&n(m.meals)>0)
-   validMeals.set(m.date,(validMeals.get(m.date)||0)+n(m.meals));
+  if(m.date<bounds.start||m.date>bounds.end)continue;
+  if(n(m.meals)>0)validMeals.set(m.date,(validMeals.get(m.date)||0)+n(m.meals));
+  if(m.status!=="pending"&&m.meals!=null&&m.meals!==""&&Number.isFinite(Number(m.meals)))
+   recordedMeals.set(m.date,(recordedMeals.get(m.date)||0)+n(m.meals));
  }
  for(const entry of state.entries||[]){
-  if(entry.date>=bounds.start&&entry.date<=bounds.end)
-   waste.set(entry.date,(waste.get(entry.date)||0)+n(entry.weight_kg));
+  if(entry.date<bounds.start||entry.date>bounds.end)continue;
+  waste.set(entry.date,(waste.get(entry.date)||0)+n(entry.weight_kg));
+  const dayCats=wasteCats.get(entry.date)||new Map();
+  dayCats.set(entry.category,(dayCats.get(entry.category)||0)+n(entry.weight_kg));
+  wasteCats.set(entry.date,dayCats);
  }
  const grouped=new Map();
  const first=Date.parse(bounds.start+"T00:00:00Z"),last=Date.parse(bounds.end+"T00:00:00Z");
@@ -14028,8 +14067,14 @@ function displaySpark(bounds,days){
   if(days===365){key=isoMonth;label=d.toLocaleDateString("de-DE",{month:"short"});}
   else if(days===30){key=date;label=d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});}
   else{key=date;label=days===1?d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit"});}
-  const row=grouped.get(key)||{key,label,meals:0,waste:0,days:0};
+  const row=grouped.get(key)||{key,label,meals:0,waste:0,days:0,allWaste:0,allMeals:null,allCats:new Map(),kpiCats:new Map()};
+  const dayCats=wasteCats.get(date);
+  const addCats=target=>dayCats?.forEach((value,cat)=>target.set(cat,(target.get(cat)||0)+value));
+  row.allWaste+=waste.get(date)||0;
+  if(recordedMeals.has(date))row.allMeals=(row.allMeals??0)+recordedMeals.get(date);
+  addCats(row.allCats);
   if(validMeals.has(date)&&waste.has(date)){
+   addCats(row.kpiCats);
    row.meals+=validMeals.get(date);
    row.waste+=waste.get(date);
    row.days++;
@@ -14037,6 +14082,7 @@ function displaySpark(bounds,days){
   grouped.set(key,row);
  }
  const points=[...grouped.values()].map(g=>({...g,g:g.meals>0?g.waste*1000/g.meals:null}));
+ sparkPoints=points;
  const chart=id("fqSpark"),pane=chart?.closest(".fq-trend-panel");
  if(!chart||!pane)return;
  let headline=pane.querySelector(".fq-weekchart-context");
@@ -14071,20 +14117,20 @@ function displaySpark(bounds,days){
  const periodChanged=chart.dataset.fqPeriod!==periodKey;
  chart.dataset.fqPeriod=periodKey;
  const priorScroll=chart.scrollLeft;
- chart.innerHTML='<div class="fq-chart-track"><div class="fq-target-line" aria-hidden="true"></div>'+points.map(p=>{
+ chart.innerHTML='<div class="fq-chart-track"><div class="fq-target-line" aria-hidden="true"></div>'+points.map((p,index)=>{
   const known=p.g!==null,bar=known?Math.max(2,scale(p.g)):0;
   const cls=known?(p.g<=50?"top":p.g<=75?"good":p.g<=108?"middle":"high"):"missing";
   const value=known?Math.round(p.g).toLocaleString("de-DE")+" g":"—";
-  return '<div class="fq-week-cell '+cls+'" title="'+p.label+": "+(known?value+" pro Essen, "+p.days+" Messtage":"keine auswertbaren Tage")+'">'+
+  return '<button type="button" class="fq-week-cell '+cls+'" data-fq-point="'+index+'" aria-haspopup="dialog" aria-label="'+p.label+": "+(known?value+" pro Essen":"kein Vergleichswert")+', Details öffnen">'+
    '<span class="fq-week-value">'+value+'</span>'+
-   '<div class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</div>'+
-   '<span class="fq-week-label">'+p.label+'</span></div>';
+   '<span class="fq-week-plot">'+(known?'<i class="fq-week-bar" style="height:'+bar.toFixed(1)+'px"></i>':'<span class="fq-week-no-data">·</span>')+'</span>'+
+   '<span class="fq-week-label">'+p.label+'</span></button>';
  }).join("")+'</div>';
  if(periodChanged&&(days===30||days===365)){
   const recent=points.reduce((last,p,index)=>p.g!==null?index:last,0);
   chart.scrollLeft=Math.max(0,recent*(days===30?84:86)-chart.clientWidth*0.62);
  }else chart.scrollLeft=priorScroll;
- chart.setAttribute("aria-label","Abfall pro Essen: "+points.map(p=>p.label+" "+(p.g===null?"keine Daten":Math.round(p.g)+" Gramm")).join("; ")+". Ziel 75 Gramm.");
+ chart.setAttribute("aria-label","Abfall pro Essen. Für Details einen Balken antippen. Ziel 75 Gramm.");
  note.innerHTML='<b>75 g</b> · FLORESQ-Ziel aus UAW-Ergebnissen nach Verbesserungen (2020). <b>108 g</b> · damaliger Ø vor Maßnahmen. <b>≤ 50 g</b> · ambitioniertes Spitzenniveau. <span>Vergleich nur bei gleichem Messumfang.</span>';
 }
 function renderCostDetails(entries,summary){
@@ -14624,5 +14670,21 @@ body.view-operational .nav{
 }
 </style>
 <!-- /FLORESQ TABLET LIGHT -->
+<style id="floresq-chart-details">
+#fqSpark button.fq-week-cell{border:0;background:transparent;padding:0;width:100%;cursor:pointer;touch-action:pan-x pan-y}
+#fqSpark button.fq-week-cell:hover,#fqSpark button.fq-week-cell:focus-visible{background:#edf6ee;border-radius:8px}
+#fqSpark button.fq-week-cell:focus-visible{outline:2px solid #217452;outline-offset:-2px}
+#fqSparkDetails{width:min(360px,calc(100% - 32px));background:#fff;color:#17291e;border:1px solid #dce8df;border-radius:20px;overflow:auto}
+#fqSparkDetails .fq-detail-card{padding:18px}
+#fqSparkDetails header{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:0;margin:0 0 12px!important;padding:0!important;background:none;border:0;box-shadow:none}
+#fqSparkDetails header span{font-size:10px;font-weight:850;color:#367558;letter-spacing:.09em}
+#fqSparkDetails h3{margin:3px 0 0;font-size:19px}
+#fqSparkDetails header button{width:44px;height:44px;flex:none;border:0;border-radius:12px;background:#edf4ef;color:#254936;font-size:24px}
+.fq-detail-summary,.fq-detail-total{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;background:#edf6ef;border-radius:10px;font-size:13px}
+#fqSparkDetails ul{list-style:none;margin:8px 0;padding:0}
+#fqSparkDetails li{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid #edf1ee;font-size:13px}
+.fq-detail-dot{width:10px;height:10px;border-radius:50%;background:var(--fq-dot)}
+#fqSparkDetails p{margin:10px 0 0;color:#52705d;font-size:11px;line-height:1.4}
+</style>
 </body>
 </html>
