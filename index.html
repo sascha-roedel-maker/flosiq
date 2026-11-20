@@ -10460,7 +10460,7 @@ body.view-operational.ios-keyboard-action #capture{padding-bottom:96px!important
   5) Beim Start: Geräte-Sicherung restaurieren -> offene Queue senden -> Cloud laden -> UI rendern.
 */
 
-window.FLOSIQ_BUILD="2026-11-20-chart-tooltip-v7";
+window.FLOSIQ_BUILD="2026-11-20-chart-rescue-v8";
 
 const IQ_CLOUD_URL="https://erfqfbbpjqqznzvgeguh.supabase.co";
 const IQ_CLOUD_KEY="sb_publishable_wYRiSInH10dpQy39MTRreA_UJ8Oyz6I";
@@ -14059,13 +14059,16 @@ function openSparkTip(button){
  const total=hasKpi?point.waste:point.allWaste;
  const meals=hasKpi?point.meals:point.allMeals;
  const fmtWeight=x=>x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:3})+" kg";
+ const rescue=window.FLORESQ_RESCUE_SUMMARY?.(point.start,point.end);
+ const rescueWeight=rescue&&Number.isFinite(rescue.rescuedKg)?fmtWeight(rescue.rescuedKg):"—";
  const rows=cats.map(c=>'<li><span class="fq-detail-dot" style="--fq-dot:'+c.color+'" aria-hidden="true"></span><span>'+c.label+'</span><b>'+
   (values.has(c.id)?fmtWeight(values.get(c.id)):"—")+'</b></li>').join("");
  id("fqSparkDetailsMeals").textContent=meals!==null?meals.toLocaleString("de-DE")+" Essen":"Essenszahl fehlt";
  id("fqSparkDetailsData").innerHTML='<ul>'+rows+'</ul><div class="fq-tip-total"><b>'+
   (hasKpi||values.size?fmtWeight(total)+" gesamt":"Keine Wiegung")+'</b><span>'+
   (hasKpi?Math.round(point.g).toLocaleString("de-DE")+" g/Essen":"— g/Essen")+'</span></div>'+
-  (hasKpi&&point.key.length===7?'<small>Nur auswertbare Tage</small>':"");
+  (hasKpi&&point.key.length===7?'<small>Abfall/Essen: nur auswertbare Tage</small>':"")+
+  '<div class="fq-tip-rescue"><span class="fq-detail-dot" aria-hidden="true"></span><span>Rettung erfasst</span><b>'+rescueWeight+'</b></div>';
  sparkTip.hidden=false;
  placeSparkTip();
 }
@@ -14100,7 +14103,8 @@ function displaySpark(bounds,days){
   if(days===365){key=isoMonth;label=d.toLocaleDateString("de-DE",{month:"short"});}
   else if(days===30){key=date;label=d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});}
   else{key=date;label=days===1?d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):d.toLocaleDateString("de-DE",{weekday:"short",day:"2-digit"});}
-  const row=grouped.get(key)||{key,label,meals:0,waste:0,days:0,allWaste:0,allMeals:null,allCats:new Map(),kpiCats:new Map()};
+  const row=grouped.get(key)||{key,label,start:date,end:date,meals:0,waste:0,days:0,allWaste:0,allMeals:null,allCats:new Map(),kpiCats:new Map()};
+  row.end=date;
   const dayCats=wasteCats.get(date);
   const addCats=target=>dayCats?.forEach((value,cat)=>target.set(cat,(target.get(cat)||0)+value));
   row.allWaste+=waste.get(date)||0;
@@ -14721,6 +14725,8 @@ body.view-operational .nav{
 #fqSparkDetails ul{list-style:none;margin:5px 0;padding:4px 0;border-block:1px solid #dfe9e2}
 #fqSparkDetails li{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:5px;align-items:center;padding:1px 0}
 .fq-detail-dot{width:7px;height:7px;border-radius:50%;background:var(--fq-dot)}
+.fq-tip-rescue{display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:5px;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid #dbeaf3;color:#155a80}
+.fq-tip-rescue .fq-detail-dot{--fq-dot:#0d77ad}
 </style>
 </body>
 </html>
